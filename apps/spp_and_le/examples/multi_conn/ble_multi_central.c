@@ -54,7 +54,7 @@
 
 //连接周期
 #define BASE_INTERVAL_MIN   (6)//最小的interval
-#define SET_CONN_INTERVAL   (BASE_INTERVAL_MIN*8) //(unit:1.25ms)
+#define SET_CONN_INTERVAL   (BASE_INTERVAL_MIN * 8) //(unit:1.25ms)
 //连接latency
 #define SET_CONN_LATENCY    0  //(unit:conn_interval)
 //连接超时
@@ -86,8 +86,8 @@ static struct ctl_pair_info_t record_bond_info[SUPPORT_MAX_GATT_CLIENT];
 static u8 multi_pair_reconnect_search_profile = 1; /*配对回连是否搜索profile*/
 static u8 multi_sm_master_pair_redo; /*配对回连keymiss,是否重新执行配对*/
 
-static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_param);
-static void multi_scan_conn_config_set(struct ctl_pair_info_t *pair_info);
+static int multi_client_event_packet_handler(int event, u8* packet, u16 size, u8* ext_param);
+static void multi_scan_conn_config_set(struct ctl_pair_info_t* pair_info);
 
 const gatt_client_cfg_t mul_client_init_cfg = {
     .event_packet_handler = multi_client_event_packet_handler,
@@ -125,21 +125,21 @@ static const target_uuid_t  jl_multi_search_uuid_table[] = {
     //	CHARACTERISTIC,  0000F531-1212-EFDE-1523-785FEABCD123, NOTIFY,
     //	CHARACTERISTIC,  0000F532-1212-EFDE-1523-785FEABCD123, WRITE_WITHOUT_RESPONSE | DYNAMIC,
     /*
-    	{
-    		.services_uuid16 = 0,
-    		.services_uuid128 =       {0x00,0x00,0xF5,0x30 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23} ,
-    		.characteristic_uuid16 = 0,
-    		.characteristic_uuid128 = {0x00,0x00,0xF5,0x31 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23},
-    		.opt_type = ATT_PROPERTY_NOTIFY,
-    	},
+        {
+            .services_uuid16 = 0,
+            .services_uuid128 =       {0x00,0x00,0xF5,0x30 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23} ,
+            .characteristic_uuid16 = 0,
+            .characteristic_uuid128 = {0x00,0x00,0xF5,0x31 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23},
+            .opt_type = ATT_PROPERTY_NOTIFY,
+        },
 
-    	{
-    		.services_uuid16 = 0,
-    		.services_uuid128 =       {0x00,0x00,0xF5,0x30 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23} ,
-    		.characteristic_uuid16 = 0,
-    		.characteristic_uuid128 = {0x00,0x00,0xF5,0x32 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23},
-    		.opt_type = ATT_PROPERTY_WRITE_WITHOUT_RESPONSE,
-    	},
+        {
+            .services_uuid16 = 0,
+            .services_uuid128 =       {0x00,0x00,0xF5,0x30 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23} ,
+            .characteristic_uuid16 = 0,
+            .characteristic_uuid128 = {0x00,0x00,0xF5,0x32 ,0x12,0x12 ,0xEF, 0xDE ,0x15,0x23 ,0x78,0x5F,0xEA ,0xBC,0xD1,0x23},
+            .opt_type = ATT_PROPERTY_WRITE_WITHOUT_RESPONSE,
+        },
     */
 
 };
@@ -156,7 +156,7 @@ static const client_match_cfg_t multi_match_device_table[] = {
 };
 
 //带绑定的设备搜索
-static client_match_cfg_t *multi_bond_device_table;
+static client_match_cfg_t* multi_bond_device_table;
 static u16  bond_device_table_cnt;
 
 //测试write数据操作
@@ -219,7 +219,8 @@ static void multi_client_reflash_bond_search_config(void)
         if (CLIENT_PAIR_BOND_TAG == record_bond_info[i].head_tag) {
             r_printf("set bond search: %d\n", i);
             multi_bond_device_table[i].filter_pdu_bitmap = BIT(EVENT_ADV_SCAN_IND) | BIT(EVENT_ADV_NONCONN_IND);
-        } else {
+        }
+        else {
             multi_bond_device_table[i].filter_pdu_bitmap = EVENT_DEFAULT_REPORT_BITMAP;
         }
     }
@@ -232,7 +233,7 @@ static void multi_client_reflash_bond_search_config(void)
 
 //-------------------------------------------------------------------------------------
 //vm 绑定对方信息读写
-static int multi_client_pair_vm_do(struct ctl_pair_info_t *info, u8 rw_flag)
+static int multi_client_pair_vm_do(struct ctl_pair_info_t* info, u8 rw_flag)
 {
     int ret = 0;
 
@@ -243,27 +244,29 @@ static int multi_client_pair_vm_do(struct ctl_pair_info_t *info, u8 rw_flag)
     log_info("-conn_pair_info vm_do:%d\n", rw_flag);
 
     if (rw_flag == 0) {
-        ret = syscfg_read(CFG_BLE_BONDING_REMOTE_INFO2, (u8 *)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
+        ret = syscfg_read(CFG_BLE_BONDING_REMOTE_INFO2, (u8*)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
         if (!ret) {
             log_info("-null--\n");
-            memset((u8 *)&record_bond_info, 0xff, uint_len * SUPPORT_MAX_GATT_CLIENT);
+            memset((u8*)&record_bond_info, 0xff, uint_len * SUPPORT_MAX_GATT_CLIENT);
             ret = 1;
         }
 
         /*检查合法性*/
         for (i = 0; i < SUPPORT_MAX_GATT_CLIENT; i++) {
             if (CLIENT_PAIR_BOND_TAG != record_bond_info[i].head_tag || record_bond_info[i].pair_flag != 1) {
-                memset((u8 *)&record_bond_info[i], 0xff, uint_len);
+                memset((u8*)&record_bond_info[i], 0xff, uint_len);
             }
         }
 
-    } else {
+    }
+    else {
         int fill_index = -1;
 
         if (info == NULL) {
             log_info("vm clear\n");
-            memset((u8 *)&record_bond_info, 0xff, uint_len * SUPPORT_MAX_GATT_CLIENT);
-        } else {
+            memset((u8*)&record_bond_info, 0xff, uint_len * SUPPORT_MAX_GATT_CLIENT);
+        }
+        else {
 
             for (i = 0; i < SUPPORT_MAX_GATT_CLIENT; i++) {
                 if (0 == memcmp(info, &record_bond_info[i], uint_len)) {
@@ -272,8 +275,8 @@ static int multi_client_pair_vm_do(struct ctl_pair_info_t *info, u8 rw_flag)
                 }
             }
 
-            put_buf((u8 *)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
-            put_buf((u8 *)info, uint_len);
+            put_buf((u8*)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
+            put_buf((u8*)info, uint_len);
             r_printf("write vm start\n");
             log_info("find table\n");
 
@@ -322,10 +325,10 @@ static int multi_client_pair_vm_do(struct ctl_pair_info_t *info, u8 rw_flag)
 
         }
 
-        syscfg_write(CFG_BLE_BONDING_REMOTE_INFO2, (u8 *)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
+        syscfg_write(CFG_BLE_BONDING_REMOTE_INFO2, (u8*)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
     }
 
-    put_buf((u8 *)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
+    put_buf((u8*)&record_bond_info, uint_len * SUPPORT_MAX_GATT_CLIENT);
     multi_client_reflash_bond_search_config();/*配对表发生变化，更新scan设备匹配*/
 
 #endif
@@ -349,12 +352,12 @@ int multi_client_clear_pair(void)
 }
 
 //处理gatt 回调的事件，hci & gatt
-static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_param)
+static int multi_client_event_packet_handler(int event, u8* packet, u16 size, u8* ext_param)
 {
     /* log_info("event: %02x,size= %d\n",event,size); */
     switch (event) {
     case GATT_COMM_EVENT_GATT_DATA_REPORT: {
-        att_data_report_t *report_data = (void *)packet;
+        att_data_report_t* report_data = (void*)packet;
         log_info("data_report:hdl=%04x,pk_type=%02x,size=%d\n", report_data->conn_handle, report_data->packet_type, report_data->blob_length);
         put_buf(report_data->blob, report_data->blob_length);
 
@@ -371,7 +374,7 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
             break;
         }
     }
-    break;
+                                         break;
 
     case GATT_COMM_EVENT_CAN_SEND_NOW:
         break;
@@ -385,10 +388,10 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
         put_buf(&ext_param[7], 7);
 
         memcpy(cur_conn_info.peer_address_info, &ext_param[7], 7);
-        cur_conn_info.conn_handle =   little_endian_read_16(packet, 0);
+        cur_conn_info.conn_handle = little_endian_read_16(packet, 0);
         cur_conn_info.conn_interval = little_endian_read_16(ext_param, 14 + 0);
-        cur_conn_info.conn_latency =  little_endian_read_16(ext_param, 14 + 2);
-        cur_conn_info.conn_timeout =  little_endian_read_16(ext_param, 14 + 4);
+        cur_conn_info.conn_latency = little_endian_read_16(ext_param, 14 + 2);
+        cur_conn_info.conn_timeout = little_endian_read_16(ext_param, 14 + 4);
         cur_conn_info.pair_flag = 0;
         cur_conn_info.head_tag = 0;
         break;
@@ -402,7 +405,8 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
 
         if (packet[3] == LINK_ENCRYPTION_RECONNECT) {
             log_info("reconnect...\n");
-        } else {
+        }
+        else {
             log_info("first pair...\n");
         }
 
@@ -416,13 +420,13 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
     case GATT_COMM_EVENT_CONNECTION_UPDATE_COMPLETE:
         log_info("conn_param update_complete:%04x\n", little_endian_read_16(packet, 0));
         log_info("update_interval = %d\n", little_endian_read_16(ext_param, 6 + 0));
-        log_info("update_latency = %d\n",  little_endian_read_16(ext_param, 6 + 2));
-        log_info("update_timeout = %d\n",  little_endian_read_16(ext_param, 6 + 4));
+        log_info("update_latency = %d\n", little_endian_read_16(ext_param, 6 + 2));
+        log_info("update_timeout = %d\n", little_endian_read_16(ext_param, 6 + 4));
 
         if (cur_conn_info.conn_handle == little_endian_read_16(packet, 0)) {
             cur_conn_info.conn_interval = little_endian_read_16(ext_param, 6 + 0);
-            cur_conn_info.conn_latency =  little_endian_read_16(ext_param, 6 + 2);
-            cur_conn_info.conn_timeout =  little_endian_read_16(ext_param, 6 + 4);
+            cur_conn_info.conn_latency = little_endian_read_16(ext_param, 6 + 2);
+            cur_conn_info.conn_timeout = little_endian_read_16(ext_param, 6 + 4);
         }
 
 #if CLIENT_PAIR_BOND_ENABLE
@@ -431,15 +435,16 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
                 log_info("update_cur_conn\n");
                 multi_client_pair_vm_do(&cur_conn_info, 1);
             }
-        } else {
+        }
+        else {
             struct ctl_pair_info_t tmp_conn_info;
             for (int i = 0; i < SUPPORT_MAX_GATT_CLIENT; i++) {
                 if (record_bond_info[i].pair_flag && record_bond_info[i].conn_handle == little_endian_read_16(packet, 0)) {
                     log_info("update_record_conn\n");
                     memcpy(&tmp_conn_info, &record_bond_info[i], sizeof(struct ctl_pair_info_t));
                     tmp_conn_info.conn_interval = little_endian_read_16(ext_param, 6 + 0);
-                    tmp_conn_info.conn_latency =  little_endian_read_16(ext_param, 6 + 2);
-                    tmp_conn_info.conn_timeout =  little_endian_read_16(ext_param, 6 + 4);
+                    tmp_conn_info.conn_latency = little_endian_read_16(ext_param, 6 + 2);
+                    tmp_conn_info.conn_timeout = little_endian_read_16(ext_param, 6 + 4);
                     multi_client_pair_vm_do(&tmp_conn_info, 1);
                     break;
                 }
@@ -454,7 +459,7 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
         if (packet[8] == 2) {
             log_info("is TEST_BOX\n");
         }
-        client_match_cfg_t *match_cfg = ext_param;
+        client_match_cfg_t* match_cfg = ext_param;
         if (match_cfg) {
             log_info("match_mode: %d\n", match_cfg->create_conn_mode);
             if (match_cfg->compare_data_len) {
@@ -475,7 +480,8 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
             if (!multi_pair_reconnect_search_profile) {
                 multil_client_bond_config.search_uuid_count = 0;//set no search
             }
-        } else {
+        }
+        else {
             /*记录表回连，使用记录的连接参数建立*/
             r_printf("match config\n");
             multi_scan_conn_config_set(NULL);
@@ -483,12 +489,12 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
 #endif
 
     }
-    break;
+                                       break;
 
     case GATT_COMM_EVENT_GATT_SEARCH_MATCH_UUID: {
-        opt_handle_t *opt_hdl = packet;
+        opt_handle_t* opt_hdl = packet;
         log_info("match:server_uuid= %04x,charactc_uuid= %04x,value_handle= %04x\n", \
-                 opt_hdl->search_uuid->services_uuid16, opt_hdl->search_uuid->characteristic_uuid16, opt_hdl->value_handle);
+            opt_hdl->search_uuid->services_uuid16, opt_hdl->search_uuid->characteristic_uuid16, opt_hdl->value_handle);
 #if MULTI_TEST_WRITE_SEND_DATA
         //for test
         if (opt_hdl->search_uuid->characteristic_uuid16 == 0xae01) {
@@ -496,7 +502,7 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
         }
 #endif
     }
-    break;
+                                               break;
 
 
     case GATT_COMM_EVENT_MTU_EXCHANGE_COMPLETE:
@@ -523,13 +529,13 @@ static int multi_client_event_packet_handler(int event, u8 *packet, u16 size, u8
 
 
 
-//scan参数设置
-static void multi_scan_conn_config_set(struct ctl_pair_info_t *pair_info)
+// scan参数设置
+static void multi_scan_conn_config_set(struct ctl_pair_info_t* pair_info)
 {
     multi_client_scan_cfg.scan_auto_do = 1;
     multi_client_scan_cfg.creat_auto_do = 1;
     multi_client_scan_cfg.scan_type = SET_SCAN_TYPE;
-    multi_client_scan_cfg.scan_filter = 1;
+    multi_client_scan_cfg.scan_filter = 0; // 
     multi_client_scan_cfg.scan_interval = SET_SCAN_INTERVAL;
     multi_client_scan_cfg.scan_window = SET_SCAN_WINDOW;
 
@@ -538,7 +544,8 @@ static void multi_scan_conn_config_set(struct ctl_pair_info_t *pair_info)
         multi_client_scan_cfg.creat_conn_interval = pair_info->conn_interval;
         multi_client_scan_cfg.creat_conn_latency = pair_info->conn_latency;
         multi_client_scan_cfg.creat_conn_super_timeout = pair_info->conn_timeout;
-    } else {
+    }
+    else {
         multi_client_scan_cfg.creat_conn_interval = SET_CONN_INTERVAL;
         multi_client_scan_cfg.creat_conn_latency = SET_CONN_LATENCY;
         multi_client_scan_cfg.creat_conn_super_timeout = SET_CONN_TIMEOUT;

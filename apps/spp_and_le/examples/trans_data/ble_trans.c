@@ -502,8 +502,8 @@ static int trans_att_write_callback(hci_con_handle_t connection_handle, uint16_t
         printf_buf(buffer, buffer_size);
         //中道指令处理
         extern void parse_led_strip_data(u8 *pBuf, u8);
-        extern void parse_zd_data(unsigned char *LedCommand);
-        parse_zd_data(buffer);  
+        // extern void parse_zd_data(unsigned char *LedCommand);
+        // parse_zd_data(buffer);  
         parse_led_strip_data(buffer,buffer_size);
         break;
 

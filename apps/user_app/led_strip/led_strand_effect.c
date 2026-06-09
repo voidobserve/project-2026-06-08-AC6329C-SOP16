@@ -873,7 +873,7 @@ void soft_turn_on_the_light(void)   //软开灯处理
     save_user_data_area3();  //保存参数配置到flash
     WS2812FX_start();
     one_wire_set_mode(4);    //360正转
-    enable_one_wire();       //启动发送电机数据
+    // enable_one_wire();       //启动发送电机数据
     open_fan();             //开启风扇
     fb_led_on_off_state();  //与app同步开关状态
 

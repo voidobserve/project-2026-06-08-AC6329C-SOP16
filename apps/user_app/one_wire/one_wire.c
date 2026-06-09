@@ -325,17 +325,17 @@ void set_stepmotor_music_mode(void)
         case 0:
    
             stepmotor_direction();
-            enable_one_wire();  //使用发送数据
+            // enable_one_wire();  //使用发送数据
         break;
         case 1:
 
             stepmotor_music_minSpeed();
-            enable_one_wire();  //使用发送数据
+            // enable_one_wire();  //使用发送数据
         break;
         case 2:
    
             stepmotor_music_maxSpeed();
-            enable_one_wire();  //使用发送数据
+            // enable_one_wire();  //使用发送数据
         break;
     }
   
@@ -353,7 +353,7 @@ void set_stepmotor_slow(void)
     if(fc_effect.base_ins.period != 26)
     {
         stepmotor_music_minSpeed();
-        enable_one_wire();  //使用发送数据
+        // enable_one_wire();  //使用发送数据
     }
 
 }
@@ -367,7 +367,7 @@ void set_stepmotor_fast(void)
     if(fc_effect.base_ins.period != 8)
     {
         stepmotor_music_maxSpeed();
-        enable_one_wire();  //使用发送数据
+        // enable_one_wire();  //使用发送数据
     }
 
 }
@@ -437,7 +437,7 @@ void stepmotor(void)
         if(stop_cnt == temp * 100)
         {
             one_wire_set_mode(6);
-            enable_one_wire();
+            // enable_one_wire();
             clean_stepmorot_flag();
         }
         else{
@@ -456,12 +456,12 @@ void Motor_Switch(void)
     if(motor_switch_f)
     {
         one_wire_set_mode(6);
-        enable_one_wire();
+        // enable_one_wire();
     }
     else
     {
         one_wire_set_mode(4);
-        enable_one_wire();
+        // enable_one_wire();
     }
 
 

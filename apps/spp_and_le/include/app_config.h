@@ -17,18 +17,18 @@
 #define CONFIG_DEBUG_ENABLE
 
 //apps example 选择,只能选1个,要配置对应的board_config.h
-#define CONFIG_APP_SPP_LE                 0 //SPP + LE or LE's client    仅从机
-#define CONFIG_APP_MULTI                  1 //蓝牙LE多连 + spp    多主机 + 从机 
-#define CONFIG_APP_DONGLE                 0 //usb + 蓝牙(ble 主机),PC hid设备
-#define CONFIG_APP_CENTRAL                0 //ble client,中心设备
-#define CONFIG_APP_LL_SYNC                0 //腾讯连连
-#define CONFIG_APP_BEACON                 0 //蓝牙BLE ibeacon
-#define CONFIG_APP_NONCONN_24G            0 //2.4G 非连接收发
-#define CONFIG_APP_TUYA                   0 //涂鸦协议
-#define CONFIG_APP_AT_COM                 0 //AT com HEX格式命令
-#define CONFIG_APP_AT_CHAR_COM            0 //AT com 字符串格式命令
-#define CONFIG_APP_IDLE                   0 //空闲任务
-#define CONFIG_APP_CONN_24G               0 //基于BLE的2.4g,板级只需要开BLE
+#define CONFIG_APP_SPP_LE                 0 // SPP + LE or LE's client    仅从机
+#define CONFIG_APP_MULTI                  1 // 蓝牙LE多连 + spp    多主机 + 从机 
+#define CONFIG_APP_DONGLE                 0 // usb + 蓝牙(ble 主机),PC hid设备
+#define CONFIG_APP_CENTRAL                0 // ble client,中心设备
+#define CONFIG_APP_LL_SYNC                0 // 腾讯连连
+#define CONFIG_APP_BEACON                 0 // 蓝牙BLE ibeacon
+#define CONFIG_APP_NONCONN_24G            0 // 2.4G 非连接收发
+#define CONFIG_APP_TUYA                   0 // 涂鸦协议
+#define CONFIG_APP_AT_COM                 0 // AT com HEX格式命令
+#define CONFIG_APP_AT_CHAR_COM            0 // AT com 字符串格式命令
+#define CONFIG_APP_IDLE                   0 // 空闲任务
+#define CONFIG_APP_CONN_24G               0 // 基于BLE的2.4g,板级只需要开BLE
 // #define LL_SYNC_EN                        CONFIG_APP_LL_SYNC //
 // #define TUYA_DEMO_EN                      CONFIG_APP_TUYA
 
@@ -69,10 +69,10 @@
 #define CONFIG_BT_GATT_CONNECTION_NUM      (CONFIG_BT_GATT_SERVER_NUM + CONFIG_BT_GATT_CLIENT_NUM) //
 
 #elif CONFIG_APP_MULTI
-#define CONFIG_BT_GATT_COMMON_ENABLE       1   //配置使用gatt公共模块
-#define CONFIG_BT_SM_SUPPORT_ENABLE        0  //配置是否支持加密
-#define CONFIG_BT_GATT_CLIENT_NUM          1 //range(0~7)  配置主机下的client个数
-#define CONFIG_BT_GATT_SERVER_NUM          1 //range(0~1)  配置从机上的server个数
+#define CONFIG_BT_GATT_COMMON_ENABLE       1 // 配置使用gatt公共模块
+#define CONFIG_BT_SM_SUPPORT_ENABLE        0 // 配置是否支持加密
+#define CONFIG_BT_GATT_CLIENT_NUM          1 // range(0~7)  配置主机下的client个数
+#define CONFIG_BT_GATT_SERVER_NUM          1 // range(0~1)  配置从机上的server个数
 #define CONFIG_BT_GATT_CONNECTION_NUM      (CONFIG_BT_GATT_SERVER_NUM + CONFIG_BT_GATT_CLIENT_NUM) //range(0~8)
 
 //选择AT: 主机从机二选一

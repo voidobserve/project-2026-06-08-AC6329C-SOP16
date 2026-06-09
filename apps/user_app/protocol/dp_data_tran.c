@@ -970,10 +970,10 @@ void parse_zd_data(unsigned char *LedCommand)
             if(LedCommand[0]==0x2F && LedCommand[1]==0x06 )
             {
                 extern void one_wire_set_mode(u8 m);
-                extern void enable_one_wire(void);
+                // extern void enable_one_wire(void);
                 one_wire_set_mode(LedCommand[2]); //配置模式
                 os_time_dly(1);
-                enable_one_wire();  //使用发送数据
+                // enable_one_wire();  //使用发送数据
                 save_user_data_area3();//保存参数配置到flash、
                 extern u8 counting_flag ;
                 extern u8 set_time;
@@ -1000,7 +1000,7 @@ void parse_zd_data(unsigned char *LedCommand)
                 extern void one_wire_set_period(u8 p);
                 one_wire_set_period(LedCommand[2]);
                 os_time_dly(1);
-                enable_one_wire();
+                // enable_one_wire();
                 save_user_data_area3();//保存参数配置到flash、
                 Send_buffer[6] = 0x2F;
                 Send_buffer[7] = 0x07;

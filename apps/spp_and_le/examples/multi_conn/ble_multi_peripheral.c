@@ -46,7 +46,8 @@
 #endif
 
 // 广播周期 (unit:0.625ms)
-#define ADV_INTERVAL_MIN          (160 * 5)//
+// #define ADV_INTERVAL_MIN          (160 * 5) //
+#define ADV_INTERVAL_MIN (64) //
 
 //---------------
 //连接参数更新请求设置
@@ -65,7 +66,7 @@ static const struct conn_update_param_t multi_connection_param_table[] = {
 #define CONN_PARAM_TABLE_CNT      (sizeof(multi_connection_param_table)/sizeof(struct conn_update_param_t))
 
 #define EIR_TAG_STRING   0xd6, 0x05, 0x08, 0x00, 'J', 'L', 'A', 'I', 'S', 'D','K'
-static const char user_tag_string[] = {EIR_TAG_STRING};
+static const char user_tag_string[] = { EIR_TAG_STRING };
 
 static u8 multi_adv_data[ADV_RSP_PACKET_MAX];//max is 31
 static u8 multi_scan_rsp_data[ADV_RSP_PACKET_MAX];//max is 31
@@ -84,14 +85,14 @@ static  u8 cur_peer_addr_info[7];//当前连接对方地址信息
 
 //------------------------------------------------------
 //广播参数设置
-extern const char *bt_get_local_name();
+extern const char* bt_get_local_name();
 extern void clr_wdt(void);
 static void multi_adv_config_set(void);
 //------------------------------------------------------
 //for ANCS
-static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t *buffer, uint16_t buffer_size);
-static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size);
-static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_param);
+static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t* buffer, uint16_t buffer_size);
+static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t* buffer, uint16_t buffer_size);
+static int multi_event_packet_handler(int event, u8* packet, u16 size, u8* ext_param);
 
 const gatt_server_cfg_t mul_server_init_cfg = {
     .att_read_cb = &multi_att_read_callback,
@@ -102,7 +103,7 @@ const gatt_server_cfg_t mul_server_init_cfg = {
 
 //-------------------------------------------------------------------------------------
 //vm 绑定对方信息读写
-static int multi_pair_vm_do(u8 *info, u8 info_len, u8 rw_flag)
+static int multi_pair_vm_do(u8* info, u8 info_len, u8 rw_flag)
 {
 #if PER_PAIR_BOND_ENABLE
     int ret;
@@ -110,7 +111,7 @@ static int multi_pair_vm_do(u8 *info, u8 info_len, u8 rw_flag)
 
     log_info("-conn_pair_info vm_do:%d\n", rw_flag);
     if (rw_flag == 0) {
-        ret = syscfg_read(CFG_BLE_BONDING_REMOTE_INFO, (u8 *)info, vm_len);
+        ret = syscfg_read(CFG_BLE_BONDING_REMOTE_INFO, (u8*)info, vm_len);
         if (!ret) {
             log_info("-null--\n");
             memset(info, 0xff, info_len);
@@ -118,8 +119,9 @@ static int multi_pair_vm_do(u8 *info, u8 info_len, u8 rw_flag)
         if (info[0] != PER_PAIR_BOND_TAG) {
             return -1;
         }
-    } else {
-        syscfg_write(CFG_BLE_BONDING_REMOTE_INFO, (u8 *)info, vm_len);
+    }
+    else {
+        syscfg_write(CFG_BLE_BONDING_REMOTE_INFO, (u8*)info, vm_len);
     }
 #endif
     return 0;
@@ -155,10 +157,10 @@ static void multi_send_connetion_update_deal(u16 conn_handle)
 
 /**
  * @brief 回连状态，主动使能通知
- * 
- * @param conn_handle 
- * @param update_request 
- * 
+ *
+ * @param conn_handle
+ * @param update_request
+ *
  * @note  注册服务
  */
 static void multi_resume_all_ccc_enable(u16 conn_handle, u8 update_request)
@@ -174,7 +176,7 @@ static void multi_resume_all_ccc_enable(u16 conn_handle, u8 update_request)
     ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_ae05_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_INDICATE);
     ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_ae3c_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_NOTIFY);
 #endif 
-//从仅从机服务搬过来
+    //从仅从机服务搬过来
     ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_fff1_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_NOTIFY);
 
 
@@ -194,7 +196,7 @@ hci_con_handle_t get_handle(hci_con_handle_t p)
 
 //-------------------------------------------------------------------------------------
 //处理gatt_common 模块返回的事件，hci & gatt
-static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_param)
+static int multi_event_packet_handler(int event, u8* packet, u16 size, u8* ext_param)
 {
     /* log_info("event: %02x,size= %d\n",event,size); */
 
@@ -205,7 +207,7 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
 
     case GATT_COMM_EVENT_SERVER_INDICATION_COMPLETE:
         log_info("INDICATION_COMPLETE:con_handle= %04x,att_handle= %04x\n", \
-                 little_endian_read_16(packet, 0), little_endian_read_16(packet, 2));
+            little_endian_read_16(packet, 0), little_endian_read_16(packet, 2));
         break;
 
     case GATT_COMM_EVENT_CONNECTION_COMPLETE:
@@ -240,7 +242,8 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
                 pair_bond_info[0] = PER_PAIR_BOND_TAG;
                 multi_pair_vm_do(pair_bond_info, sizeof(pair_bond_info), 1);
             }
-        } else {
+        }
+        else {
             log_info("first pair...\n");
 #if PER_PAIR_BOND_ENABLE
             memcpy(&pair_bond_info[1], cur_peer_addr_info, 7);
@@ -260,7 +263,8 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
         log_info("DIRECT_ADV_TIMEOUT:%d", direct_adv_count);
         if (direct_adv_count) {
             direct_adv_count--;
-        } else {
+        }
+        else {
             multi_adv_config_set();
         }
         break;
@@ -291,13 +295,13 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
  *
  *  \note      profile的读属性uuid 有配置 DYNAMIC 关键字，就有read_callback 回调
  */
-/*************************************************************************************************/
-// ATT Client Read Callback for Dynamic Data
-// - if buffer == NULL, don't copy data, just return size of value
-// - if buffer != NULL, copy data and return number bytes copied
-// @param offset defines start of attribute value
+ /*************************************************************************************************/
+ // ATT Client Read Callback for Dynamic Data
+ // - if buffer == NULL, don't copy data, just return size of value
+ // - if buffer != NULL, copy data and return number bytes copied
+ // @param offset defines start of attribute value
 #if 0
-static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t *buffer, uint16_t buffer_size)
+static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t* buffer, uint16_t buffer_size)
 {
     uint16_t  att_value_len = 0;
     uint16_t handle = att_handle;
@@ -306,7 +310,7 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
 
     switch (handle) {
     case ATT_CHARACTERISTIC_2a00_01_VALUE_HANDLE: {
-        char *gap_name = ble_comm_get_gap_name();
+        char* gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
 
         if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
@@ -319,7 +323,7 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
             log_info("\n------read gap_name: %s\n", gap_name);
         }
     }
-    break;
+                                                break;
 
     case ATT_CHARACTERISTIC_ae10_01_VALUE_HANDLE:
         att_value_len = sizeof(multi_test_read_write_buf);
@@ -348,7 +352,7 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
 
 
     case ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE:
-        char *gap_name = ble_comm_get_gap_name();
+        char* gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
 
         if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
@@ -373,8 +377,8 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
 #endif
 extern u8 fff3_buf_len;
 extern u8 _0103_f;
-extern uint8_t Send_buffer[50];  
-static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t *buffer, uint16_t buffer_size)
+extern uint8_t Send_buffer[50];
+static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t* buffer, uint16_t buffer_size)
 {
     uint16_t  att_value_len = 0;
     uint16_t handle = att_handle;
@@ -383,7 +387,7 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
 
     switch (handle) {
     case ATT_CHARACTERISTIC_2a00_01_VALUE_HANDLE: {
-        char *gap_name = ble_comm_get_gap_name();
+        char* gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
 
         if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
@@ -396,9 +400,9 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
             log_info("\n------read gap_name: %s\n", gap_name);
         }
     }
-    break;
+                                                break;
 
-      case ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE:
+    case ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE:
         // char *gap_name = ble_comm_get_gap_name();
         // att_value_len = strlen(gap_name);
 
@@ -424,30 +428,30 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
 
 
 
-        case ATT_CHARACTERISTIC_fff3_01_VALUE_HANDLE:
+    case ATT_CHARACTERISTIC_fff3_01_VALUE_HANDLE:
         extern void fff3_fb_state(void);
-        char *gap_name = ble_comm_get_gap_name();
+        char* gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
-       
+
         if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
             break;
         }
 
         if (buffer) {
-            if(_0103_f)
+            if (_0103_f)
             {
-                 printf("_0103_f == 1");
+                printf("_0103_f == 1");
                 fff3_fb_state();
 
             }
             memcpy(buffer, &Send_buffer, fff3_buf_len);
             att_value_len = fff3_buf_len;
-            printf_buf(Send_buffer,fff3_buf_len);
+            printf_buf(Send_buffer, fff3_buf_len);
             // printf_buf(buffer,fff3_buf_len);
 
         }
         printf("ATT_CHARACTERISTIC_fff3_01_VALUE_HANDLE");
-  
+
         break;
 
 
@@ -474,97 +478,9 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
  *
  *  \note      profile的写属性uuid 有配置 DYNAMIC 关键字，就有write_callback 回调
  */
-/*************************************************************************************************/
-#if 0
-static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size)
-{
-    int result = 0;
-    u16 tmp16;
-
-    u16 handle = att_handle;
-
-    log_info("write_callback,conn_handle =%04x, handle =%04x,size =%d\n", connection_handle, handle, buffer_size);
-
-    switch (handle) {
-
-    case ATT_CHARACTERISTIC_2a00_01_VALUE_HANDLE:
-        break;
-
-    case ATT_CHARACTERISTIC_ae02_01_CLIENT_CONFIGURATION_HANDLE:
-    case ATT_CHARACTERISTIC_ae04_01_CLIENT_CONFIGURATION_HANDLE:
-    case ATT_CHARACTERISTIC_ae05_01_CLIENT_CONFIGURATION_HANDLE:
-    case ATT_CHARACTERISTIC_ae3c_01_CLIENT_CONFIGURATION_HANDLE:
-    case ATT_CHARACTERISTIC_2a05_01_CLIENT_CONFIGURATION_HANDLE:
-        multi_send_connetion_update_deal(connection_handle);
-        log_info("\n------write ccc:%04x,%02x\n", handle, buffer[0]);
-        ble_gatt_server_characteristic_ccc_set(connection_handle, handle, buffer[0]);
-        break;
-
-    case ATT_CHARACTERISTIC_ae10_01_VALUE_HANDLE:
-        tmp16 = sizeof(multi_test_read_write_buf);
-        if ((offset >= tmp16) || (offset + buffer_size) > tmp16) {
-            break;
-        }
-        memcpy(&multi_test_read_write_buf[offset], buffer, buffer_size);
-        break;
-
-    case ATT_CHARACTERISTIC_ae01_01_VALUE_HANDLE:
-        log_info("\n-ae01_rx(%d):", buffer_size);
-        put_buf(buffer, buffer_size);
-
-        //收发测试，自动发送收到的数据;for test
-        if (ble_comm_att_check_send(connection_handle, buffer_size)) {
-            log_info("-loop send1\n");
-
-
-            ble_comm_att_send_data(connection_handle, ATT_CHARACTERISTIC_ae02_01_VALUE_HANDLE, buffer, buffer_size, ATT_OP_AUTO_READ_CCC);
-        }
-        break;
-
-
-    case ATT_CHARACTERISTIC_ae03_01_VALUE_HANDLE:
-        log_info("\n-ae_rx(%d):", buffer_size);
-        put_buf(buffer, buffer_size);
-
-        //收发测试，自动发送收到的数据;for test
-        if (ble_comm_att_check_send(connection_handle, buffer_size)) {
-            log_info("-loop send2\n");
-            ble_comm_att_send_data(connection_handle, ATT_CHARACTERISTIC_ae05_01_VALUE_HANDLE, buffer, buffer_size, ATT_OP_AUTO_READ_CCC);
-        }
-        break;
-
-#if RCSP_BTMATE_EN
-    case ATT_CHARACTERISTIC_ae02_02_CLIENT_CONFIGURATION_HANDLE:
-        ble_op_latency_skip(connection_handle, 0xffff); //
-        ble_gatt_server_set_update_send(connection_handle, ATT_CHARACTERISTIC_ae02_02_VALUE_HANDLE, ATT_OP_AUTO_READ_CCC);
-#endif
-        /* multi_send_connetion_update_deal(connection_handle); */
-        log_info("------write ccc:%04x,%02x\n", handle, buffer[0]);
-        ble_gatt_server_characteristic_ccc_set(connection_handle, handle, buffer[0]);
-        break;
-
-#if RCSP_BTMATE_EN
-    case ATT_CHARACTERISTIC_ae01_02_VALUE_HANDLE:
-        log_info("rcsp_read:%x\n", buffer_size);
-        ble_gatt_server_receive_update_data(NULL, buffer, buffer_size);
-        break;
-#endif
-
-    case ATT_CHARACTERISTIC_ae3b_01_VALUE_HANDLE:
-        log_info("\n-ae3b_rx(%d):", buffer_size);
-        put_buf(buffer, buffer_size);
-        break;
-
-
-    default:
-        break;
-    }
-    return 0;
-}
-#endif
-
+ /*************************************************************************************************/
 //从从机代码移植过来
-static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size)
+static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t* buffer, uint16_t buffer_size)
 {
     int result = 0;
     u16 tmp16;
@@ -587,7 +503,7 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
     case ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE:
         log_info("\n-fff1_rx(%d):", buffer_size);
         printf_buf(buffer, buffer_size);
-        
+
         // extern void parse_led_strip_data(u8 *pBuf, u8);
         // extern void parse_zd_data(unsigned char *LedCommand);
         // parse_zd_data(buffer);  //中道指令处理
@@ -598,7 +514,7 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
         log_info("\n-fff2_rx(%d):", buffer_size);
         printf_buf(buffer, buffer_size);
         parse_zd_data(buffer);
-        parse_led_strip_data(buffer,buffer_size);
+        parse_led_strip_data(buffer, buffer_size);
 
         break;
 
@@ -646,31 +562,33 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
 //
 /**
  * @brief 生成adv包数据，写入buff
- * 
- * 
+ *
+ *
  * @note 可以设置从机的广播信息
  */
 static u8  adv_name_ok = 0;//name 优先存放在ADV包
 static int multi_make_set_adv_data(void)
 {
     u8 offset = 0;
-    u8 *buf = multi_adv_data;
+    u8* buf = multi_adv_data;
 
     offset += make_eir_packet_val(&buf[offset], offset, HCI_EIR_DATATYPE_FLAGS, FLAGS_GENERAL_DISCOVERABLE_MODE | FLAGS_EDR_NOT_SUPPORTED, 1);
     offset += make_eir_packet_val(&buf[offset], offset, HCI_EIR_DATATYPE_COMPLETE_16BIT_SERVICE_UUIDS, 0xAF30, 2);
 #if 0
-    char *gap_name = ble_comm_get_gap_name();
+    char* gap_name = ble_comm_get_gap_name();
     u8 name_len = strlen(gap_name);
     u8 vaild_len = ADV_RSP_PACKET_MAX - (offset + 2);
     if (name_len < vaild_len) {
-        offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_COMPLETE_LOCAL_NAME, (void *)gap_name, name_len);
+        offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_COMPLETE_LOCAL_NAME, (void*)gap_name, name_len);
         adv_name_ok = 1;
-    } else {
+    }
+    else {
         adv_name_ok = 0;
     }
 #endif
 
-	u8 info[13];    //客户机型数据
+    // 广播头
+    u8 info[13];    //客户机型数据
     info[0] = 'Z';
     info[1] = 'D';
     info[2] = 0x00; //
@@ -680,7 +598,7 @@ static int multi_make_set_adv_data(void)
     info[6] = 0x07;
     le_controller_get_mac(&info[7]);    //获取ble的蓝牙public地址
 
-    offset += make_eir_packet_data(&buf[offset],offset,HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA,info,13);
+    offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA, info, 13);
 
 
     if (offset > ADV_RSP_PACKET_MAX) {
@@ -698,21 +616,21 @@ static int multi_make_set_adv_data(void)
 static int multi_make_set_rsp_data(void)
 {
     u8 offset = 0;
-    u8 *buf = multi_scan_rsp_data;
+    u8* buf = multi_scan_rsp_data;
 
 #if RCSP_BTMATE_EN
     u8  tag_len = sizeof(user_tag_string);
-    offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA, (void *)user_tag_string, tag_len);
+    offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA, (void*)user_tag_string, tag_len);
 #endif
 
     if (!adv_name_ok) {
-        char *gap_name = ble_comm_get_gap_name();
+        char* gap_name = ble_comm_get_gap_name();
         u8 name_len = strlen(gap_name);
         u8 vaild_len = ADV_RSP_PACKET_MAX - (offset + 2);
         if (name_len > vaild_len) {
             name_len = vaild_len;
         }
-        offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_COMPLETE_LOCAL_NAME, (void *)gap_name, name_len);
+        offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_COMPLETE_LOCAL_NAME, (void*)gap_name, name_len);
     }
 
     if (offset > ADV_RSP_PACKET_MAX) {
@@ -730,7 +648,7 @@ static int multi_make_set_rsp_data(void)
 
 /**
  * @brief 广播参数设置
- * 
+ *
  */
 static void multi_adv_config_set(void)
 {
@@ -746,7 +664,8 @@ static void multi_adv_config_set(void)
     if (direct_adv_count) {
         multi_server_adv_config.adv_type = ADV_DIRECT_IND;
         direct_adv_count--;
-    } else {
+    }
+    else {
         multi_server_adv_config.adv_type = ADV_IND;    //仅从机执行的是这个句
     }
 

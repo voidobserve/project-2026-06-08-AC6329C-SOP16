@@ -11,6 +11,7 @@
 				<Option type="1" />
 				<Option compiler="q32s_lto_compiler" />
 				<Compiler>
+					<Add option="-flto" />
 					<Add option="-Os" />
 					<Add option="-Wcast-align" />
 					<Add option="-Wundef" />
@@ -18,7 +19,6 @@
 					<Add option="-g" />
 					<Add option="-integrated-as" />
 					<Add option="-O0" />
-					<Add option="-flto" />
 					<Add option="-fallow-pointer-null" />
 					<Add option="-Wincompatible-pointer-types" />
 					<Add option="-fprefer-gnu-section" />
@@ -128,8 +128,11 @@
 					<Add directory="../../../user_app/ad_key" />
 					<Add directory="../../../user_app/one_wire" />
 					<Add directory="../../../user_app/rf24g" />
+					<Add directory="../../../user_app" />
+					<Add directory="../../../user_app/hardware/motor" />
 				</Compiler>
 				<Linker>
+					<Add option="-flto" />
 					<Add option="--plugin-opt=-inline-threshold=5" />
 					<Add option="--plugin-opt=save-temps" />
 					<Add option="--plugin-opt=-inline-normal-into-special-section=true" />
@@ -706,6 +709,14 @@
 		</Unit>
 		<Unit filename="../../../user_app/ad_key/ad_key_app.h" />
 		<Unit filename="../../../user_app/ad_key/adkey.h" />
+		<Unit filename="../../../user_app/hardware/motor/motor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/hardware/motor/motor.h" />
+		<Unit filename="../../../user_app/hardware/motor/motor_driver.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/hardware/motor/motor_driver.h" />
 		<Unit filename="../../../user_app/ir_key/ir_key.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -754,6 +765,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/save_flash/save_flash.h" />
+		<Unit filename="../../../user_app/user_include.h" />
+		<Unit filename="../../../user_app/user_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/Adafruit_NeoPixel.H" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/adafruit_typedef.h" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/neo_pixel.c">

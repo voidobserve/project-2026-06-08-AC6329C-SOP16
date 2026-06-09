@@ -28,6 +28,7 @@
 #define LOG_CLI_ENABLE
 #include "debug.h"
 
+#include "user_include.h"
 
 #if CONFIG_APP_MULTI
 
@@ -97,6 +98,9 @@ static int multi_state_machine(struct application *app, enum app_state state, st
         switch (it->action) {
         case ACTION_MULTI_MAIN:
             multi_app_start();
+
+            user_init();
+
         extern void my_main(void);
             my_main();
             break;

@@ -104,11 +104,10 @@ void WS2812FX_service()
 {
   if(_running || _triggered) {
     // USER_TO_DO 测试时使用： unsigned long now = millis() 
-    // unsigned long now = millis(); // Be aware, millis() rolls over every 49 days
+    unsigned long now = millis(); // Be aware, millis() rolls over every 49 days
 
     // USER_TO_DO 在测试时屏蔽了，实际要恢复
-    // unsigned long now = get_syn_time(); // Be aware, millis() rolls over every 49 days    
-    u32 now = get_syn_time(); // Be aware, millis() rolls over every 49 days    
+    // u32 now = get_syn_time(); // Be aware, millis() rolls over every 49 days    
 
     uint8_t doShow = false;
     for(uint8_t i=0; i < _active_segments_len; i++) {

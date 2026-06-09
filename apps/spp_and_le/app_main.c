@@ -29,6 +29,9 @@
 #define LOG_CLI_ENABLE
 #include "debug.h"
 
+#include "user_include.h"
+#include "motor_driver.h"
+
 /*任务列表 */
 const struct task_info task_info_table[] = {
     {"app_core",            1,     0,   640,   128  },
@@ -60,6 +63,7 @@ const struct task_info task_info_table[] = {
     {"user_deal",           7,     0,   512,   512  },//定义线程 tuya任务调度
 #endif
     {"led_task",            2,      0,  512,    512},
+    {"motor_task",            2,      0,  128,    128},
     {0, 0},
 };
 
@@ -276,39 +280,25 @@ static const u16 timer_div[] = {
     /*1110*/    32 * 256,
     /*1111*/    128 * 256,
 };
-#define APP_TIMER_CLK           (CONFIG_BT_NORMAL_HZ/2) //clk_get("timer")
-#define MAX_TIME_CNT            0x7fff
-#define MIN_TIME_CNT            0x100
-#define TIMER_UNIT				1
 
-#define TIMER_CON               JL_TIMER2->CON
-#define TIMER_CNT               JL_TIMER2->CNT
-#define TIMER_PRD               JL_TIMER2->PRD
-#define TIMER_VETOR             IRQ_TIME2_IDX
+#define APP_TIMER_CLK (24000000) // clk_get("timer")
+#define MAX_TIME_CNT 0x7fff
+#define MIN_TIME_CNT 0x100
+#define TIMER_UNIT 1
 
-#define USER_IR_ENABLE 0
+#define TIMER_CON JL_TIMER2->CON
+#define TIMER_CNT JL_TIMER2->CNT
+#define TIMER_PRD JL_TIMER2->PRD
+#define TIMER_VETOR IRQ_TIME2_IDX
+
 ___interrupt
 AT_VOLATILE_RAM_CODE
-void user_timer_isr(void)//50us
+void user_timer2_isr(void)
 {
-    static u8 timer_cnt;
-    TIMER_CON |= BIT(14);
-
-    timer_cnt++;
-#if USER_IR_ENABLE
-    //	if(timer_cnt%4==0)
-    //	{
-    ir_detect_isr();
-    //	}
-#endif
-
-    void one_wire_send(void);
-    one_wire_send();  //steomotor
-
-
+    TIMER_CON |= BIT(14);  // 清除中断标志
+    user_125us_isr();
 
 }
-
 
 void user_timer_init(void)
 {
@@ -319,15 +309,16 @@ void user_timer_init(void)
     for (index = 0; index < (sizeof(timer_div) / sizeof(timer_div[0])); index++)
     {
         prd_cnt = TIMER_UNIT * (APP_TIMER_CLK / 8000) / timer_div[index];
-        if (prd_cnt > MIN_TIME_CNT && prd_cnt < MAX_TIME_CNT) {
+        if (prd_cnt > MIN_TIME_CNT && prd_cnt < MAX_TIME_CNT)
+        {
             break;
         }
     }
 
     TIMER_CNT = 0;
     TIMER_PRD = prd_cnt;
-    request_irq(TIMER_VETOR, 0, user_timer_isr, 0);
-    TIMER_CON = (index << 4) | BIT(0) | BIT(3);
+    request_irq(TIMER_VETOR, 3, user_timer2_isr, 0);
+    TIMER_CON = (0b0001 << 10) | (index << 4) | (0x01 << 0); // 选择晶振作为时钟源，分频系数，定时器计数模式
 }
 __initcall(user_timer_init);
 
@@ -477,13 +468,13 @@ void sound_handle(void)
     }
 }
 
-// 1ms调用一次
+// 10ms 调用一次
 void main_while(viod)
 {
     u16 i;
     extern void run_tick_per_10ms(void);
     extern void WS2812FX_service();
-    extern void ir_timer_handler(void);
+    // extern void ir_timer_handler(void);
     extern void check_mic_sound(void);
     void clr_wdt(void);
     extern void stepmotor(void);
@@ -493,26 +484,28 @@ void main_while(viod)
     // extern void acc_control(void);
     while (1)
     {
-        // sound_handle();
-
-        time_clock_handler();  //闹钟
-
-        ir_timer_handler();
+        // USER_TO_DO 测试时屏蔽，还不知道哪些需要恢复
+#if 0
+        time_clock_handler();  //闹钟 
 
         /****添加 处理函数 start**/
+        check_mic_sound();      // 采集声音并计算平均值
+        music_static_sound();   // 声控，七彩灯定色转换
 
-        check_mic_sound();      //采集声音并计算平均值
-        music_static_sound();   //声控，七彩灯定色转换
-
-        effect_stepmotor();    //声控，电机的音乐效果
-        meteor_period_sub();   //流星周期控制
-        stepmotor();            //电机停止指令计时
+        effect_stepmotor();    // 声控，电机的音乐效果
+        meteor_period_sub();   // 流星周期控制
+        stepmotor();            // 电机停止指令计时
         /****添加 处理函数 end**/
 
         rf24g_long_timer();
         run_tick_per_10ms();
         WS2812FX_service(); // 注意，这里约 20ms 才调用一次动画
         count_down_run();
+#endif
+
+
+        // motor_24byj48_move_steps(4096, MOTOR_DIR_CW);
+
         os_time_dly(1);
     }
 }
@@ -521,35 +514,39 @@ void main_while(viod)
 
 
 #include "iokey.h"
-OS_SEM LED_TASK_SEM;
+// OS_SEM LED_TASK_SEM;
 
 void my_main(void)
 {
-    printf("\n my_main");
 
     extern void full_color_init(void);
     extern void led_state_init(void);
     extern void read_flash_device_status_init(void);
     extern void mic_gpio_init(void);
     extern void mcu_com_init();
-    led_state_init();        //初始化LED接口 必需需要，不加上，某些工程可能会导致不断重启 幻彩引脚初始化
-    led_gpio_init();         //RGB控制脚初始化
-    led_pwm_init();          //控制灯的PWM
-    mic_gpio_init();         //本地麦克风
-    mcu_com_init();          //电机控制芯片的初始化
+    // led_state_init();        // 初始化LED接口 必需需要，不加上，某些工程可能会导致不断重启 幻彩引脚初始化
+    led_gpio_init();         // RGB控制脚初始化
+    led_pwm_init();          // 控制灯的PWM
+    mic_gpio_init();         // 本地麦克风
+    // mcu_com_init();          // 电机控制芯片的初始化
+    motor_24byj48_init();
+
+    // 测试时使用它来观察波形：
+    // gpio_set_direction(IO_PORT_DM, 0); // 
+    // gpio_direction_output(IO_PORT_DM, 0);
 
     // USER_TO_DO 测试时屏蔽：
-#if 1
-    extern void io_ext_interrupt_syn(void); //上升沿中断初始化
+#if 0
+    extern void io_ext_interrupt_syn(void); // 上升沿中断初始化
     io_ext_interrupt_syn();
 #endif
 
-    read_flash_device_status_init();  //读取flash
+    read_flash_device_status_init();  // 读取flash
 
     full_color_init();
 
 
-    os_sem_create(&LED_TASK_SEM, 0);
+    // os_sem_create(&LED_TASK_SEM, 0);
     task_create(main_while, NULL, "led_task");
 
 
