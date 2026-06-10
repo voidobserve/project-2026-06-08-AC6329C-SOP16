@@ -8,6 +8,7 @@
 #include "asm/adc_api.h"
 #include "asm/mcpwm.h"
 #include "led_strand_effect.h"
+#include "power_interface.h"
 MIC_OFFON MIC_ENABLE;           //0-关闭麦克风，1-开启麦克风
 
 const struct ledc_platform_data ledc_data =
@@ -81,25 +82,25 @@ u16 check_mic_adc(void)
 }
 
 /**************************  风扇IO口初始化   ***********/
-void fan_gpio_init(void)
-{
+// void fan_gpio_init(void)
+// {
 
-    gpio_set_pull_down(IO_PORT_DM, 0);
-    gpio_set_pull_up(IO_PORT_DM, 0);
-    gpio_direction_output(IO_PORT_DM, 1);
-}
+//     gpio_set_pull_down(IO_PORT_DM, 0);
+//     gpio_set_pull_up(IO_PORT_DM, 0);
+//     gpio_direction_output(IO_PORT_DM, 1);
+// }
 
-void open_fan(void)
-{
-    gpio_direction_output(IO_PORT_DM, 1);
+// void open_fan(void)
+// {
+//     gpio_direction_output(IO_PORT_DM, 1);
 
-}
+// }
 
-void close_fan(void)
-{
-    gpio_direction_output(IO_PORT_DM, 0);
+// void close_fan(void)
+// {
+//     gpio_direction_output(IO_PORT_DM, 0);
 
-}
+// }
 
 
 
@@ -284,6 +285,7 @@ void led_pwm_init(void)
 volatile u32 syn_ms = 0;
 u8 syn_timer_f = 0;
 
+ 
 AT_VOLATILE_RAM_CODE
 void get_syn_signal(void)
 {

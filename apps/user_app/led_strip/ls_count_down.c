@@ -35,13 +35,13 @@ void change_count_down(void)
     }
 }
 
-void set_count_down(u8 t)
-{
-    cd_state = 5;
-    // setting_time = t*10*1000;
-    setting_time = t*60*60*1000;
-    run_white_tips();
-}
+// void set_count_down(u8 t)
+// {
+//     cd_state = 5;
+//     // setting_time = t*10*1000;
+//     setting_time = t*60*60*1000;
+//     run_white_tips();
+// }
 
 void set_dly_pwr_off(void)
 {

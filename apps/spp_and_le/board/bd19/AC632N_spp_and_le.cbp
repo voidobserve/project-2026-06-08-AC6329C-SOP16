@@ -130,6 +130,9 @@
 					<Add directory="../../../user_app/rf24g" />
 					<Add directory="../../../user_app" />
 					<Add directory="../../../user_app/hardware/motor" />
+					<Add directory="../../../user_app/hardware/led" />
+					<Add directory="../../../../include_lib/driver/cpu/bd19/asm" />
+					<Add directory="../../../user_app/hardware/sound_coutrol" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
@@ -709,6 +712,10 @@
 		</Unit>
 		<Unit filename="../../../user_app/ad_key/ad_key_app.h" />
 		<Unit filename="../../../user_app/ad_key/adkey.h" />
+		<Unit filename="../../../user_app/hardware/led/led_driver.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/hardware/led/led_driver.h" />
 		<Unit filename="../../../user_app/hardware/motor/motor.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -717,6 +724,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/hardware/motor/motor_driver.h" />
+		<Unit filename="../../../user_app/hardware/sound_coutrol/sound_control.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/hardware/sound_coutrol/sound_control.h" />
 		<Unit filename="../../../user_app/ir_key/ir_key.c">
 			<Option compilerVar="CC" />
 		</Unit>

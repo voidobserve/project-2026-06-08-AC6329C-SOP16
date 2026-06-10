@@ -4,7 +4,7 @@
 #include "led_strip_sys.h"
 #include "WS2812FX.H"
 #include "led_strip_drive.h"
-#include "one_wire.h"
+
 
 
 #define MAX_SMEAR_LED_NUM 48  //最多48个灯/48段
@@ -37,12 +37,12 @@ typedef struct
 //当前模式枚举
 typedef enum
 {
-  ACT_TY_PAIR,          //配对效果
-  ACT_CUSTOM,           //自定义效果
+  // ACT_TY_PAIR,          //配对效果
+  // ACT_CUSTOM,           //自定义效果
   IS_STATIC,            //静态模式
   IS_light_music = 27,    //音乐律动
   IS_light_scene = 56,   //炫彩情景
-  IS_smear_adjust = 59  //涂抹功能
+  // IS_smear_adjust = 59  //涂抹功能
 
 
 } Now_state_e;
@@ -109,9 +109,9 @@ typedef struct
   unsigned char seg_size;     //段大小
   unsigned char c_n;          //颜色数量
   color_t rgb[MAX_NUM_COLORS];
-  unsigned short speed;       //由档位决定 
+  unsigned short speed;       //由档位决定
 
-  u16 mixed_white_breath_speed; // 混白色呼吸的速度 目前固定只有 4秒 和 8秒，数值对应 4000 和 8000 
+  u16 mixed_white_breath_speed; // 混白色呼吸的速度 目前固定只有 4秒 和 8秒，数值对应 4000 和 8000
 } dream_scene_t;
 
 /*----------------------------倒计时结构体----------------------------------*/
@@ -173,9 +173,9 @@ typedef struct
   sound_t sound;                //声控
   u8 metemor_on_off;           //流星开关
   u8 metemor_effect_index;
-  base_ins_t base_ins;           //电机
+  // base_ins_t base_ins;           //电机
   unsigned char sequence;       //RGB通道顺序
-  bool  auto_f;                 //自动跑效果
+  // bool  auto_f;                 //自动跑效果
 } fc_effect_t;
 
 countdown_t zd_countdown[ALARM_NUMBER];
@@ -201,7 +201,7 @@ typedef struct _LED_STATE {
 
 #pragma pack ()
 
-extern fc_effect_t fc_effect;
+extern volatile fc_effect_t fc_effect;
 extern TIME_CLOCK time_clock;
 extern ALARM_CLOCK alarm_clock[3];
 void effect_smear_adjust_updata(smear_tool_e tool, hsv_t* colour, unsigned short* led_place);

@@ -24,13 +24,13 @@
 #include "board_ac632n_demo_cfg.h"
 #include "led_strand_effect.h"
  // #include "tuya_ble_type.h"
-#include "one_wire.h"
+// #include "one_wire.h"
 #include "btstack/btstack_typedef.h"
 #include "ble_multi_profile.h"
 #include "att.h"
 #include "asm/mcpwm.h"
 // #if TCFG_RF24GKEY_ENABLE
-#include "ir_key_app.h"
+// #include "ir_key_app.h"
 #include "../../../apps/user_app/led_strip/led_strand_effect.h"
 
 #if 1
@@ -177,7 +177,7 @@ void rf24_key_handle(struct sys_event* event)
 
     // printf("\n event->u.key.type = %d",event->u.key.type);
     // printf("\n event->event_type = %d",event_type);
-    printf("\n key_value = %d", key_value);
+    printf("key_value = %d\n", key_value);
 
     if (event->u.key.type == KEY_DRIVER_TYPE_RF24GKEY)  //按键类型
     {
@@ -215,7 +215,7 @@ void rf24_key_handle(struct sys_event* event)
                 key_value != RFKEY_1H
                 )
             {
-                set_ir_auto(IR_PAUSE);
+                // set_ir_auto(IR_PAUSE);
             }
 
             //速度/亮度 -
@@ -237,8 +237,7 @@ void rf24_key_handle(struct sys_event* event)
                 {
                     if (MODE_MIXED_WHITE_BREATH == fc_effect.dream_scene.change_type)
                     {
-                        // 如果正处于混白色呼吸
-                        // fc_effect.dream_scene.mixed_white_breath_speed = (u16)6000;
+                        // 如果正处于混白色呼吸 
                         fc_effect.dream_scene.mixed_white_breath_speed = (u16)4000;
                     }
                     else
@@ -289,8 +288,7 @@ void rf24_key_handle(struct sys_event* event)
                 {
                     if (MODE_MIXED_WHITE_BREATH == fc_effect.dream_scene.change_type)
                     {
-                        // 如果正处于混白色呼吸
-                        // fc_effect.dream_scene.mixed_white_breath_speed = (u16)10000;
+                        // 如果正处于混白色呼吸 
                         fc_effect.dream_scene.mixed_white_breath_speed = (u16)8000;
                     }
                     else
@@ -406,12 +404,7 @@ void rf24_key_handle(struct sys_event* event)
             {
                 // printf("breath\n");
                 u8 temp_buff[3] = { 0x04, 0x02, 254 }; // 对应混白色呼吸
-
-                // if (fc_effect.dream_scene.mixed_white_breath_speed != (u16)6000 && fc_effect.dream_scene.mixed_white_breath_speed != (u16)10000)
-                // {
-                //     fc_effect.dream_scene.mixed_white_breath_speed = 6000;
-                //     // fc_effect.dream_scene.mixed_white_breath_speed = 10000;
-                // }
+ 
 
                 parse_zd_data(temp_buff);
 
@@ -435,18 +428,9 @@ void rf24_key_handle(struct sys_event* event)
             //电机转速调节 5挡   8s 13s 18s 21s 26s 35s
             if (key_value == RF24_STEMPMOTOR_SPEED && event_type == KEY_EVENT_CLICK)
             {
-
-
-
-                extern void Motor_Switch(void);
-
-                Motor_Switch();
-                // one_wire_set_period(period[stepmotpor_speed_cnt]);
-                // enable_one_wire();
-                // stepmotpor_speed_cnt++;
-                // if(stepmotpor_speed_cnt == 6) stepmotpor_speed_cnt = 0;
-                // save_user_data_area3();
-
+                // USER_TO_DO Motor_Switch 函数已注释，待添加新的接口，如果遥控器没有对应的模式，可以直接注释
+                // extern void Motor_Switch(void);
+                // Motor_Switch();
             }
             //声控1    4音乐律动减
             if (key_value == RF24_SOUND_ONE && event_type == KEY_EVENT_CLICK)
@@ -471,42 +455,40 @@ void rf24_key_handle(struct sys_event* event)
 
             if (key_value == RF24_ONE_TOW_METEOR && event_type == KEY_EVENT_CLICK)
             {
-                one_wire_set_period(period[0]);
-                // enable_one_wire();
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+                // one_wire_set_period(period[0]);
                 save_user_data_area3();
 
             }
             if (key_value == RF24_METEOR_SOUND_ONE_TWO && event_type == KEY_EVENT_CLICK)
             {
 
-                one_wire_set_period(period[1]);
-                // enable_one_wire();
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+   // one_wire_set_period(period[1]);
                 save_user_data_area3();
             }
             if (key_value == RF24_DIRECTION && event_type == KEY_EVENT_CLICK)
             {
-
-                one_wire_set_period(period[2]);
-                // enable_one_wire();
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+                   // one_wire_set_period(period[2]);
                 save_user_data_area3();
             }
             if (key_value == RF24_METEOR_SPEED && event_type == KEY_EVENT_CLICK)
             {
-
-                one_wire_set_period(period[3]);
-                // enable_one_wire();
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+                   // one_wire_set_period(period[3]);
                 save_user_data_area3();
             }
             if (key_value == RF24_METEOR_FREQUENCY && event_type == KEY_EVENT_CLICK)
             {
-                one_wire_set_period(period[4]);
-                // enable_one_wire();
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+   // one_wire_set_period(period[4]);
                 save_user_data_area3();
             }
             if (key_value == RF24_METEOR_TAIL && event_type == KEY_EVENT_CLICK)
             {
-                one_wire_set_period(period[5]);
-                // enable_one_wire();
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+   // one_wire_set_period(period[5]);
                 save_user_data_area3();
             }
 

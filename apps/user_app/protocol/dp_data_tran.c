@@ -17,7 +17,7 @@ DP协议转置，提取DP点有效数据
 #include "ble_user.h"
 #include "btstack/le/ble_api.h"
 #include "led_strip_drive.h"
-#include "one_wire.h"
+// #include "one_wire.h"
 dp_data_header_t  dp_data_header;  //涂鸦DP数据头
 dp_switch_led_t   dp_switch_led;   //DPID_SWITCH_LED开关
 dp_work_mode_t    dp_work_mode;    //DPID_WORK_MODE工作模式
@@ -424,11 +424,11 @@ void fff3_fb_state(void)
 
     else if(i_cnt == 13)
     {
-        //-------------------电机转速-----------------------
-        extern base_ins_t base_ins;
+        //-------------------电机转速----------------------- 
         Send_buffer[6] = 0x2F;
         Send_buffer[7] = 0x07;
-        Send_buffer[8] =  fc_effect.base_ins.period;
+        // USER_TO_DO base_ins 相关定义已注释，需要添加新的
+        // Send_buffer[8] =  fc_effect.base_ins.period;
         fff3_buf_len = 9;
 
         i_cnt++;
@@ -439,7 +439,8 @@ void fff3_fb_state(void)
         //-------------------电机模式----------------
         Send_buffer[6] = 0x2F;
         Send_buffer[7] = 0x06;
-        Send_buffer[8] =  fc_effect.base_ins.mode;
+        // USER_TO_DO base_ins 相关定义已注释，需要添加新的
+        // Send_buffer[8] =  fc_effect.base_ins.mode;
         fff3_buf_len = 9;
 
         i_cnt++;
@@ -969,20 +970,21 @@ void parse_zd_data(unsigned char *LedCommand)
             // ---------------------------------设置电机模式-----------------------------------
             if(LedCommand[0]==0x2F && LedCommand[1]==0x06 )
             {
-                extern void one_wire_set_mode(u8 m);
-                // extern void enable_one_wire(void);
-                one_wire_set_mode(LedCommand[2]); //配置模式
+                // USER_TO_DO one_wire_set_mode 已屏蔽，待添加新的接口
+                // extern void one_wire_set_mode(u8 m); 
+                // one_wire_set_mode(LedCommand[2]); //配置模式
                 os_time_dly(1);
                 // enable_one_wire();  //使用发送数据
                 save_user_data_area3();//保存参数配置到flash、
-                extern u8 counting_flag ;
-                extern u8 set_time;
-                extern u8 stop_cnt;
-                if(LedCommand[2] == 0 && counting_flag == 0)
-                {
-                    counting_flag = 1;  //开始计时
-                    set_time = 1;    //允许修改时间
-                }
+                // extern u8 counting_flag ;
+                // extern u8 set_time;
+                // extern u8 stop_cnt;
+                // if(LedCommand[2] == 0 && counting_flag == 0)
+                // if(LedCommand[2] == 0)
+                // {
+                //     // counting_flag = 1;  //开始计时
+                //     set_time = 1;    //允许修改时间
+                // }
 
 
                 Send_buffer[6] = 0x2F;
@@ -997,8 +999,9 @@ void parse_zd_data(unsigned char *LedCommand)
             // --------------------------------设置电机转速-----------------------------------
             if(LedCommand[0]==0x2F && LedCommand[1]==0x07 )
             {
-                extern void one_wire_set_period(u8 p);
-                one_wire_set_period(LedCommand[2]);
+                // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
+                // extern void one_wire_set_period(u8 p);
+                // one_wire_set_period(LedCommand[2]);
                 os_time_dly(1);
                 // enable_one_wire();
                 save_user_data_area3();//保存参数配置到flash、

@@ -2,6 +2,11 @@
 #include "ws2812_bsp.h"
 #include "debug.h"
 #include "my_effect.h"
+
+#include "led_driver.h"
+
+#include "led_strand_effect.h"
+
 static unsigned long tick_ms;
 void ws281x_init()
 {
@@ -25,12 +30,24 @@ void ws281x_show(unsigned char* pixels_pattern, unsigned short pattern_size)
 
     //printf_buf(pixels_pattern,pattern_size);
 //七彩灯驱动函数
-    extern void fc_driver(u8 r, u8 g, u8 b);
-    fc_driver(*pixels_pattern, \
-        * (pixels_pattern + 1), \
-        * (pixels_pattern + 2));
+    // extern void fc_driver(u8 r, u8 g, u8 b);
+    // fc_driver(*pixels_pattern, \
+    //     * (pixels_pattern + 1), \
+    //     * (pixels_pattern + 2));
 
-
+    if (led_driver.is_mixed_white_light)
+    {
+        led_driver_set_rgb_pwm_val(
+            pixels_pattern[0],
+            pixels_pattern[1],
+            pixels_pattern[2]
+        );
+    }
+    else
+    {
+        u8 white_val = (u32)fc_effect.w * fc_effect.b / 255;
+        led_driver_set_white_pwm_val(white_val);
+    }
 
     //该数据处理是仅有白光的流星使用
         // unsigned short i,j=0,k=0;    

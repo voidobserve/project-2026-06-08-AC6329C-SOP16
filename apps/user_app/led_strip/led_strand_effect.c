@@ -17,9 +17,9 @@
 extern void printf_buf(u8* buf, u32 len);
 static void static_mode(void);
 static void fc_smear_adjust(void);
-static void fc_pair_effect(void);
+// static void fc_pair_effect(void);
 static void ls_scene_effect(void);
-void fc_set_style_custom(void);
+// void fc_set_style_custom(void);
 void custom_effect(void);
 static void strand_rainbow(void);
 void strand_jump_change(void);
@@ -46,13 +46,12 @@ void double_meteor(void);
 
 extern LED_STATE led_state;
 extern u8 is_rgbw;
-fc_effect_t fc_effect;//幻彩灯串效果数据
+volatile fc_effect_t fc_effect; // 幻彩灯串效果数据
 
 
 // 效果数据初始化
 void fc_data_init(void)
 {
-    u16 num;
     //灯具
     fc_effect.on_off_flag = DEVICE_ON;  //灯为开启状态
     fc_effect.led_num = 16;        //灯带的总灯珠数量
@@ -62,10 +61,10 @@ void fc_data_init(void)
     fc_effect.rgb.b = 255;
     fc_effect.dream_scene.c_n = 1;  //颜色数量为1
     fc_effect.b = 255;
-    fc_effect.dream_scene.speed = 100;
-    // fc_effect.dream_scene.mixed_white_breath_speed = (u16)6000;
+    fc_effect.dream_scene.speed = 100; 
     fc_effect.dream_scene.mixed_white_breath_speed = (u16)4000; // 初始值为 4000，对应 4秒
     fc_effect.sequence = NEO_RGB;
+
     //流星
     fc_effect.metemor_on_off = 0x01;        //开关
     fc_effect.metemor_effect_index = 1;     //效果编号
@@ -74,10 +73,10 @@ void fc_data_init(void)
     fc_effect.period_cnt = fc_effect.meteor_period * 1000;  //ms,运行时的计数器
     fc_effect.mode_cycle = 0;   //模式完成一个循环的标志
     //电机
-    fc_effect.base_ins.mode = 4;   //360转
-    fc_effect.base_ins.period = 8;  //速度8s
-    fc_effect.base_ins.dir = 0;  // 0: 正转  1：
-    fc_effect.base_ins.music_mode = 0;
+    // fc_effect.base_ins.mode = 4;   //360转
+    // fc_effect.base_ins.period = 8;  //速度8s
+    // fc_effect.base_ins.dir = 0;  // 0: 正转  1：
+    // fc_effect.base_ins.music_mode = 0;
     //声控部分
     fc_effect.sound.c_v = 0;
     fc_effect.sound.v = 0;
@@ -94,16 +93,18 @@ void fc_data_init(void)
 // WS2812FX_mode_scan
 extern uint16_t WS2812FX_mode_comet_1(void);
 
+// led_colorful
 
 //全彩效果初始化
 void full_color_init(void)
 {
-    printf("full_color_init");
+    // printf("full_color_init");
     WS2812FX_init(fc_effect.led_num + 1, fc_effect.sequence);     //初始化ws2811
     WS2812FX_setBrightness(fc_effect.b);
     soft_turn_on_the_light();  //软开灯，灯为开状态
     set_fc_effect();  //效果实现调度
-    custom_meteor_effect(); //实现上电，LED的流星效果
+
+    // custom_meteor_effect(); //实现上电，LED的流星效果
 
 }
 
@@ -200,7 +201,7 @@ void turn_off_meteor(void)
  * @brief 效果调度函数，想要实现效果，必须要有调度函数
  *
  */
-void   flash_printf(void);
+// void   flash_printf(void);
 void set_fc_effect(void)
 {
     printf("set_fc_effect");
@@ -217,15 +218,15 @@ void set_fc_effect(void)
             ls_scene_effect();
             break;
             //配对模式
-        case ACT_TY_PAIR:  // 配对完成，要恢复fc_effect.Now_state
-            fc_pair_effect();
-            break;
+        // case ACT_TY_PAIR:  // 配对完成，要恢复fc_effect.Now_state
+        //     fc_pair_effect();
+        //     break;
             //自定义效果模式
-        case ACT_CUSTOM:
-            // custom_effect();
+        // case ACT_CUSTOM:
+        //     // custom_effect();
 
-          //  custom_meteor_effect();
-            break;
+        //   //  custom_meteor_effect();
+        //     break;
         case IS_light_music:
 
             fc_effect.w = 0;
@@ -295,9 +296,9 @@ void set_fc_effect(void)
 
             }
             break;
-        case IS_smear_adjust:
-            // fc_smear_adjust();
-            break;
+        // case IS_smear_adjust:
+        //     // fc_smear_adjust();
+        //     break;
             //静态模式
         case IS_STATIC:
             static_mode();
@@ -325,8 +326,8 @@ void ls_set_colors(uint8_t n, color_t* c)
 /***************************************************自定义效果*****************************************************/
 
 
-extern uint16_t power_on_effect(void);
-extern uint16_t power_off_effect(void);
+// extern uint16_t power_on_effect(void);
+// extern uint16_t power_off_effect(void);
 
 // 1~4，正向流水效果
 // 5~8：反向流水效果
@@ -341,12 +342,12 @@ const u8 fade_type[3] =
     FADE_XFAST,FADE_FAST,FADE_MEDIUM //,FADE_SLOW
 };
 
-void set_power_off(void)
-{
-    fc_effect.metemor_effect_index = 1; //关机效果
-    fc_set_style_custom(); //自定义效果
-    set_fc_effect();
-}
+// void set_power_off(void)
+// {
+//     fc_effect.metemor_effect_index = 1; //关机效果
+//     fc_set_style_custom(); //自定义效果
+//     set_fc_effect();
+// }
 
 void change_meteor_mode(void)
 {
@@ -815,19 +816,19 @@ void custom_meteor_effect(void)
 }
 
 
-void flash_printf(void)
-{
-    printf("fc_effect.on_off_flag  = %d", fc_effect.on_off_flag);
-    printf("fc_effect.Now_state  = %d", fc_effect.Now_state);
+// void flash_printf(void)
+// {
+//     printf("fc_effect.on_off_flag  = %d", fc_effect.on_off_flag);
+//     printf("fc_effect.Now_state  = %d", fc_effect.Now_state);
 
-    printf("fc_effect.rgb.r = %d", fc_effect.rgb.r);
-    printf("fc_effect.rgb.g = %d", fc_effect.rgb.g);
-    printf("fc_effect.rgb.b = %d", fc_effect.rgb.b);
-    printf("fc_effect.w = %d", fc_effect.w);
-    printf("fc_effect.b  = %d", fc_effect.b);
+//     printf("fc_effect.rgb.r = %d", fc_effect.rgb.r);
+//     printf("fc_effect.rgb.g = %d", fc_effect.rgb.g);
+//     printf("fc_effect.rgb.b = %d", fc_effect.rgb.b);
+//     printf("fc_effect.w = %d", fc_effect.w);
+//     printf("fc_effect.b  = %d", fc_effect.b);
 
 
-}
+// }
 
 
 
@@ -838,10 +839,10 @@ void external_devices_variable(void)
     extern u8 music_trigger;  //控制七彩灯的声控定色变换效果
     fc_effect.metemor_on_off = 0x02;  //流星关机
     music_trigger = 0;           //声控
-    extern u8 counting_flag;
-    extern u8 set_time;
-    counting_flag = 1;        //无霍尔时，电机
-    set_time = 1;
+    // extern u8 counting_flag;
+    // extern u8 set_time;
+    // counting_flag = 1;        //无霍尔时，电机
+    // set_time = 1;
 
 }
 
@@ -852,8 +853,8 @@ void soft_rurn_off_lights(void) //软关灯处理
     external_devices_variable();   //附加功能的控制变量
     WS2812FX_stop();
     WS2812FX_strip_off();   // 从WS2812FX_stop() 搬出来，
-    save_user_data_area3();//保存参数配置到flash
-    close_fan();  //关闭风扇
+    save_user_data_area3(); // 保存参数配置到flash
+    // close_fan();  //关闭风扇
     //关闭RGBW灯，这个设计时因为有W的控制灯
     mcpwm_set_duty(pwm_ch0, 0);
     mcpwm_set_duty(pwm_ch1, 0);
@@ -866,15 +867,14 @@ void soft_rurn_off_lights(void) //软关灯处理
 /**************************************************软件开机*****************************************************/
 void soft_turn_on_the_light(void)   //软开灯处理
 {
-
-    //flash_printf();
     fc_effect.on_off_flag = DEVICE_ON;
-    fc_effect.metemor_on_off = 0x01;
+    // fc_effect.metemor_on_off = 0x01;
+
     save_user_data_area3();  //保存参数配置到flash
     WS2812FX_start();
-    one_wire_set_mode(4);    //360正转
-    // enable_one_wire();       //启动发送电机数据
-    open_fan();             //开启风扇
+
+    // USER_TO_DO one_wire_set_mode 函数已注释，待添加新的接口
+    // one_wire_set_mode(4);    //360正转
     fb_led_on_off_state();  //与app同步开关状态
 
     printf("soft_turn_on_the_light!!\n");
@@ -1110,110 +1110,15 @@ static void static_mode(void)
     WS2812FX_start();
 }
 
-
-#if 0
-/******************************************************************
- * 函数：更新涂抹效果数据
- * 形参1：tool       油桶、画笔、橡皮擦
- * 形参2：colour     hsv颜色
- * 形参3：led_place  灯点位置（0~47）
- * 返回：无
- *
- * 注：若选择IS_drum油桶，led_place参数无效
- *     若选择IS_eraser橡皮擦，colour参数无效，内部将colour设为黑色
- *****************************************************************/
-void effect_smear_adjust_updata(smear_tool_e tool, hsv_t* colour, unsigned short* led_place)
-{
-    unsigned char num = 0;
-    unsigned char max;
-
-    //更新为涂抹功能状态
-    fc_effect.Now_state = IS_smear_adjust;
-
-    //更新工具
-    fc_effect.smear_adjust.smear_tool = tool;
-    printf("fc_effect.smear_adjust.smear_tool = %d\r\n", (uint8_t)fc_effect.smear_adjust.smear_tool);
-    printf("\r\n");
-
-    //清除rgb[0~n]数据
-    // memset(fc_effect.smear_adjust.rgb, 0, sizeof(fc_effect.smear_adjust.rgb));
-
-    /*HSV转换RGB*/
-    if (fc_effect.smear_adjust.smear_tool == IS_drum) //油桶
-    {
-        m_hsv_to_rgb(&fc_effect.smear_adjust.rgb[0].r,
-            &fc_effect.smear_adjust.rgb[0].g,
-            &fc_effect.smear_adjust.rgb[0].b,
-            colour->h_val,
-            colour->s_val,
-            colour->v_val);
-        max = fc_effect.led_num;
-        for (num = 1; num < max; ++num)
-        {
-            fc_effect.smear_adjust.rgb[num].r = fc_effect.smear_adjust.rgb[0].r;
-            fc_effect.smear_adjust.rgb[num].g = fc_effect.smear_adjust.rgb[0].g;
-            fc_effect.smear_adjust.rgb[num].b = fc_effect.smear_adjust.rgb[0].b;
-
-            // printf("fc_effect.smear_adjust.rgb[%d].r = %d\r\n", num,fc_effect.smear_adjust.rgb[num].r);
-            // printf("fc_effect.smear_adjust.rgb[%d].g = %d\r\n", num,fc_effect.smear_adjust.rgb[num].g);
-            // printf("fc_effect.smear_adjust.rgb[%d].b = %d\r\n", num,fc_effect.smear_adjust.rgb[num].b);
-            // printf("\r\n");
-        }
-    }
-    else if ((fc_effect.smear_adjust.smear_tool == IS_pen) ||   //画笔
-        (fc_effect.smear_adjust.smear_tool == IS_eraser))  //橡皮擦
-    {
-        m_hsv_to_rgb(&fc_effect.smear_adjust.rgb[*led_place].r,
-            &fc_effect.smear_adjust.rgb[*led_place].g,
-            &fc_effect.smear_adjust.rgb[*led_place].b,
-            colour->h_val,
-            colour->s_val,
-            colour->v_val);
-
-        // printf("fc_effect.smear_adjust.rgb[%d].r = %d\r\n", *led_place, fc_effect.smear_adjust.rgb[dp_draw_tool.led_place].r);
-        // printf("fc_effect.smear_adjust.rgb[%d].g = %d\r\n", *led_place, fc_effect.smear_adjust.rgb[dp_draw_tool.led_place].g);
-        // printf("fc_effect.smear_adjust.rgb[%d].b = %d\r\n", *led_place, fc_effect.smear_adjust.rgb[dp_draw_tool.led_place].b);
-        // printf("\r\n");
-    }
-}
-/*----------------------------------涂抹模式----------------------------------*/
-extern  Segment* _seg;
-extern  uint16_t _seg_len;
-extern Segment_runtime* _seg_rt;
-
-/*******************************************
-灯串涂抹效果实现方法
- ******************************************/
-static uint16_t ls_smear_adjust_effect(void)
-{
-    unsigned char num;
-    unsigned char max = fc_effect.led_num;
-    if (max >= _seg_len) max = _seg_len;
-    for (num = 0; num < max; ++num)
-    {
-        WS2812FX_setPixelColor_rgb(num,
-            fc_effect.smear_adjust.rgb[num].r,
-            fc_effect.smear_adjust.rgb[num].g,
-            fc_effect.smear_adjust.rgb[num].b);
-    }
-    return _seg->speed;
-}
-
-static void fc_smear_adjust(void)
-{
-    WS2812FX_stop();
-    WS2812FX_setSegment_colorOptions(0, 0, fc_effect.led_num - 1, &ls_smear_adjust_effect, BLUE, 100, 0);
-    WS2812FX_start();
-}
-#endif
+ 
 /*----------------------------------涂鸦配网效果----------------------------------*/
-static void fc_pair_effect(void)
-{
-    extern uint16_t unbind_effect(void);
-    WS2812FX_stop();
-    WS2812FX_setSegment_colorOptions(0, 0, fc_effect.led_num - 1, &unbind_effect, 0, 0, 0);
-    WS2812FX_start();
-}
+// static void fc_pair_effect(void)
+// {
+//     extern uint16_t unbind_effect(void);
+//     WS2812FX_stop();
+//     WS2812FX_setSegment_colorOptions(0, 0, fc_effect.led_num - 1, &unbind_effect, 0, 0, 0);
+//     WS2812FX_start();
+// }
 
 /*----------------------------------情景效果实现----------------------------------*/
 static void ls_scene_effect(void)
@@ -1320,7 +1225,7 @@ static void strand_rainbow(void)
 
     WS2812FX_setSegment_colorOptions(
         0,                                      //第0段
-        0, 0,                  //起始位置，结束位置
+        0, 0,                                   // 起始位置，结束位置
         &WS2812FX_mode_mutil_fade,               //效果
         0,                                      //颜色，WS2812FX_setColors设置
         fc_effect.dream_scene.speed,            //速度
@@ -1662,12 +1567,12 @@ void single_c_breath(void)
 
 
 // 触发提示效果，白光闪烁
-void run_white_tips(void)
-{
-    extern uint16_t white_tips(void);
-    WS2812FX_setSegment_colorOptions(0, 0, fc_effect.led_num - 1, &white_tips, 0, 0, 0);
-    WS2812FX_start();
-}
+// void run_white_tips(void)
+// {
+//     extern uint16_t white_tips(void);
+//     WS2812FX_setSegment_colorOptions(0, 0, fc_effect.led_num - 1, &white_tips, 0, 0, 0);
+//     WS2812FX_start();
+// }
 
 
 
@@ -1848,18 +1753,18 @@ u8 get_effect_p(void)
 
 /* *********************************样式 */
 // 自定义样式
-void fc_set_style_custom(void)
-{
-    fc_effect.Now_state = ACT_CUSTOM;
-}
+// void fc_set_style_custom(void)
+// {
+//     fc_effect.Now_state = ACT_CUSTOM;
+// }
 
 
 
 // 涂鸦配对样式
-void fc_set_style_ty_pair(void)
-{
-    fc_effect.Now_state = ACT_TY_PAIR;
-}
+// void fc_set_style_ty_pair(void)
+// {
+//     fc_effect.Now_state = ACT_TY_PAIR;
+// }
 
 
 // ------------------------------------------------亮度  0-100

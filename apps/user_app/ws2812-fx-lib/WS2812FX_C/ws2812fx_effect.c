@@ -1204,84 +1204,84 @@ uint16_t music_1(void)
 //-----------------------------------------------------涂鸦的开关机，解绑效果------------------------------
 #pragma region
 // 开机效果
-uint16_t power_on_effect(void)
-{
-    if (_seg_rt->counter_mode_step)
-    {
-        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
-    }
-    else
-    {
-        Adafruit_NeoPixel_fill(GREEN, _seg->start, _seg_len);
-    }
-    _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
-    _seg_rt->aux_param++;
-    if (_seg_rt->aux_param > 6)
-    {
-        extern void read_flash_device_status_init(void);
-        read_flash_device_status_init();
-        set_fc_effect();
-    }
-    return (500);
-}
+// uint16_t power_on_effect(void)
+// {
+//     if (_seg_rt->counter_mode_step)
+//     {
+//         Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+//     }
+//     else
+//     {
+//         Adafruit_NeoPixel_fill(GREEN, _seg->start, _seg_len);
+//     }
+//     _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
+//     _seg_rt->aux_param++;
+//     if (_seg_rt->aux_param > 6)
+//     {
+//         extern void read_flash_device_status_init(void);
+//         read_flash_device_status_init();
+//         set_fc_effect();
+//     }
+//     return (500);
+// }
 
-uint16_t power_off_effect(void)
-{
-    if (_seg_rt->counter_mode_step)
-    {
-        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
-    }
-    else
-    {
-        Adafruit_NeoPixel_fill(RED, _seg->start, _seg_len);
-    }
-    _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
-    _seg_rt->aux_param++;
-    if (_seg_rt->aux_param > 4)
-    {
-        // 硬件关机
-        gpio_direction_output(IO_PORTA_08, 0);
-    }
-    return (500);
-}
+// uint16_t power_off_effect(void)
+// {
+//     if (_seg_rt->counter_mode_step)
+//     {
+//         Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+//     }
+//     else
+//     {
+//         Adafruit_NeoPixel_fill(RED, _seg->start, _seg_len);
+//     }
+//     _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
+//     _seg_rt->aux_param++;
+//     if (_seg_rt->aux_param > 4)
+//     {
+//         // 硬件关机
+//         gpio_direction_output(IO_PORTA_08, 0);
+//     }
+//     return (500);
+// }
 
 // 解绑效果
-uint16_t unbind_effect(void)
-{
-    if (_seg_rt->counter_mode_step)
-    {
-        Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
-    }
-    else
-    {
-        Adafruit_NeoPixel_fill(GRAY, _seg->start, _seg_len);
-    }
-    _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
+// uint16_t unbind_effect(void)
+// {
+//     if (_seg_rt->counter_mode_step)
+//     {
+//         Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
+//     }
+//     else
+//     {
+//         Adafruit_NeoPixel_fill(GRAY, _seg->start, _seg_len);
+//     }
+//     _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
 
-    return (500);
-}
+//     return (500);
+// }
 
 // 提示效果,白光闪烁
-uint16_t white_tips(void)
-{
-    if (_seg_rt->counter_mode_step)
-    {
-        Adafruit_NeoPixel_fill(GRAY, _seg->start, _seg_len);
-    }
-    else
-    {
-        Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
-    }
-    _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
-    _seg_rt->aux_param++;
-    if (_seg_rt->aux_param > 3)
-    {
-        extern void read_flash_device_status_init(void);
-        read_flash_device_status_init();
-        set_fc_effect();
-    }
-    return (100);
-}
+// uint16_t white_tips(void)
+// {
+//     if (_seg_rt->counter_mode_step)
+//     {
+//         Adafruit_NeoPixel_fill(GRAY, _seg->start, _seg_len);
+//     }
+//     else
+//     {
+//         Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
+//     }
+//     _seg_rt->counter_mode_step = !_seg_rt->counter_mode_step;
+//     _seg_rt->aux_param++;
+//     if (_seg_rt->aux_param > 3)
+//     {
+//         extern void read_flash_device_status_init(void);
+//         read_flash_device_status_init();
+//         set_fc_effect();
+//     }
+//     return (100);
+// }
 
 
 #pragma endregion

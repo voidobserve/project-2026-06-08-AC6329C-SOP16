@@ -62,8 +62,9 @@ const struct task_info task_info_table[] = {
 #if (TUYA_DEMO_EN)
     {"user_deal",           7,     0,   512,   512  },//定义线程 tuya任务调度
 #endif
-    {"led_task",            2,      0,  512,    512},
-    {"motor_task",            2,      0,  128,    128},
+    // {"led_task",            2,      0,  512,    512},
+    {"usr_main",            2,      0,  512,    512},
+    // {"motor_task",            2,      0,  128,    128},
     {0, 0},
 };
 
@@ -297,7 +298,6 @@ void user_timer2_isr(void)
 {
     TIMER_CON |= BIT(14);  // 清除中断标志
     user_125us_isr();
-
 }
 
 void user_timer_init(void)
@@ -502,9 +502,7 @@ void main_while(viod)
         WS2812FX_service(); // 注意，这里约 20ms 才调用一次动画
         count_down_run();
 #endif
-
-
-        // motor_24byj48_move_steps(4096, MOTOR_DIR_CW);
+ 
 
         os_time_dly(1);
     }
@@ -529,7 +527,7 @@ void my_main(void)
     led_pwm_init();          // 控制灯的PWM
     mic_gpio_init();         // 本地麦克风
     // mcu_com_init();          // 电机控制芯片的初始化
-    motor_24byj48_init();
+    // motor_24byj48_init();
 
     // 测试时使用它来观察波形：
     // gpio_set_direction(IO_PORT_DM, 0); // 

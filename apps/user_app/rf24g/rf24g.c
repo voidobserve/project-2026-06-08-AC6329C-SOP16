@@ -76,7 +76,7 @@ void rf24g_long_timer(void)
 u8 last_dynamic_code;   //记录上次的滚码，和当前的滚码对比，实现长按判定
 u8 last_key_v;
 u8 rf24g_key_state;     /* 用完需要手动清状态,值KEY_EVENT_LONG，  */
-extern fc_effect_t fc_effect;
+extern volatile fc_effect_t fc_effect;
 static u8 rf24g_get_key_value(void)
 {
 
