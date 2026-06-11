@@ -7,6 +7,7 @@
 #include "save_flash.h"
 
 #include "led_strand_effect.h"
+#include "rf24g_app.h"
 
 void user_init(void)
 {
@@ -21,6 +22,8 @@ void user_init(void)
 
 	sys_s_hi_timer_add(NULL, user_10ms_isr, 10);
 	task_create(user_main, NULL, "usr_main");
+
+	printf("user_init\n");
 }
 
 
@@ -44,10 +47,12 @@ void user_main(void)
 		rf24g_long_timer();
 
 		WS2812FX_service(); // 注意，这里约 20ms 才调用一次动画
-		count_down_run();
+ 
 
+		rf24g_key_handle();
 
-		clr_wdt();
+		// clr_wdt();
+		os_time_dly(1);
 	}
 }
 

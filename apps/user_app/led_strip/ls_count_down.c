@@ -18,22 +18,22 @@ typedef enum
 2：4h
 3：8h
  */
-u8 cd_state = 0; 
-u32 setting_time;
+// u8 cd_state = 0; 
+// u32 setting_time;
 
-void change_count_down(void)
-{
-    cd_state++;
-    cd_state%= 4;
+// void change_count_down(void)
+// {
+//     cd_state++;
+//     cd_state%= 4;
 
-    switch(cd_state)
-    {
-        case 0: setting_time=0;            break;
-        case 1: setting_time=IR_TIMER_2H;  break;
-        case 2: setting_time=IR_TIMER_4H;  break;
-        case 3: setting_time=IR_TIMER_8H;  break;
-    }
-}
+//     switch(cd_state)
+//     {
+//         case 0: setting_time=0;            break;
+//         case 1: setting_time=IR_TIMER_2H;  break;
+//         case 2: setting_time=IR_TIMER_4H;  break;
+//         case 3: setting_time=IR_TIMER_8H;  break;
+//     }
+// }
 
 // void set_count_down(u8 t)
 // {
@@ -43,28 +43,28 @@ void change_count_down(void)
 //     run_white_tips();
 // }
 
-void set_dly_pwr_off(void)
-{
-    cd_state = 5;
-    setting_time = 60 * 1000;
+// void set_dly_pwr_off(void)
+// {
+//     cd_state = 5;
+//     setting_time = 60 * 1000;
     
-}
+// }
 
 // 每10ms跑一次
-void count_down_run(void)
-{
+// void count_down_run(void)
+// {
 
-    if(cd_state != 0)
-    {
-        if(setting_time >= 10)
-        {
-            setting_time -=  10;
-        }
-        else
-        {
-            cd_state = 0;
-            soft_rurn_off_lights();  //关灯.
+//     if(cd_state != 0)
+//     {
+//         if(setting_time >= 10)
+//         {
+//             setting_time -=  10;
+//         }
+//         else
+//         {
+//             cd_state = 0;
+//             soft_rurn_off_lights();  //关灯.
             
-        }
-    }
-}
+//         }
+//     }
+// }

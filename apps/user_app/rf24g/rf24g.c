@@ -53,8 +53,8 @@ void rf24g_scan(u8* pBuf)
     rf24g_ins_t* p = (rf24g_ins_t*)pBuf;
     if (p->header1 == HEADER1 && p->header2 == HEADER2)
     {
-        // printf_buf(pBuf, sizeof(rf24g_ins_t));
-        // printf("key = %d",p->key_v);
+        printf_buf(pBuf, sizeof(rf24g_ins_t));
+        printf("key = %d", p->key_v);
         memcpy((u8*)&rf24g_ins, pBuf, sizeof(rf24g_ins_t));
         rf24g_rx_flag = 1;
     }

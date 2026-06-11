@@ -30,6 +30,9 @@
 #include "ble_user.h"
 #include "le_gatt_common.h"
 
+#include "rf24g.h"
+#include "rf24g_driver.h"
+
 #define LOG_TAG_CONST       GATT_CLIENT
 #define LOG_TAG             "[GATT_CLIENT]"
 #define LOG_ERROR_ENABLE
@@ -69,9 +72,9 @@ enum {
 
 //---------------
 typedef struct {
-    scan_conn_cfg_t *scan_conn_config; //扫描配置项
-    gatt_client_cfg_t *client_config;//client配置项
-    gatt_search_cfg_t *gatt_search_config;//搜索profile配置项
+    scan_conn_cfg_t* scan_conn_config; //扫描配置项
+    gatt_client_cfg_t* client_config;//client配置项
+    gatt_search_cfg_t* gatt_search_config;//搜索profile配置项
     u8  client_work_state;   //未连接状态
     u8  scan_ctrl_en;        //控制开关
     u16 client_timeout_id; //定时器
@@ -100,8 +103,8 @@ bool ble_comm_need_wait_encryption(u8 role);
  *
  *  \note
  */
-/*************************************************************************************************/
-static int __gatt_client_event_callback_handler(int event, u8 *packet, u16 size, u8 *ext_param)
+ /*************************************************************************************************/
+static int __gatt_client_event_callback_handler(int event, u8* packet, u16 size, u8* ext_param)
 {
     if (__this->client_config->event_packet_handler) {
 
@@ -120,7 +123,7 @@ static int __gatt_client_event_callback_handler(int event, u8 *packet, u16 size,
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_set_work_state(u16 conn_handle, ble_state_e state, u8 report_en)
 {
     u8 packet_buf[4];
@@ -128,10 +131,12 @@ static void __gatt_client_set_work_state(u16 conn_handle, ble_state_e state, u8 
     //区分连接和未连接的两个状态维护
     if (conn_handle != INVAIL_CONN_HANDLE) {
         ;
-    } else if (state != __this->client_work_state) {
+    }
+    else if (state != __this->client_work_state) {
         log_info("client_work_st:%x->%x\n", __this->client_work_state, state);
         __this->client_work_state = state;
-    } else {
+    }
+    else {
         return;
     }
     packet_buf[0] = state;
@@ -149,7 +154,7 @@ static void __gatt_client_set_work_state(u16 conn_handle, ble_state_e state, u8 
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_timeout_handler(int type_id)
 {
     __this->client_timeout_id = 0;
@@ -173,7 +178,7 @@ static void __gatt_client_timeout_handler(int type_id)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_timeout_del(void)
 {
     if (__this->client_timeout_id) {
@@ -192,13 +197,13 @@ static void __gatt_client_timeout_del(void)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_timeout_add(int type_id, u32 set_ms)
 {
     if (__this->client_timeout_id) {
         sys_timeout_del(__this->client_timeout_id);
     }
-    __this->client_timeout_id = sys_timeout_add((void *)type_id, __gatt_client_timeout_handler, set_ms);
+    __this->client_timeout_id = sys_timeout_add((void*)type_id, __gatt_client_timeout_handler, set_ms);
 }
 
 /*************************************************************************************************/
@@ -211,7 +216,7 @@ static void __gatt_client_timeout_add(int type_id, u32 set_ms)
  *
  *  \note      可用于触发上层往协议栈发送数据
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_can_send_now_wakeup(void)
 {
     /* log_info("can_send"); */
@@ -228,7 +233,7 @@ static void __gatt_client_can_send_now_wakeup(void)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 ble_state_e ble_gatt_client_get_work_state(void)
 {
     return __this->client_work_state;
@@ -244,7 +249,7 @@ ble_state_e ble_gatt_client_get_work_state(void)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 ble_state_e ble_gatt_client_get_connect_state(u16 conn_handle)
 {
     if (!conn_handle) {
@@ -263,14 +268,14 @@ ble_state_e ble_gatt_client_get_connect_state(u16 conn_handle)
  *
  *  \note      可以指定接受后使用的参数
  */
-/*************************************************************************************************/
-//协议栈内部调用
-int l2cap_connection_update_request_just(u8 *packet, hci_con_handle_t handle)
+ /*************************************************************************************************/
+ //协议栈内部调用
+int l2cap_connection_update_request_just(u8* packet, hci_con_handle_t handle)
 {
     log_info("slave request conn_update:\n-conn_handle= %04x\n-interval_min= %d,\n-interval_max= %d,\n-latency= %d,\n-timeout= %d\n",
-             handle,
-             little_endian_read_16(packet, 0), little_endian_read_16(packet, 2),
-             little_endian_read_16(packet, 4), little_endian_read_16(packet, 6));
+        handle,
+        little_endian_read_16(packet, 0), little_endian_read_16(packet, 2),
+        little_endian_read_16(packet, 4), little_endian_read_16(packet, 6));
 
 #if (SUPPORT_MAX_GATT_CLIENT > 1)
     u16 cfg_interval = BASE_INTERVAL_VALUE;
@@ -294,7 +299,8 @@ int l2cap_connection_update_request_just(u8 *packet, hci_con_handle_t handle)
             log_info("interval_625 error,reject!!!\n");
             return 1;
         }
-    } else {
+    }
+    else {
         if (little_endian_read_16(packet, 0) < 6) {
             log_info("interval_1250 error,reject!!!\n");
             return 1;
@@ -319,9 +325,9 @@ int l2cap_connection_update_request_just(u8 *packet, hci_con_handle_t handle)
  *
  *  \note      read动作返回数据、notify 或indicate 通知数据
  */
-/*************************************************************************************************/
-//协议栈内部调用
-void user_client_report_data_callback(att_data_report_t *report_data)
+ /*************************************************************************************************/
+ //协议栈内部调用
+void user_client_report_data_callback(att_data_report_t* report_data)
 {
     if (INVAIL_INDEX == ble_comm_dev_get_index(report_data->conn_handle, GATT_ROLE_CLIENT)) {
         log_info("unknown_handle:%04x,drop data\n", report_data->conn_handle);
@@ -342,11 +348,11 @@ void user_client_report_data_callback(att_data_report_t *report_data)
  *
  *  \note       操作handle，完成 write ccc
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __do_operate_search_handle(void)
 {
     u16 tmp_16, i, cur_opt_type;
-    opt_handle_t *opt_hdl_pt;
+    opt_handle_t* opt_hdl_pt;
 
     if (!__this->gatt_search_config || 0 == __this->gatt_search_config->search_uuid_count) {
         return;
@@ -362,13 +368,13 @@ static void __do_operate_search_handle(void)
 
         opt_hdl_pt = &__this->operate_handle_table[i];
         log_info("do opt:service_uuid16:%04x,charactc_uuid16:%04x\n", \
-                 opt_hdl_pt->search_uuid->services_uuid16, opt_hdl_pt->search_uuid->characteristic_uuid16);
+            opt_hdl_pt->search_uuid->services_uuid16, opt_hdl_pt->search_uuid->characteristic_uuid16);
         cur_opt_type = opt_hdl_pt->search_uuid->opt_type;
 
         switch ((u8)cur_opt_type) {
         case ATT_PROPERTY_NOTIFY:
             if (__this->gatt_search_config->auto_enable_ccc) {
-                tmp_16  = 0x0001;//fixed
+                tmp_16 = 0x0001;//fixed
                 log_info("write_ntf_ccc:%04x\n", opt_hdl_pt->value_handle);
                 ble_comm_att_send_data(__this->client_search_handle, opt_hdl_pt->value_handle + 1, &tmp_16, 2, ATT_OP_WRITE);
             }
@@ -376,7 +382,7 @@ static void __do_operate_search_handle(void)
 
         case ATT_PROPERTY_INDICATE:
             if (__this->gatt_search_config->auto_enable_ccc) {
-                tmp_16  = 0x0002;//fixed
+                tmp_16 = 0x0002;//fixed
                 log_info("write_ind_ccc:%04x\n", opt_hdl_pt->value_handle);
                 ble_comm_att_send_data(__this->client_search_handle, opt_hdl_pt->value_handle + 1, &tmp_16, 2, ATT_OP_WRITE);
             }
@@ -384,11 +390,12 @@ static void __do_operate_search_handle(void)
 
         case ATT_PROPERTY_READ:
             if (opt_hdl_pt->search_uuid->read_long_enable) {
-                tmp_16  = 0x55A2;//fixed
+                tmp_16 = 0x55A2;//fixed
                 log_info("read_long:%04x\n", opt_hdl_pt->value_handle);
                 ble_comm_att_send_data(__this->client_search_handle, opt_hdl_pt->value_handle, &tmp_16, 2, ATT_OP_READ_LONG);
-            } else {
-                tmp_16  = 0x55A1;//fixed
+            }
+            else {
+                tmp_16 = 0x55A1;//fixed
                 log_info("read:%04x\n", opt_hdl_pt->value_handle);
                 ble_comm_att_send_data(__this->client_search_handle, opt_hdl_pt->value_handle, &tmp_16, 2, ATT_OP_READ);
             }
@@ -411,11 +418,11 @@ static void __do_operate_search_handle(void)
  *
  *  \note
  */
-/*************************************************************************************************/
-static void __check_target_uuid_match(search_result_t *result_info)
+ /*************************************************************************************************/
+static void __check_target_uuid_match(search_result_t* result_info)
 {
     u32 i;
-    target_uuid_t *t_uuid;
+    target_uuid_t* t_uuid;
 
     for (i = 0; i < __this->gatt_search_config->search_uuid_count; i++) {
         t_uuid = &__this->gatt_search_config->search_uuid_group[i];
@@ -424,7 +431,8 @@ static void __check_target_uuid_match(search_result_t *result_info)
                 /* log_info("b1"); */
                 continue;
             }
-        } else {
+        }
+        else {
             if (memcmp(result_info->services.uuid128, t_uuid->services_uuid128, 16)) {
                 /* log_info("b2"); */
                 continue;
@@ -437,7 +445,8 @@ static void __check_target_uuid_match(search_result_t *result_info)
                 /* log_info("%d: %04x--%04x",result_info->characteristic.uuid16,t_uuid->characteristic_uuid16); */
                 continue;
             }
-        } else {
+        }
+        else {
             if (memcmp(result_info->characteristic.uuid128, t_uuid->characteristic_uuid128, 16)) {
                 /* log_info("b4"); */
                 continue;
@@ -463,7 +472,7 @@ static void __check_target_uuid_match(search_result_t *result_info)
 
     log_info("match one uuid\n");
 
-    opt_handle_t *opt_get = &__this->operate_handle_table[__this->opt_handle_used_cnt++];
+    opt_handle_t* opt_get = &__this->operate_handle_table[__this->opt_handle_used_cnt++];
     opt_get->value_handle = result_info->characteristic.value_handle;
     opt_get->search_uuid = t_uuid;
 
@@ -493,8 +502,8 @@ static void __check_target_uuid_match(search_result_t *result_info)
  *
  *  \note      搜索charactc包含descriptor
  */
-/*************************************************************************************************/
-void user_client_report_descriptor_result(charact_descriptor_t *result_descriptor)
+ /*************************************************************************************************/
+void user_client_report_descriptor_result(charact_descriptor_t* result_descriptor)
 {
     log_info("report_descriptor,handle= %04x ,uuid16: %04x\n", result_descriptor->handle, result_descriptor->uuid16);
     if (result_descriptor->uuid16 == 0) {
@@ -513,11 +522,11 @@ void user_client_report_descriptor_result(charact_descriptor_t *result_descripto
  *
  *  \note      每搜索到一个server 或 charactc uuid 都会调用,直到搜索结束
  */
-/*************************************************************************************************/
-//协议栈内部调用
-void user_client_report_search_result(search_result_t *result_info)
+ /*************************************************************************************************/
+ //协议栈内部调用
+void user_client_report_search_result(search_result_t* result_info)
 {
-    if (result_info == (void *) - 1) {
+    if (result_info == (void*)-1) {
         log_info("client_report_search_result finish!!!\n");
         ble_comm_dev_set_handle_state(__this->client_search_handle, GATT_ROLE_CLIENT, BLE_ST_SEARCH_COMPLETE);
         __do_operate_search_handle();
@@ -533,10 +542,10 @@ void user_client_report_search_result(search_result_t *result_info)
 
     log_info("\n*** services, uuid16:%04x,index=%d ***\n", result_info->services.uuid16, result_info->service_index);
     log_info("{charactc, uuid16:%04x,index=%d,handle:%04x~%04x,value_handle=%04x}\n",
-             result_info->characteristic.uuid16, result_info->characteristic_index,
-             result_info->characteristic.start_handle, result_info->characteristic.end_handle,
-             result_info->characteristic.value_handle
-            );
+        result_info->characteristic.uuid16, result_info->characteristic_index,
+        result_info->characteristic.start_handle, result_info->characteristic.end_handle,
+        result_info->characteristic.value_handle
+    );
 
     if (!result_info->services.uuid16) {
         log_info("######services_uuid128:");
@@ -561,7 +570,7 @@ void user_client_report_search_result(search_result_t *result_info)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_search_profile_start(void)
 {
     __gatt_client_event_callback_handler(GATT_COMM_EVENT_GATT_SEARCH_PROFILE_START, &__this->client_search_handle, 2, 0);
@@ -572,7 +581,8 @@ static void __gatt_client_search_profile_start(void)
     if (!__this->gatt_search_config || 0 == __this->gatt_search_config->search_uuid_count) {
         log_info("skip search_profile:%04x\n\n", __this->client_search_handle);
         user_client_set_search_complete();
-    } else {
+    }
+    else {
         log_info("start search_profile_all:%04x\n", __this->client_search_handle);
         ble_op_search_profile_all();
     }
@@ -588,7 +598,7 @@ static void __gatt_client_search_profile_start(void)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static void __gatt_client_check_auto_scan(void)
 {
     if (__this->scan_conn_config->scan_auto_do) {
@@ -606,7 +616,7 @@ static void __gatt_client_check_auto_scan(void)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static bool __gatt_client_just_new_dev_scan(void)
 {
     log_info("%s\n", __FUNCTION__);
@@ -645,7 +655,7 @@ static bool __gatt_client_just_new_dev_scan(void)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 int ble_gatt_client_scan_enable(u32 en)
 {
     ble_state_e next_state, cur_state;
@@ -660,11 +670,12 @@ int ble_gatt_client_scan_enable(u32 en)
             return 	GATT_CMD_OPT_FAIL;
         }
         next_state = BLE_ST_SCAN;
-    } else {
+    }
+    else {
         next_state = BLE_ST_IDLE;
     }
 
-    cur_state =  ble_gatt_client_get_work_state();
+    cur_state = ble_gatt_client_get_work_state();
 
     switch (cur_state) {
     case BLE_ST_SCAN:
@@ -690,7 +701,8 @@ int ble_gatt_client_scan_enable(u32 en)
     if (en) {
         ble_op_set_ext_scan_param(&ext_scan_param, sizeof(ext_scan_param));
         ble_op_ext_scan_enable(&ext_scan_enable, sizeof(ext_scan_enable));
-    } else {
+    }
+    else {
         ble_op_ext_scan_enable(&ext_scan_disable, sizeof(ext_scan_disable));
     }
 #else
@@ -701,7 +713,7 @@ int ble_gatt_client_scan_enable(u32 en)
         }
 
         log_info("scan_param: %d-%d-%d\n", \
-                 __this->scan_conn_config->scan_type, __this->scan_conn_config->scan_interval, __this->scan_conn_config->scan_window);
+            __this->scan_conn_config->scan_type, __this->scan_conn_config->scan_interval, __this->scan_conn_config->scan_window);
         ble_op_set_scan_param(__this->scan_conn_config->scan_type, __this->scan_conn_config->scan_interval, __this->scan_conn_config->scan_window);
     }
     log_info("scan_en:%d\n", en);
@@ -721,13 +733,13 @@ int ble_gatt_client_scan_enable(u32 en)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static u8 device_match_index;
-static bool __check_device_is_match(u8 event_type, u8 info_type, u8 *data, int size, client_match_cfg_t **output_match_devices)
+static bool __check_device_is_match(u8 event_type, u8 info_type, u8* data, int size, client_match_cfg_t** output_match_devices)
 {
     int i;
     u8  conn_mode = BIT(info_type);
-    client_match_cfg_t *cfg;
+    client_match_cfg_t* cfg;
 
     if (!__this->gatt_search_config || !__this->gatt_search_config->match_devices_count) {
         return false;
@@ -771,14 +783,14 @@ static bool __check_device_is_match(u8 event_type, u8 info_type, u8 *data, int s
  *
  *  \note
  */
-/*************************************************************************************************/
-static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
+ /*************************************************************************************************/
+static bool __resolve_adv_report(adv_report_t* report_pt, u16 len)
 {
     u8 i, length, ad_type;
-    u8 *adv_data_pt;
+    u8* adv_data_pt;
     u8 find_remoter = 0;
     u32 tmp32;
-    client_match_cfg_t *match_cfg = NULL;
+    client_match_cfg_t* match_cfg = NULL;
 
     // if (__check_device_is_match(report_pt->event_type, CLI_CREAT_BY_ADDRESS, report_pt->address, 6, &match_cfg)) {
     //     find_remoter = 1;
@@ -787,7 +799,7 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
     // }
 
     adv_data_pt = report_pt->data;
-    
+
     for (i = 0; i < report_pt->length;) {
         if (*adv_data_pt == 0) {
             log_info("analyze end\n");
@@ -795,29 +807,65 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
         }
 
         length = *adv_data_pt++;
-// printf_buf(adv_data_pt,30);
-        if (length >= report_pt->length || (length + i) >= report_pt->length) {
-            /*过滤非标准包格式*/
-            // printf("!!!error_adv_packet:");
-            // put_buf(report_pt->data, report_pt->length);
+        // if (length >= report_pt->length || (length + i) >= report_pt->length) {
+        //     /*过滤非标准包格式*/
+        //     // printf("!!!error_adv_packet:");
+        //     // put_buf(report_pt->data, report_pt->length);
 
-            rf24g_scan(report_pt->data);    //天奕光纤灯2.4G遥控
+        //     rf24g_scan(report_pt->data);    //天奕光纤灯2.4G遥控
 
-            break;
-        }
+        //     break;
+        // }
 
         ad_type = *adv_data_pt++;
         i += (length + 1);
-    
-    /*  注意：  如果打印广播包内容，在这个行打印，长度是length  不要使用len*/
-   
+
+        /*  注意：  如果打印广播包内容，在这个行打印，长度是length  不要使用len*/
+    // if (report_pt->rssi >= -60 &&
+    //     report_pt->data[0] == 0x0D && 
+    //     report_pt->data[1] == 0xFF)
+        // if (report_pt->rssi >= -60)
+        // if (adv_data_pt[0] != 0x06 &&
+        //     (adv_data_pt[0] != 0x4C && adv_data_pt[1] != 0x00 & adv_data_pt[2] != 0x0C) &&
+        //     (adv_data_pt[0] != 0x2D && adv_data_pt[1] != 0xFD & adv_data_pt[2] != 0x01) &&
+        //     adv_data_pt[0] != 0x8F &&
+        //     adv_data_pt[0] != 0x52 &&
+        //     adv_data_pt[0] != 0x48 &&
+        //     adv_data_pt[0] != 0x43 &&
+        //     adv_data_pt[0] != 0xEE &&
+        //     adv_data_pt[0] != 0x5A &&
+        //     adv_data_pt[0] != 0x42 &&
+        //     adv_data_pt[0] != 0x6B &&
+        //     adv_data_pt[0] != 0x4E &&
+        //     adv_data_pt[0] != 0x37 &&
+        //     adv_data_pt[0] != 0x6E &&
+        //     (adv_data_pt[0] != 0x00 && adv_data_pt[1] != 0x01 & adv_data_pt[2] != 0xB5)
+        //      && length >= 4
+        //     )
+        // if (length >= 10 &&
+        //     adv_data_pt[0] == 0x55 &&
+        //     adv_data_pt[1] == 0xAA)
+        // {
+        //     printf("rssi == %d\n", (int)report_pt->rssi);
+        //     printf("address_type == %u\n", report_pt->address_type);
+        //     printf("event_type == %u\n", report_pt->event_type);
+        //     // printf("==\n");
+        //     printf_buf(adv_data_pt, length);
+        // }
+
+        // if (report_pt->rssi >= -60)
+        // {
+        rf24g_driver_package_handle(adv_data_pt, length);
+        // }
+
+
         switch (ad_type) {    //ad_type  广播包类型
         case HCI_EIR_DATATYPE_FLAGS:
             /* log_info("flags:%02x\n",adv_data_pt[0]); */
             break;
 
         case HCI_EIR_DATATYPE_MORE_16BIT_SERVICE_UUIDS:
-            
+
         case HCI_EIR_DATATYPE_COMPLETE_16BIT_SERVICE_UUIDS:
         case HCI_EIR_DATATYPE_MORE_32BIT_SERVICE_UUIDS:
         case HCI_EIR_DATATYPE_COMPLETE_32BIT_SERVICE_UUIDS:
@@ -825,7 +873,7 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
         case HCI_EIR_DATATYPE_COMPLETE_128BIT_SERVICE_UUIDS:
             /* log_info("service uuid:"); */
             /* log_info_hexdump(adv_data_pt, length - 1); */
-           
+
             break;
 
         case HCI_EIR_DATATYPE_COMPLETE_LOCAL_NAME:
@@ -860,6 +908,9 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
                 log_info("get_tag_string!\n");
                 find_remoter = 1;
             }
+
+
+
             break;
 
         case HCI_EIR_DATATYPE_APPEARANCE_DATA:
@@ -905,7 +956,7 @@ just_creat:
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 static const struct create_conn_param_ext_t create_default_param_table = {
     .le_scan_interval = 24,
     .le_scan_window = 8,
@@ -921,9 +972,9 @@ static const struct create_conn_param_ext_t create_default_param_table = {
     .maximum_ce_length = 1,
 };
 
-int ble_gatt_client_create_connection_request(u8 *address, u8 addr_type, int mode)
+int ble_gatt_client_create_connection_request(u8* address, u8 addr_type, int mode)
 {
-    u8 cur_state =  ble_gatt_client_get_work_state();
+    u8 cur_state = ble_gatt_client_get_work_state();
 
     log_info("===========create_connection_request\n");
     log_info("***remote type %d,addr:", addr_type);
@@ -941,7 +992,8 @@ int ble_gatt_client_create_connection_request(u8 *address, u8 addr_type, int mod
     case BLE_ST_CREATE_CONN:
         if (CONFIG_BT_GATT_CLIENT_NUM == 1) {
             log_error("already create conn:%d!!!\n");
-        } else if (CONFIG_BT_GATT_CLIENT_NUM > 1) {
+        }
+        else if (CONFIG_BT_GATT_CLIENT_NUM > 1) {
             r_printf("Please wait Please wait for the first connection to complete!!");
         }
 
@@ -969,7 +1021,7 @@ int ble_gatt_client_create_connection_request(u8 *address, u8 addr_type, int mod
     /* ret = ble_op_create_connection(create_conn_par); */
 #else
     /*全参数格式*/
-    struct create_conn_param_ext_t *create_conn_par = scan_buffer;
+    struct create_conn_param_ext_t* create_conn_par = scan_buffer;
     memcpy(create_conn_par, &create_default_param_table, sizeof(struct create_conn_param_ext_t));
 
     create_conn_par->conn_interval_min = __this->scan_conn_config->creat_conn_interval;
@@ -983,7 +1035,8 @@ int ble_gatt_client_create_connection_request(u8 *address, u8 addr_type, int mod
 
     if (ret) {
         log_error("creat fail!!!\n");
-    } else {
+    }
+    else {
         __gatt_client_set_work_state(INVAIL_CONN_HANDLE, BLE_ST_CREATE_CONN, 1);
         if (__this->scan_conn_config->creat_state_timeout_ms) {
             __gatt_client_timeout_add(TO_TYPE_CREAT_CONN, __this->scan_conn_config->creat_state_timeout_ms);
@@ -1002,7 +1055,7 @@ int ble_gatt_client_create_connection_request(u8 *address, u8 addr_type, int mod
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 int ble_gatt_client_create_connection_cannel(void)
 {
     if (ble_gatt_client_get_work_state() == BLE_ST_CREATE_CONN) {
@@ -1022,8 +1075,8 @@ int ble_gatt_client_create_connection_cannel(void)
  *
  *  \note
  */
-/*************************************************************************************************/
-static void __gatt_client_report_adv_data(adv_report_t *report_pt, u16 len)
+ /*************************************************************************************************/
+static void __gatt_client_report_adv_data(adv_report_t* report_pt, u16 len)
 {
     u8 find_tag = 0;
     /* log_info("event_type,addr_type: %x,%x; ",report_pt->event_type,report_pt->address_type); */
@@ -1046,7 +1099,8 @@ static void __gatt_client_report_adv_data(adv_report_t *report_pt, u16 len)
             log_info("creat fail,scan again!!!\n");
             ble_gatt_client_scan_enable(1);
         }
-    } else {
+    }
+    else {
     }
 
 }
@@ -1061,8 +1115,8 @@ static void __gatt_client_report_adv_data(adv_report_t *report_pt, u16 len)
  *
  *  \note
  */
-/*************************************************************************************************/
-void ble_gatt_client_passkey_input(u32 *key, u16 conn_handle)
+ /*************************************************************************************************/
+void ble_gatt_client_passkey_input(u32* key, u16 conn_handle)
 {
     u16 tmp_val[3];
     *key = 123456; //default key
@@ -1082,10 +1136,10 @@ void ble_gatt_client_passkey_input(u32 *key, u16 conn_handle)
  *
  *  \note
  */
-/*************************************************************************************************/
-void ble_gatt_client_sm_packet(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size)
+ /*************************************************************************************************/
+void ble_gatt_client_sm_packet(uint8_t packet_type, uint16_t channel, uint8_t* packet, uint16_t size)
 {
-    sm_just_event_t *event = (void *)packet;
+    sm_just_event_t* event = (void*)packet;
     u32 tmp32;
     switch (packet_type) {
     case HCI_EVENT_PACKET:
@@ -1128,7 +1182,7 @@ void ble_gatt_client_sm_packet(uint8_t packet_type, uint16_t channel, uint8_t *p
 }
 
 
-static const char *const client_phy_result[] = {
+static const char* const client_phy_result[] = {
     "None",
     "1M",
     "2M",
@@ -1145,8 +1199,8 @@ static const char *const client_phy_result[] = {
  *
  *  \note
  */
-/*************************************************************************************************/
-void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size)
+ /*************************************************************************************************/
+void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t* packet, uint16_t size)
 {
     u16 tmp_val[4];
 
@@ -1161,8 +1215,9 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
         case GAP_EVENT_ADVERTISING_REPORT:
             if (BLE_ST_SCAN == ble_gatt_client_get_work_state()) {
                 /* putchar('V'); */
-                __gatt_client_report_adv_data((void *)&packet[2], packet[1]);
-            } else {
+                __gatt_client_report_adv_data((void*)&packet[2], packet[1]);
+            }
+            else {
                 log_info("drop scan_report!!!\n");
             }
             break;
@@ -1178,7 +1233,8 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
                     log_info("LE_MASTER CONNECTION FAIL!!! %0x\n", packet[3]);
                     __gatt_client_set_work_state(INVAIL_CONN_HANDLE, BLE_ST_IDLE, 1);
                     __gatt_client_check_auto_scan();
-                } else {
+                }
+                else {
                     tmp_val[0] = hci_subevent_le_enhanced_connection_complete_get_connection_handle(packet);
                     log_info("HCI_SUBEVENT_LE_ENHANCED_CONNECTION_COMPLETE : %0x\n", tmp_val[0]);
                     log_info("conn_interval = %d\n", hci_subevent_le_enhanced_connection_complete_get_conn_interval(packet));
@@ -1189,7 +1245,7 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
                     __gatt_client_event_callback_handler(GATT_COMM_EVENT_CONNECTION_COMPLETE, tmp_val, 2, packet);
                 }
             }
-            break;
+                                                             break;
 #endif
 
             case HCI_SUBEVENT_LE_CONNECTION_COMPLETE: {
@@ -1219,7 +1275,7 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
                 }
 
             }
-            break;
+                                                    break;
 
             case HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE: {
                 tmp_val[0] = little_endian_read_16(packet, 4);
@@ -1239,7 +1295,7 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
                 }
 
             }
-            break;
+                                                           break;
 
             case HCI_SUBEVENT_LE_DATA_LENGTH_CHANGE:
                 log_info("conn_handle = %04x\n", little_endian_read_16(packet, 4));
@@ -1267,7 +1323,7 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
             __gatt_client_event_callback_handler(GATT_COMM_EVENT_DISCONNECT_COMPLETE, tmp_val, 4, packet);
             __gatt_client_check_auto_scan();
         }
-        break;
+                                             break;
 
         case ATT_EVENT_MTU_EXCHANGE_COMPLETE: {
             tmp_val[0] = little_endian_read_16(packet, 2);
@@ -1275,7 +1331,7 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
             log_info("handle= %02x, ATT MTU = %u\n", tmp_val[0], tmp_val[1]);
             __gatt_client_event_callback_handler(GATT_COMM_EVENT_MTU_EXCHANGE_COMPLETE, tmp_val, 4, 0);
         }
-        break;
+                                            break;
 
         case HCI_EVENT_VENDOR_REMOTE_TEST:
             log_info("---HCI_EVENT_VENDOR_REMOTE_TEST\n");
@@ -1295,7 +1351,7 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
             }
 
         }
-        break;
+                                        break;
         }
         break;
     }
@@ -1311,8 +1367,8 @@ void ble_gatt_client_cbk_packet_handler(uint8_t packet_type, uint16_t channel, u
  *
  *  \note
  */
-/*************************************************************************************************/
-int ble_gatt_client_connetion_update_set(u16 conn_handle, const struct conn_update_param_t *param)
+ /*************************************************************************************************/
+int ble_gatt_client_connetion_update_set(u16 conn_handle, const struct conn_update_param_t* param)
 {
     int ret;
 
@@ -1331,7 +1387,7 @@ int ble_gatt_client_connetion_update_set(u16 conn_handle, const struct conn_upda
     }
 
     log_info("connection_update_set: %04x: -%d-%d-%d-%d-\n", conn_handle, \
-             param->interval_min, param->interval_max, param->latency, param->timeout);
+        param->interval_min, param->interval_max, param->latency, param->timeout);
     ret = ble_op_conn_param_update(conn_handle, param);
     if (!ret) {
         __this->client_operation_handle = conn_handle;
@@ -1349,14 +1405,15 @@ int ble_gatt_client_connetion_update_set(u16 conn_handle, const struct conn_upda
  *
  *  \note      会执行自动配置scan 打开
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 void ble_gatt_client_module_enable(u8 en)
 {
     log_info("mode_en:%d\n", en);
     if (en) {
         __this->scan_ctrl_en = 1;
         __gatt_client_check_auto_scan();
-    } else {
+    }
+    else {
         ble_gatt_client_scan_enable(0);
         __this->scan_ctrl_en = 0;
         ble_gatt_client_disconnect_all();
@@ -1374,7 +1431,7 @@ void ble_gatt_client_module_enable(u8 en)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 void ble_gatt_client_disconnect_all(void)
 {
     u8 i;
@@ -1398,8 +1455,8 @@ void ble_gatt_client_disconnect_all(void)
  *
  *  \note      没开启scan前，都可以配置
  */
-/*************************************************************************************************/
-void ble_gatt_client_set_scan_config(scan_conn_cfg_t *scan_conn_cfg)
+ /*************************************************************************************************/
+void ble_gatt_client_set_scan_config(scan_conn_cfg_t* scan_conn_cfg)
 {
     __this->scan_conn_config = scan_conn_cfg;
 }
@@ -1414,8 +1471,8 @@ void ble_gatt_client_set_scan_config(scan_conn_cfg_t *scan_conn_cfg)
  *
  *  \note      没开启scan前，都可以配置
  */
-/*************************************************************************************************/
-void ble_gatt_client_set_search_config(gatt_search_cfg_t *gatt_search_cfg)
+ /*************************************************************************************************/
+void ble_gatt_client_set_search_config(gatt_search_cfg_t* gatt_search_cfg)
 {
     __this->gatt_search_config = gatt_search_cfg;
 }
@@ -1430,7 +1487,7 @@ void ble_gatt_client_set_search_config(gatt_search_cfg_t *gatt_search_cfg)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 void ble_gatt_client_profile_init(void)
 {
     log_info("%s\n", __FUNCTION__);
@@ -1450,8 +1507,8 @@ void ble_gatt_client_profile_init(void)
  *
  *  \note
  */
-/*************************************************************************************************/
-void ble_gatt_client_init(gatt_client_cfg_t *client_cfg)
+ /*************************************************************************************************/
+void ble_gatt_client_init(gatt_client_cfg_t* client_cfg)
 {
     log_info("%s\n", __FUNCTION__);
     memset(__this, 0, sizeof(client_ctl_t));
@@ -1468,7 +1525,7 @@ void ble_gatt_client_init(gatt_client_cfg_t *client_cfg)
  *
  *  \note
  */
-/*************************************************************************************************/
+ /*************************************************************************************************/
 void ble_gatt_client_exit(void)
 {
     log_info("%s\n", __FUNCTION__);

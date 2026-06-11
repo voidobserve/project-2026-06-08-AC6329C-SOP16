@@ -728,12 +728,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/hardware/sound_coutrol/sound_control.h" />
-		<Unit filename="../../../user_app/ir_key/ir_key.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../../../user_app/ir_key/ir_key_app.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../../../user_app/ir_key/ir_key_app.h" />
 		<Unit filename="../../../user_app/led_strip/led_strand_effect.c">
 			<Option compilerVar="CC" />
@@ -750,9 +744,6 @@
 		<Unit filename="../../../user_app/led_strip/ls_count_down.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../../../user_app/one_wire/one_wire.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../../../user_app/one_wire/one_wire.h" />
 		<Unit filename="../../../user_app/protocol/dp_data_tran.c">
 			<Option compilerVar="CC" />
@@ -766,6 +757,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/rf24g/rf24g_app.h" />
+		<Unit filename="../../../user_app/rf24g/rf24g_driver.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../user_app/rf24g/rf24g_server_driver.c">
 			<Option compilerVar="CC" />
 		</Unit>

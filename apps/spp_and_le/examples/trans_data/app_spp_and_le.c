@@ -259,7 +259,7 @@ static void spple_key_event_handler(struct sys_event *event)
     /* u16 cpi = 0; */
     extern void ir_key_handle(struct sys_event *event);
     extern void ad_key_handle(struct sys_event *event);
-    extern void rf24_key_handle(struct sys_event *event)；
+    // extern void rf24_key_handle(struct sys_event *event);
     u8 event_type = 0;
     u8 key_value = 0;
 

@@ -33,6 +33,8 @@
 // #include "ir_key_app.h"
 #include "../../../apps/user_app/led_strip/led_strand_effect.h"
 
+#include "rf24g_driver.h"
+
 #if 1
 #pragma pack (1)
 typedef struct
@@ -404,7 +406,7 @@ void rf24_key_handle(struct sys_event* event)
             {
                 // printf("breath\n");
                 u8 temp_buff[3] = { 0x04, 0x02, 254 }; // 对应混白色呼吸
- 
+
 
                 parse_zd_data(temp_buff);
 
@@ -503,4 +505,39 @@ void rf24_key_handle(struct sys_event* event)
 
 #endif
 
+extern const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX]; // 变量声明
 
+void rf24g_key_handle(void)
+{
+    u8 rf24g_key_event = 0;
+    rf24_key_handle_func_t rf24g_key_handle_func_ptr = NULL;
+
+    rf24g_key_event = rf24g_convert_to_key_event(rf24g_key.driver_key_val, rf24g_key.driver_key_event);
+    rf24g_key.driver_key_val = NO_KEY; // 置为无效键值（由于扫描函数只更新，不会清除，在这里要清除）
+
+    if (rf24g_key_event == RF24G_TYPE_28KEY_EVENT_NONE)
+    {
+        // 如果是无效的按键事件，直接返回
+        return;
+    }
+
+    // printf("rf24g_key_event: %u\n", (u16)rf24g_key_event);
+
+    // 调用按键事件对应的处理函数
+    rf24g_key_handle_func_ptr = rf24g_key_type_28keys_handle_func_buff[rf24g_key_event];
+    if (NULL == rf24g_key_handle_func_ptr)
+    {
+        // 如果按键事件没有对应的处理函数，直接退出
+        return;
+    }
+
+    // 直接调用对应的处理函数，这样需要每个处理函数内都要判断一下设备是否开机
+    rf24g_key_handle_func_ptr();
+
+    // USER_TO_DO 将变化的数据保存到flash
+}
+
+const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX] = {
+    [RF24G_TYPE_28KEY_EVENT_R1C1_PRESS] = NULL,
+
+};
