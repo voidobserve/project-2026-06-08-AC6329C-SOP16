@@ -29,4 +29,9 @@ typedef struct
 
 void motor_handle_125us(void);
 
+// 设置电机模式
+void motor_set_mode(motor_mode_t mode);
+// 根据传参设置电机转速
+void motor_set_speed_sec_per_round(u8 sec_per_round);
+
 #endif

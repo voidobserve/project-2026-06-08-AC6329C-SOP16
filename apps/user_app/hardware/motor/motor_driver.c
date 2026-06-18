@@ -109,7 +109,7 @@ void motor_24byj48_init(void)
 	gpio_set_direction(motor_24byj48.in4_pin, 0); // 
 	gpio_direction_output(motor_24byj48.in4_pin, 0);
 
-	// 关闭所有线圈
+	// 设置引脚为输出模式并初始值为0
 	motor_set_pins(0x00);
 }
 
@@ -138,10 +138,16 @@ void motor_24byj48_set_step_mode(motor_step_mode_t mode)
 
 // }
 
+/**
+ * @brief 设置目标步进延迟（单位：微秒）
+ *
+ * @param delay_us
+ *
+ */
 void motor_24byj48_set_dest_step_delay_us(u32 delay_us)
 {
-	this->current_step = 0;
-	this->cur_step_delay_us = 0;
+	this->current_step = 0; // 清空当前步数位置
+	this->cur_step_delay_us = 0; // 清空当前延时计数值
 	this->dest_step_delay_us = delay_us;
 }
 
@@ -238,6 +244,8 @@ void motor_24byj48_step(motor_direction_t direction)
 //         motor_24byj48_step(motor, actual_dir);
 //     }
 // }
+
+// 移动指定步数
 void motor_24byj48_move_steps(motor_24byj48_t* motor, u32 steps, motor_direction_t direction)
 {
 	if (steps == 0) return;

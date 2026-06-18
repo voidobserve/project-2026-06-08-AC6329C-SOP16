@@ -1,10 +1,11 @@
-#ifndef led_strand_effect_h
-#define led_strand_effect_h
+#ifndef __LED_STRAND_EFFECT_H__
+#define __LED_STRAND_EFFECT_H__
 #include "cpu.h"
 #include "led_strip_sys.h"
 #include "WS2812FX.H"
 #include "led_strip_drive.h"
 
+#include "motor.h"
 
 
 #define MAX_SMEAR_LED_NUM 48  //最多48个灯/48段
@@ -83,7 +84,9 @@ typedef enum
   MODE_SINGLE_C_BREATH = 24,        //单色呼吸
   MODE_GRADUAL = 25,                //标准渐变，彩虹颜色
   MODE_BREATH_W = 26,               //W通道呼吸
-  MODE_MUTIL_C_BREATH,
+  // MODE_MUTIL_C_BREATH,
+
+  MODE_COLORFUL_BREATH,
 
   MODE_MIXED_WHITE_BREATH,  // 混白色呼吸
 
@@ -175,49 +178,66 @@ typedef struct
   u8 metemor_effect_index;
   // base_ins_t base_ins;           //电机
   unsigned char sequence;       //RGB通道顺序
-  // bool  auto_f;                 //自动跑效果
+
+  u8 motor_sec_per_round; // 电机转速，单位：秒/圈（最小只能接近4s/圈）
+  motor_mode_t motor_mode; // 电机模式
+
+  // 向app反馈的数据
+  u8 report_speed;  
 } fc_effect_t;
 
 countdown_t zd_countdown[ALARM_NUMBER];
-typedef struct _LED_STATE {
-  u32 ledlight;                   //灯条的亮度，范围由Light_Max，Light_Min决定
-  u32 ledlight_temp;              //亮度的百分比，取值范围0-100
-  u8 running_task;                //设备处在动态模式还是静态模式
-  u8 dynamic_state_flag;          //如果是动态,设备处在动态的哪种模式
-  u8 static_state_flag;           //如果是静态,设备处在静态的哪种模式
-  u8 OpenorCloseflag;             //亮灯还是灭灯标志,默认关灯
-  u8 R_flag;                      //红色，取值范围0~0xff
-  u8 G_flag;                      //绿色，取值范围0~0xff
-  u8 B_flag;                      //蓝色，取值范围0~0xff
-  u8 W_flag;
-  u8 interface_mode;              //灯条RBG接口顺序模式
-  u8 speed;                       //动态时用于调节速度
-}LED_STATE;
+// typedef struct _LED_STATE {
+//   u32 ledlight;                   //灯条的亮度，范围由Light_Max，Light_Min决定
+//   u32 ledlight_temp;              //亮度的百分比，取值范围0-100
+//   u8 running_task;                //设备处在动态模式还是静态模式
+//   u8 dynamic_state_flag;          //如果是动态,设备处在动态的哪种模式
+//   u8 static_state_flag;           //如果是静态,设备处在静态的哪种模式
+//   u8 OpenorCloseflag;             //亮灯还是灭灯标志,默认关灯
+//   u8 R_flag;                      //红色，取值范围0~0xff
+//   u8 G_flag;                      //绿色，取值范围0~0xff
+//   u8 B_flag;                      //蓝色，取值范围0~0xff
+//   u8 W_flag;
+//   u8 interface_mode;              //灯条RBG接口顺序模式
+//   u8 speed;                       //动态时用于调节速度
+// }LED_STATE;
 
-
-
-
-
+ 
 
 #pragma pack ()
 
 extern volatile fc_effect_t fc_effect;
 extern TIME_CLOCK time_clock;
 extern ALARM_CLOCK alarm_clock[3];
-void effect_smear_adjust_updata(smear_tool_e tool, hsv_t* colour, unsigned short* led_place);
+// void effect_smear_adjust_updata(smear_tool_e tool, hsv_t* colour, unsigned short* led_place);
+
+void bright_plus(void);
+void bright_sub(void);
+void set_bright(u8 b);
+
+void ls_sensitive_plus(void);
+void ls_sensitive_sub(void);
+void ls_speed_plus(void);
+void ls_speed_sub(void);
+
+
 
 void set_fc_effect(void);
 
 void full_color_init(void);
 void soft_rurn_off_lights(void); //软关灯处理
 void soft_turn_on_the_light(void);  //软开灯处理
-void ls_set_speed(uint8_t s);
-void set_bright(u8 b);
+void ls_set_speed(uint8_t s); 
 void fc_static_effect(u8 n);
 void ls_set_color(uint8_t n, uint32_t c);
 void music_static_sound(void);
 
 void set_static_mode(u8 r, u8 g, u8 b);
 void fc_dynamic_effect(u8 n);
+
+void led_colorful_light_set_static_color(u32 color);
+void led_colorful_light_set_static_color_by_structure(color_t color);
+
+
 
 #endif

@@ -42,11 +42,13 @@ void ws281x_show(unsigned char* pixels_pattern, unsigned short pattern_size)
             pixels_pattern[1],
             pixels_pattern[2]
         );
+        // led_driver_set_white_pwm_val(0);
     }
     else
     {
         u8 white_val = (u32)fc_effect.w * fc_effect.b / 255;
         led_driver_set_white_pwm_val(white_val);
+        // led_driver_set_rgb_pwm_val(0,0,0);
     }
 
     //该数据处理是仅有白光的流星使用

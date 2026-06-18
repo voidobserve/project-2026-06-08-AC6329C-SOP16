@@ -20,13 +20,14 @@ void led_driver_init(void)
 	gpio_set_die(LED_DRIVER_WHITE_PIN, 1);
 	gpio_set_direction(LED_DRIVER_WHITE_PIN, 1);  //输入模式
 	gpio_set_pull_up(LED_DRIVER_WHITE_PIN, 1);  //上拉
- 
+
 
 	/*
 		检测脚读取到高电平，作为混白色灯，读取到低电平，作为纯白色灯
 	*/
 	u8 white_light_det_cnt = 0; // 纯白色灯检测计数
 	u8 mixed_white_light_det_cnt = 0; // 混白色灯检测计数
+	// USER_TO_DO 这里测试时屏蔽了检测功能，实际需要恢复
 	// u8 i = 0;
 	// for (i = 0; i < 20; i++)
 	// {
@@ -38,7 +39,7 @@ void led_driver_init(void)
 	// 	{
 	// 		white_light_det_cnt++;
 	// 	}
- 
+
 	// 	clr_wdt();
 	// 	delay(1);
 	// }
@@ -73,10 +74,19 @@ void led_driver_init(void)
 		mcpwm_arg.l_pin = -1;                                  //任意引脚,不需要就填-1
 		mcpwm_arg.complementary_en = 0;                        //两个引脚的波形, 0: 同步,  1: 互补，互补波形的占空比体现在H引脚上
 		mcpwm_init(&mcpwm_arg);
+
+		// 关闭检测脚的上拉
+		gpio_set_pull_up(LED_DRIVER_WHITE_PIN, 0);  // 关闭上拉
 	}
 	else
 	{
 		led_driver.is_mixed_white_light = 0;
+
+		// 关闭检测脚的上拉，检测脚改为输出模式，驱动白灯
+		gpio_set_pull_up(LED_DRIVER_WHITE_PIN, 0);  // 关闭上拉
+		gpio_set_direction(LED_DRIVER_WHITE_PIN, 0); // 输出模式
+		gpio_direction_output(LED_DRIVER_WHITE_PIN, 0);
+
 
 		mcpwm_arg.pwm_aligned_mode = pwm_edge_aligned;         // 边沿对齐
 		mcpwm_arg.pwm_ch_num = LED_DRIVER_PWM_WHITE_CHANNEL;   // 通道号
@@ -114,7 +124,7 @@ void led_driver_set_rgb_pwm_val(u8 r, u8 g, u8 b)
 
 	red_pwm_duty = (u32)r * 10000 / 255;
 	green_pwm_duty = (u32)b * 10000 / 255;
-	blue_pwm_duty = (u32)g * 10000 / 255; 
+	blue_pwm_duty = (u32)g * 10000 / 255;
 
 	mcpwm_set_duty(LED_DRIVER_PWM_RED_CHANNEL, red_pwm_duty);  // R
 	mcpwm_set_duty(LED_DRIVER_PWM_GREEN_CHANNEL, blue_pwm_duty);  // G   
@@ -133,7 +143,7 @@ void led_driver_set_white_pwm_val(u8 white_val)
 	}
 
 	u32 white_pwm_duty;
-	white_pwm_duty = (u32)white_val * 10000 / 255; 
+	white_pwm_duty = (u32)white_val * 10000 / 255;
 	mcpwm_set_duty(LED_DRIVER_PWM_WHITE_CHANNEL, white_pwm_duty);
 }
 

@@ -100,6 +100,7 @@ void rf24g_driver_package_handle(void* ptr, u8 len)
 	{
 		// printf_buf(ptr, len);
 		// printf("key == %02x\n", (u16)((rf24g_remote_package_t*)ptr)->key_val);
+		// printf("is_hold == %02x\n", (u16)((rf24g_remote_package_t*)ptr)->is_hold);
 
 		rf24g_key.key_val = (u8)((rf24g_remote_package_t*)ptr)->key_val;
 		rf24g_key.is_update = 1;
@@ -117,10 +118,14 @@ u8 rf24g_convert_to_key_event(u8 key_driver_value, u8 key_driver_event)
 
 	// 索引对应 key_event_table[][] 中的
 	u8 key_event_index = 0; // 默认为0，0对应无效索引
+
 	switch (key_driver_event)
 	{
 	case KEY_EVENT_PRESS:
 		key_event_index = 1;
+		break;
+	case KEY_EVENT_CLICK:
+		key_event_index = 2;
 		break;
 	case KEY_EVENT_LONG:
 		key_event_index = 3;

@@ -133,6 +133,7 @@
 					<Add directory="../../../user_app/hardware/led" />
 					<Add directory="../../../../include_lib/driver/cpu/bd19/asm" />
 					<Add directory="../../../user_app/hardware/sound_coutrol" />
+					<Add directory="../../../user_app/user_report" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />

@@ -14,6 +14,10 @@
 #include "led_strip_drive.h"
 #include "app_main.h"
 #include "asm/mcpwm.h"
+
+#include "led_colorful_anim.h"
+#include "motor.h"
+
 extern void printf_buf(u8* buf, u32 len);
 static void static_mode(void);
 static void fc_smear_adjust(void);
@@ -44,7 +48,8 @@ void double_meteor(void);
 
 
 
-extern LED_STATE led_state;
+
+// extern LED_STATE led_state;
 extern u8 is_rgbw;
 volatile fc_effect_t fc_effect; // 幻彩灯串效果数据
 
@@ -53,30 +58,39 @@ volatile fc_effect_t fc_effect; // 幻彩灯串效果数据
 void fc_data_init(void)
 {
     //灯具
-    fc_effect.on_off_flag = DEVICE_ON;  //灯为开启状态
-    fc_effect.led_num = 16;        //灯带的总灯珠数量
-    fc_effect.Now_state = IS_STATIC;  //当前运行状态 静态
+    fc_effect.on_off_flag = DEVICE_ON;  // 灯为开启状态
+    fc_effect.led_num = 16;        // 灯带的总灯珠数量
+    fc_effect.Now_state = IS_STATIC;  // 当前运行状态 静态
     fc_effect.rgb.r = 255;
     fc_effect.rgb.g = 255;
     fc_effect.rgb.b = 255;
+    // fc_effect.rgb.g = 0;
+    // fc_effect.rgb.b = 0;
     fc_effect.dream_scene.c_n = 1;  //颜色数量为1
-    fc_effect.b = 255;
-    fc_effect.dream_scene.speed = 100; 
+    fc_effect.b = 255; // 亮度
+
+    fc_effect.report_speed = 80; // 速度值 80%
+    fc_effect.dream_scene.speed = 500 - (u32)fc_effect.report_speed * (500 - 10) / 100;
+    // fc_effect.dream_scene.speed = 100;
     fc_effect.dream_scene.mixed_white_breath_speed = (u16)4000; // 初始值为 4000，对应 4秒
     fc_effect.sequence = NEO_RGB;
 
     //流星
-    fc_effect.metemor_on_off = 0x01;        //开关
-    fc_effect.metemor_effect_index = 1;     //效果编号
-    fc_effect.speed = 100;                    //变化速度
-    fc_effect.meteor_period = 8;            //默认8秒  周期值
-    fc_effect.period_cnt = fc_effect.meteor_period * 1000;  //ms,运行时的计数器
-    fc_effect.mode_cycle = 0;   //模式完成一个循环的标志
+    // fc_effect.metemor_on_off = 0x01;        //开关
+    // fc_effect.metemor_effect_index = 1;     //效果编号
+    // fc_effect.speed = 100;                    //变化速度
+    // fc_effect.meteor_period = 8;            //默认8秒  周期值
+    // fc_effect.period_cnt = fc_effect.meteor_period * 1000;  //ms,运行时的计数器
+    // fc_effect.mode_cycle = 0;   //模式完成一个循环的标志
     //电机
     // fc_effect.base_ins.mode = 4;   //360转
     // fc_effect.base_ins.period = 8;  //速度8s
     // fc_effect.base_ins.dir = 0;  // 0: 正转  1：
     // fc_effect.base_ins.music_mode = 0;
+
+    fc_effect.motor_mode = MOTOR_MODE_FORWARD_ROTATION; // 正转
+    fc_effect.motor_sec_per_round = 8; // 默认8秒
+
     //声控部分
     fc_effect.sound.c_v = 0;
     fc_effect.sound.v = 0;
@@ -86,7 +100,6 @@ void fc_data_init(void)
     zd_countdown[0].set_on_off = DEVICE_OFF;
     zd_countdown[1].set_on_off = DEVICE_OFF;
     zd_countdown[2].set_on_off = DEVICE_OFF;
-
 
 }
 // WS2812FX_mode_comet
@@ -201,10 +214,10 @@ void turn_off_meteor(void)
  * @brief 效果调度函数，想要实现效果，必须要有调度函数
  *
  */
-// void   flash_printf(void);
+ // void   flash_printf(void);
 void set_fc_effect(void)
 {
-    printf("set_fc_effect");
+    // printf("set_fc_effect\n");
 
     if (fc_effect.on_off_flag == DEVICE_ON)
     {
@@ -296,13 +309,13 @@ void set_fc_effect(void)
 
             }
             break;
-        // case IS_smear_adjust:
-        //     // fc_smear_adjust();
-        //     break;
-            //静态模式
+            // case IS_smear_adjust:
+            //     // fc_smear_adjust();
+            //     break;
+                //静态模式
         case IS_STATIC:
             static_mode();
-            printf("IS_STATIC");
+            // printf("IS_STATIC");
             break;
         default:
             break;
@@ -320,6 +333,7 @@ void ls_set_colors(uint8_t n, color_t* c)
     {
         colors[i] = c[i].r << 16 | c[i].g << 8 | c[i].b;
     }
+
     WS2812FX_setColors(0, colors);
 }
 
@@ -853,14 +867,11 @@ void soft_rurn_off_lights(void) //软关灯处理
     external_devices_variable();   //附加功能的控制变量
     WS2812FX_stop();
     WS2812FX_strip_off();   // 从WS2812FX_stop() 搬出来，
-    save_user_data_area3(); // 保存参数配置到flash
-    // close_fan();  //关闭风扇
-    //关闭RGBW灯，这个设计时因为有W的控制灯
-    mcpwm_set_duty(pwm_ch0, 0);
-    mcpwm_set_duty(pwm_ch1, 0);
-    mcpwm_set_duty(pwm_ch2, 0);
-    mcpwm_set_duty(pwm_ch3, 0);
-    fb_led_on_off_state();    //与app同步开关状态
+
+    motor_set_mode(MOTOR_MODE_STOP);
+
+
+    // fb_led_on_off_state();    //与app同步开关状态
     printf("soft_rurn_off_light!!\n");
 
 }
@@ -868,14 +879,10 @@ void soft_rurn_off_lights(void) //软关灯处理
 void soft_turn_on_the_light(void)   //软开灯处理
 {
     fc_effect.on_off_flag = DEVICE_ON;
-    // fc_effect.metemor_on_off = 0x01;
-
-    save_user_data_area3();  //保存参数配置到flash
     WS2812FX_start();
+    motor_set_mode(fc_effect.motor_mode);
 
-    // USER_TO_DO one_wire_set_mode 函数已注释，待添加新的接口
-    // one_wire_set_mode(4);    //360正转
-    fb_led_on_off_state();  //与app同步开关状态
+    // fb_led_on_off_state();  //与app同步开关状态
 
     printf("soft_turn_on_the_light!!\n");
     //  flash_printf();
@@ -972,109 +979,109 @@ void set_music_type(u8 ty)
 
 }
 
-void set_music_sensitive(u8 s)
-{
-    printf("\n music sensitive = %d", s);
+// void set_music_sensitive(u8 s)
+// {
+//     printf("\n music sensitive = %d", s);
 
-    fc_effect.music.s = s;
+//     // fc_effect.music.s = s;
 
-}
+// }
 
-void fc_music(void)
-{
-    extern uint16_t music_meteor(void);
+// void fc_music(void)
+// {
+//     extern uint16_t music_meteor(void);
 
-    //频谱
-    extern uint16_t music_fs(void);
-    extern uint16_t music_fs_bc(void);
-    extern uint16_t music_fs_green_blue(void);
-    // 节奏
-    extern uint16_t music_2_side_oc(void);
-    extern uint16_t music_oc_2(void);
-    extern uint16_t music_rainbow_flash(void);
-
-
-    // 滚动
-    extern uint16_t music_energy(void);
-    extern uint16_t music_multi_c_flow(void);
-    extern uint16_t music_meteor(void);
+//     //频谱
+//     extern uint16_t music_fs(void);
+//     extern uint16_t music_fs_bc(void);
+//     extern uint16_t music_fs_green_blue(void);
+//     // 节奏
+//     extern uint16_t music_2_side_oc(void);
+//     extern uint16_t music_oc_2(void);
+//     extern uint16_t music_rainbow_flash(void);
 
 
-    // 能量
-    extern uint16_t music_star(void); //七彩
+//     // 滚动
+//     extern uint16_t music_energy(void);
+//     extern uint16_t music_multi_c_flow(void);
+//     extern uint16_t music_meteor(void);
 
-    // extern void set_music_s_m(u8 m);
 
-    void* p;
-    switch (fc_effect.music.m)
-    {
-    case 0: //能量1
-        // set_music_s_m(0);
-        // p = &music_star;
-        extern uint16_t fc_music_gradual(void);
-        p = &fc_music_gradual;
-        break;
-    case 1: //能量2
-        // set_music_s_m(1);
-        // p = &music_star;
-        extern uint16_t fc_music_breath(void);
-        p = &fc_music_breath;
-        break;
-    case 2: //能量3
-        // set_music_s_m(2);
-        // p = &music_star;
-        extern uint16_t fc_music_static(void);
-        p = &fc_music_static;
-        break;
+//     // 能量
+//     extern uint16_t music_star(void); //七彩
 
-    case 3://节奏1
-        // p = &music_2_side_oc;
-        extern uint16_t fc_music_twinkle(void);
-        p = &fc_music_twinkle;
-        break;
+//     // extern void set_music_s_m(u8 m);
 
-    case 4://节奏2
-        p = &music_oc_2;
-        break;
+//     void* p;
+//     switch (fc_effect.music.m)
+//     {
+//     case 0: //能量1
+//         // set_music_s_m(0);
+//         // p = &music_star;
+//         extern uint16_t fc_music_gradual(void);
+//         p = &fc_music_gradual;
+//         break;
+//     case 1: //能量2
+//         // set_music_s_m(1);
+//         // p = &music_star;
+//         extern uint16_t fc_music_breath(void);
+//         p = &fc_music_breath;
+//         break;
+//     case 2: //能量3
+//         // set_music_s_m(2);
+//         // p = &music_star;
+//         extern uint16_t fc_music_static(void);
+//         p = &fc_music_static;
+//         break;
 
-    case 5://节奏3
-        p = &music_rainbow_flash;
-        break;
+//     case 3://节奏1
+//         // p = &music_2_side_oc;
+//         extern uint16_t fc_music_twinkle(void);
+//         p = &fc_music_twinkle;
+//         break;
 
-    case 6://频谱1
-        p = &music_fs;
-        break;
-    case 7://频谱2
-        p = &music_fs_bc;
-        break;
-    case 8://频谱3
-        p = &music_fs_green_blue;
-        break;
+//     case 4://节奏2
+//         p = &music_oc_2;
+//         break;
 
-    case 9://滚动1
-        p = &music_energy;
-        break;
-    case 10://滚动2
-        p = &music_multi_c_flow;
-        break;
-    case 11://滚动3
-        p = &music_meteor;
-        break;
+//     case 5://节奏3
+//         p = &music_rainbow_flash;
+//         break;
 
-    }
+//     case 6://频谱1
+//         p = &music_fs;
+//         break;
+//     case 7://频谱2
+//         p = &music_fs_bc;
+//         break;
+//     case 8://频谱3
+//         p = &music_fs_green_blue;
+//         break;
 
-    WS2812FX_stop();
+//     case 9://滚动1
+//         p = &music_energy;
+//         break;
+//     case 10://滚动2
+//         p = &music_multi_c_flow;
+//         break;
+//     case 11://滚动3
+//         p = &music_meteor;
+//         break;
 
-    WS2812FX_setSegment_colorOptions(
-        0,                          //第0段
-        0, fc_effect.led_num - 1,                       //起始位置，结束位置
-        p,              //效果
-        WHITE,                      //颜色，WS2812FX_setColors设置
-        fc_effect.music.s,                        //速度
-        SIZE_MEDIUM);               //选项，这里像素点大小：3,反向/反向
-    WS2812FX_start();
+//     }
 
-}
+//     WS2812FX_stop();
+
+//     WS2812FX_setSegment_colorOptions(
+//         0,                          //第0段
+//         0, fc_effect.led_num - 1,                       //起始位置，结束位置
+//         p,              //效果
+//         WHITE,                      //颜色，WS2812FX_setColors设置
+//         fc_effect.music.s,                        //速度
+//         SIZE_MEDIUM);               //选项，这里像素点大小：3,反向/反向
+//     WS2812FX_start();
+
+// }
 
 
 
@@ -1096,21 +1103,22 @@ void set_static_mode(u8 r, u8 g, u8 b)
 //静态效果
 static void static_mode(void)
 {
-    printf("static_mode");
+    // printf("static_mode");
     WS2812FX_stop();
     WS2812FX_setSegment_colorOptions(           //设置一段颜色的效果
         0,                                      //第0段
-        0, 0,                                    //起始位置，结束位置
-        &WS2812FX_mode_static,                  //效果
-        0,                                      //颜色，WS2812FX_setColors设置
-        1000,                                      //速度
+        0,                                  // 起始位置
+        0,                                    // 结束位置
+        &WS2812FX_mode_static,                  // 效果
+        0,                                      // 颜色，WS2812FX_setColors设置
+        1000,                                      // 速度（静态模式下，该传参无效）
         0);                                     //选项，这里像素点大小：1
-    WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);  // 设置颜色数量  0：第0段   fc_effect.dream_scene.c_n  颜色数量，一个颜色包含（RGB）
-    ls_set_colors(1, &fc_effect.rgb);   //1:1个颜色    &fc_effect.rgb 这个颜色是什么色
+    // WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);  // 设置颜色数量  0：第0段   fc_effect.dream_scene.c_n  颜色数量，一个颜色包含（RGB）
+    ls_set_colors(1, &fc_effect.rgb); // 设置颜色数量为1，颜色取自 fc_effect.rgb
     WS2812FX_start();
 }
 
- 
+
 /*----------------------------------涂鸦配网效果----------------------------------*/
 // static void fc_pair_effect(void)
 // {
@@ -1165,7 +1173,7 @@ static void ls_scene_effect(void)
 
     case MODE_JUMP:     //标准跳变
         // standard_jump();
-        standart_jump_fix();  //准备天奕客户修改
+        standart_jump_fix();
         break;
 
     case MODE_MUTIL_C_GRADUAL:  //多段同时渐变
@@ -1204,6 +1212,20 @@ static void ls_scene_effect(void)
         // printf("fc_effect.dream_scene.mixed_white_breath_speed = %u\n", (u16)fc_effect.dream_scene.mixed_white_breath_speed);
     }
     break;
+
+    case MODE_COLORFUL_BREATH:
+        WS2812FX_setSegment_colorOptions(
+            0, // 第0段
+            0, // 起始位置
+            0,                  // 结束位置
+            &led_colorful_anim_breath,            //效果
+            0,                                      //颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed,            // 速度  
+            NO_OPTIONS);                           //选项，这里像素点大小：3
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_start();
+        break;
 
     default:
         break;
@@ -1273,7 +1295,7 @@ void standard_jump(void)
     WS2812FX_start();
 }
 
-//针对天奕光纤灯修改的跳变
+
 void standart_jump_fix(void)
 {
     extern uint16_t WS2812FX_mutil_c_jump(void);
@@ -1606,32 +1628,32 @@ u16 get_max_sp(void)
 }
 //---------------------------------------灵敏度
 
+// 增加声控模式的灵敏度
 void ls_sensitive_plus(void)
 {
     if (fc_effect.sound.sensitive < 100 - 10)
     {
         fc_effect.sound.sensitive += 10;
     }
-    else {
+    else
+    {
         fc_effect.sound.sensitive = 100;
-
     }
-    //    printf("fc_effect.music.s = %d", fc_effect.music.s);
 
+    //    printf("fc_effect.music.s = %d", fc_effect.music.s);
     set_fc_effect();
 }
 
+// 减小声控模式的灵敏度
 void ls_sensitive_sub(void)
 {
-
-    if (fc_effect.sound.sensitive > 10)
+    if (fc_effect.sound.sensitive > 10 + 10)
     {
         fc_effect.sound.sensitive -= 10;
     }
     else
     {
         fc_effect.sound.sensitive = 10;
-
     }
 
     // printf("fc_effect.music.s = %d", fc_effect.music.s);
@@ -1655,48 +1677,65 @@ void ls_set_speed(uint8_t s)
 
 }
 
+// 动态模式下，增加速度
 void ls_speed_plus(void)
 {
-
-    // if( speed_index < 10 )
-  // {
-  //     speed_index++;
-  // }
-  // ls_set_speed(speed_map[speed_index]);
-    if (fc_effect.dream_scene.speed > 50)
+    if (fc_effect.report_speed < 100 - 10)
     {
-        fc_effect.dream_scene.speed -= 50;
+        fc_effect.report_speed += 10;
     }
     else
     {
-        fc_effect.dream_scene.speed = 10;
-
+        fc_effect.report_speed = 100;
     }
 
+    // 将速度百分比值映射到 10 ~ 500 的速度值
+    fc_effect.dream_scene.speed =
+        500 - ((u32)fc_effect.report_speed * (500 - 10) / 100);
+
+    // 速度值越小，速度越快
+    // if (fc_effect.dream_scene.speed > 10 + 50)
+    // {
+    //     fc_effect.dream_scene.speed -= 50;
+    // }
+    // else
+    // {
+    //     fc_effect.dream_scene.speed = 10;
+    // }
 
     // printf("fc_effect.dream_scene.speed= %d", fc_effect.dream_scene.speed);
-    set_fc_effect();
-
+    // set_fc_effect(); 
 }
 
+// 动态模式下，减小速度
 void ls_speed_sub(void)
 {
-
-
-    if (fc_effect.dream_scene.speed < 500 - 50)
+    if (fc_effect.report_speed > 0 + 10)
     {
-        fc_effect.dream_scene.speed += 50;
+        fc_effect.report_speed -= 10;
     }
-    else {
-        fc_effect.dream_scene.speed = 500;
+    else
+    {
+        fc_effect.report_speed = 0;
+    }
 
-    }
+    // 将速度百分比值映射到 10 ~ 500 的速度值
+    fc_effect.dream_scene.speed =
+        500 - ((u32)fc_effect.report_speed * (500 - 10) / 100);
+
+
+    // // 速度值越小，速度越快
+    // if (fc_effect.dream_scene.speed < 500 - 50)
+    // {
+    //     fc_effect.dream_scene.speed += 50;
+    // }
+    // else
+    // {
+    //     fc_effect.dream_scene.speed = 500;
+    // }
 
     // printf("fc_effect.dream_scene.speed= %d", fc_effect.dream_scene.speed);
-
-    set_fc_effect();
-
-
+    // set_fc_effect(); 
 }
 
 // --------------------------------------播放
@@ -1777,6 +1816,7 @@ void set_bright(u8 b)
     WS2812FX_setBrightness(fc_effect.b);
 }
 
+// 灯光亮度 增加
 void bright_plus(void)
 {
     if (fc_effect.b < 255 - 50)
@@ -1786,28 +1826,25 @@ void bright_plus(void)
     else
     {
         fc_effect.b = 255;
-        // run_white_tips();
     }
     WS2812FX_setBrightness(fc_effect.b);
 }
 
+// 灯光亮度 减小
 void bright_sub(void)
 {
-    if (fc_effect.b > 50)
+    if (fc_effect.b > 10 + 50)
     {
         fc_effect.b -= 50;
     }
     else
     {
         fc_effect.b = 10;
-        // run_white_tips();
     }
-    if (fc_effect.b <= 10)
-    {
-        fc_effect.b = 10;
-    }
+
     WS2812FX_setBrightness(fc_effect.b);
 }
+
 void updata_sp(void)
 {
     if (get_max_sp() > fc_effect.dream_scene.speed)
@@ -1886,6 +1923,37 @@ void fc_static_effect(u8 n)
     }
 
     save_user_data_area3();
+    set_fc_effect();
+}
+
+/**
+ * @brief 设置七彩灯为静态模式，并且颜色为内置的常用颜色
+ *
+ */
+void led_colorful_light_set_static_color(u32 color)
+{
+    fc_effect.Now_state = IS_STATIC;
+
+    fc_effect.rgb.r = color >> 16;
+    fc_effect.rgb.g = color >> 8;
+    fc_effect.rgb.b = color;
+    fc_effect.rgb.w = color >> 24;
+
+    set_fc_effect();
+}
+
+/**
+ * @brief 设置七彩灯为静态模式，并且颜色为自定义的
+ *
+ */
+void led_colorful_light_set_static_color_by_structure(color_t color)
+{
+    fc_effect.Now_state = IS_STATIC;
+    fc_effect.rgb.r = color.r;
+    fc_effect.rgb.g = color.g;
+    fc_effect.rgb.b = color.b;
+    fc_effect.rgb.w = color.w;
+
     set_fc_effect();
 }
 

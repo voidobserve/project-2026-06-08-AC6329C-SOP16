@@ -33,6 +33,10 @@
 #include "ble_multi.h"
 #include "ble_multi_profile.h"
 
+#include "led_driver.h"
+#include "user_report_app.h"
+#include "led_strand_effect.h"
+
 #if CONFIG_APP_MULTI && CONFIG_BT_GATT_SERVER_NUM
 
 #if LE_DEBUG_PRINT_EN
@@ -185,13 +189,13 @@ static void multi_resume_all_ccc_enable(u16 conn_handle, u8 update_request)
     }
 }
 
-hci_con_handle_t fd_handle;
+// hci_con_handle_t fd_handle;
 
-hci_con_handle_t get_handle(hci_con_handle_t p)
-{
-    fd_handle = p;
-    return fd_handle;
-}
+// hci_con_handle_t get_handle(hci_con_handle_t p)
+// {
+//     fd_handle = p;
+//     return fd_handle;
+// }
 
 
 //-------------------------------------------------------------------------------------
@@ -214,7 +218,8 @@ static int multi_event_packet_handler(int event, u8* packet, u16 size, u8* ext_p
         log_info("connection_handle:%04x\n", little_endian_read_16(packet, 0));
         log_info("peer_address_info:");
         hci_con_handle_t temp = little_endian_read_16(packet, 0);
-        get_handle(temp);
+        // get_handle(temp);
+        user_conn_handle_set(temp);
         put_buf(&ext_param[7], 7);
         memcpy(cur_peer_addr_info, &ext_param[7], 7);
         multi_connection_update_enable = 1;
@@ -433,6 +438,7 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
         char* gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
 
+#if 0
         if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
             break;
         }
@@ -440,7 +446,7 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
         if (buffer) {
             if (_0103_f)
             {
-                printf("_0103_f == 1");
+                printf("_0103_f == 1\n");
                 fff3_fb_state();
 
             }
@@ -450,7 +456,34 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
             // printf_buf(buffer,fff3_buf_len);
 
         }
-        printf("ATT_CHARACTERISTIC_fff3_01_VALUE_HANDLE");
+#endif
+
+        if (led_driver.is_mixed_white_light)
+        {
+            // 混白色灯，对应0x01
+            user_report_dev_type(0x01);
+        }
+        else
+        {
+            // 纯白色灯，对应0x02
+            user_report_dev_type(0x02);
+        }
+
+        user_report_dev_on_off_sta(fc_effect.on_off_flag);
+        user_report_brightness((u32)fc_effect.b * 100 / 255);
+        user_report_speed(fc_effect.report_speed);
+        user_report_sound_control_type(fc_effect.music.m_type);
+        user_report_sound_control_mode(fc_effect.music.m);
+        user_report_sound_control_sensitive(fc_effect.sound.sensitive);
+
+        user_report_alarm_data(0, alarm_clock[0]);
+        user_report_alarm_data(1, alarm_clock[1]);
+        user_report_alarm_data(2, alarm_clock[2]);
+        user_report_motor_mode(fc_effect.motor_mode);
+        user_report_motor_speed_sec_per_round(fc_effect.motor_sec_per_round);
+        user_report_syn_end();
+
+        printf("ATT_CHARACTERISTIC_fff3_01_VALUE_HANDLE\n");
 
         break;
 

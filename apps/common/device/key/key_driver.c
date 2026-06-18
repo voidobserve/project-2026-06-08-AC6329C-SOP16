@@ -28,7 +28,7 @@
 //#define LOG_CLI_ENABLE
 #include "debug.h"
 
-#define KEY_EVENT_CLICK_ONLY_SUPPORT	1 	//是否支持某些按键只响应单击事件
+#define KEY_EVENT_CLICK_ONLY_SUPPORT	0 	//是否支持某些按键只响应单击事件
 
 
 #if TCFG_SPI_LCD_ENABLE
@@ -249,8 +249,12 @@ _notify:
         rf24g_key.driver_key_val = key_value;
         rf24g_key.driver_key_event = key_event;
 
-        scan_para->click_cnt = 0; // 单击次数清0
-        scan_para->notify_value = NO_KEY;
+        // 如果是按键刚按下，不清除对应的单击次数，否则会检测不到短按事件
+        if (key_event != KEY_EVENT_PRESS)
+        {
+            scan_para->click_cnt = 0; // 单击次数清0
+            scan_para->notify_value = NO_KEY;
+        }        
 
         goto _scan_end; // 提前退出
     }

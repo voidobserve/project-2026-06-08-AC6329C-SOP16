@@ -15,7 +15,7 @@ uint8_t music_trg = 0;
 uint8_t music_step = 0;
 uint8_t step2_flag, music_dly, change_mode, cycle_t;
 
-u8 ws2811fx_set_cycle; //1：效果跑完一轮
+// u8 ws2811fx_set_cycle; //1：效果跑完一轮
 
 
 //-----------------------------------------------天奕流星效果 -----------------------------------
@@ -1602,7 +1602,7 @@ uint16_t WS2812FX_mode_mutil_fade(void)
         cnt1 %= _seg->c_n;
         if (cnt1 == 0)
         {
-            ws2811fx_set_cycle = 1;
+            // ws2811fx_set_cycle = 1;
             SET_CYCLE;
 
         }
@@ -2298,7 +2298,7 @@ uint16_t WS2812FX_mode_breath(void) {
     if (_seg_rt->counter_mode_step > (512 - 5)) {
         _seg_rt->counter_mode_step = 5;
         SET_CYCLE;
-        ws2811fx_set_cycle = 1;
+        // ws2811fx_set_cycle = 1;
     }
     return (fc_effect.dream_scene.speed / 50 * 10 + fc_effect.dream_scene.speed % 50);  //原来的速度对遥控调速变化太大了
 
@@ -2438,10 +2438,11 @@ uint16_t WS2812FX_mode_strobe_rainbow(void) {
 /*
  * No blinking. Just plain old static light.
  */
-uint16_t  WS2812FX_mode_static(void) {
+uint16_t  WS2812FX_mode_static(void)
+{
     Adafruit_NeoPixel_fill(_seg->colors[0], _seg->start, _seg_len);
-    SET_CYCLE;
-    ws2811fx_set_cycle = 1;
+    // SET_CYCLE;
+    // ws2811fx_set_cycle = 1;
     return _seg->speed;
 }
 
@@ -2453,7 +2454,10 @@ uint16_t WS2812FX_mutil_c_jump(void)
     Adafruit_NeoPixel_fill(_seg->colors[_seg_rt->counter_mode_step], _seg->start, _seg_len);
     _seg_rt->counter_mode_step++;
     _seg_rt->counter_mode_step %= _seg->c_n;
-    if (_seg_rt->counter_mode_step == 0) ws2811fx_set_cycle = 1;
+    if (_seg_rt->counter_mode_step == 0)
+    {
+        // ws2811fx_set_cycle = 1;
+    }
     return _seg->speed;
 }
 
@@ -2485,7 +2489,10 @@ uint16_t WS2812FX_mutil_c_gradual(void)
     {
         index++;
         index %= _seg->c_n;
-        if (index == 0) ws2811fx_set_cycle = 1;
+        if (index == 0)
+        {
+            // ws2811fx_set_cycle = 1;
+        }
         // rgb = ( (uint32_t)_seg->colors[index].r << 16 ) |
         //         ( (uint32_t)_seg->colors[index].g << 8 ) |
         //         ( (uint32_t)_seg->colors[index].b ) ;
@@ -2500,7 +2507,10 @@ uint16_t WS2812FX_mutil_c_gradual(void)
         index++;
         index %= _seg->c_n;
         c0 = _seg->colors[index];
-        if (index == 0) ws2811fx_set_cycle = 1;
+        if (index == 0)
+        {
+            // ws2811fx_set_cycle = 1;
+        }
         SET_CYCLE;
     }
     return (_seg->speed / 5);
@@ -2542,7 +2552,7 @@ uint16_t breath_w(void)
     if (_seg_rt->counter_mode_step > (512 - 5)) {
         _seg_rt->counter_mode_step = 5;
         SET_CYCLE;
-        ws2811fx_set_cycle = 1;
+        // ws2811fx_set_cycle = 1;
     }
     // return _seg->speed;
     return (fc_effect.dream_scene.speed / 50 * 10 + fc_effect.dream_scene.speed % 50);  //原来的速度对遥控调速变化太大了
@@ -2704,7 +2714,7 @@ uint16_t fc_music_twinkle(void)
  *          一轮动画的时间 == fc_effect.dream_scene.mixed_white_breath_speed，单位：ms
  *          呼吸期间的最大亮度受 fc_effect.b 的影响
  *
- *      注意，时基要求是 20ms ，否则动画时间不准确 
+ *      注意，时基要求是 20ms ，否则动画时间不准确
  *
  * @return u16
  */
@@ -2751,8 +2761,8 @@ u16 colorful_light_mixed_white_breathing(void)
     /*
         实际测试这里的动画时间会比速度值多一倍，这里在分子上多乘以2（渐亮->渐灭->一轮动画完成），
         由于时基是20ms的，这里要再乘以2，总共多乘以4
-    */ 
-    step = ((u32)fc_effect.b + 1) * 10 * 1000 * 4 / speed; 
+    */
+    step = ((u32)fc_effect.b + 1) * 10 * 1000 * 4 / speed;
 
     if (0 == _seg_rt->counter_mode_step &&
         0 == _seg_rt->aux_param &&

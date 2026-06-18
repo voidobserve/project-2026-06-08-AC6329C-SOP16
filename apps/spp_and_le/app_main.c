@@ -62,9 +62,10 @@ const struct task_info task_info_table[] = {
 #if (TUYA_DEMO_EN)
     {"user_deal",           7,     0,   512,   512  },//定义线程 tuya任务调度
 #endif
-    // {"led_task",            2,      0,  512,    512},
+
     {"usr_main",            2,      0,  512,    512},
-    // {"motor_task",            2,      0,  128,    128},
+    {"msg_task", 3, 0, 128, 128}, // 用户消息处理线程 
+    {"usr_report_task", 3, 0, 128, 128}, // 
     {0, 0},
 };
 
@@ -363,110 +364,89 @@ extern uint8_t met_trg;
 extern uint8_t trg_en;
 extern void set_music_oc_trg(u8 p);
 
-void sound_handle(void)
-{
-    extern u32 adc_get_value(u32 ch);
+// void sound_handle(void)
+// {
+//     extern u32 adc_get_value(u32 ch);
 
-    u16 adc;
-    u8 i, trg, trg_v;
-    u32 adc_all, adc_ttl;
+//     u16 adc;
+//     u8 i, trg, trg_v;
+//     u32 adc_all, adc_ttl;
 
-    extern u32 adc_sample(u32 ch);
-    // 记录adc值
-    adc = adc_get_value(AD_CH_PA8);
+//     extern u32 adc_sample(u32 ch);
+//     // 记录adc值
+//     adc = adc_get_value(AD_CH_PA8);
 
-    // adc = adc_sample(AD_CH_PA8);
-    if (adc < 1000)
-    {
+//     // adc = adc_sample(AD_CH_PA8);
+//     if (adc < 1000)
+//     {
 
-        if (adc_sum_n < 2000)
-        {
-            adc_sum_n++;
-        }
-        if (adc_sum_n == 2000)
-        {
-            if (adc / (adc_sum / adc_sum_n) > 3) return; //adc突变，大于平均值的3倍，丢弃改值
-            adc_sum = adc_sum - adc_sum / adc_sum_n;
-        }
-        adc_sum += adc;
+//         if (adc_sum_n < 2000)
+//         {
+//             adc_sum_n++;
+//         }
+//         if (adc_sum_n == 2000)
+//         {
+//             if (adc / (adc_sum / adc_sum_n) > 3) return; //adc突变，大于平均值的3倍，丢弃改值
+//             adc_sum = adc_sum - adc_sum / adc_sum_n;
+//         }
+//         adc_sum += adc;
 
-        adc_v_n %= SAMPLE_N;
-        adc_v[adc_v_n] = adc;
-        adc_v_n++;
-        adc_all = 0;
-        for (i = 0; i < SAMPLE_N; i++)
-        {
-            adc_all += adc_v[i];
-        }
+//         adc_v_n %= SAMPLE_N;
+//         adc_v[adc_v_n] = adc;
+//         adc_v_n++;
+//         adc_all = 0;
+//         for (i = 0; i < SAMPLE_N; i++)
+//         {
+//             adc_all += adc_v[i];
+//         }
 
-        adc_avrg_n %= 10;
-        adc_avrg[adc_avrg_n] = adc_all / SAMPLE_N;
-        adc_avrg_n++;
-        // printf("%d,",adc_all / SAMPLE_N);
-        adc_ttl = 0;
-        for (i = 0; i < 10; i++)
-        {
-            adc_ttl += adc_avrg[i];
-        }
-        memmove((u8*)adc_total, (u8*)adc_total + 4, 14 * 4);
-        adc_total[14] = adc_ttl / 10; //总数平均值
+//         adc_avrg_n %= 10;
+//         adc_avrg[adc_avrg_n] = adc_all / SAMPLE_N;
+//         adc_avrg_n++;
+//         // printf("%d,",adc_all / SAMPLE_N);
+//         adc_ttl = 0;
+//         for (i = 0; i < 10; i++)
+//         {
+//             adc_ttl += adc_avrg[i];
+//         }
+//         memmove((u8*)adc_total, (u8*)adc_total + 4, 14 * 4);
+//         adc_total[14] = adc_ttl / 10; //总数平均值
 
-        // 查找峰值
-        trg = 0;
-        // if( adc_total[7] >= adc_total[6] &&
-        //     adc_total[7] >= adc_total[5] &&
-        //     adc_total[7] > adc_total[4] &&
-        //     adc_total[7] > adc_total[3] &&
-        //     adc_total[7] > adc_total[2] &&
-        //     adc_total[7] > adc_total[1] &&
-        //     adc_total[7] > adc_total[0] &&
-        //     adc_total[7] >= adc_total[8] &&
-        //     adc_total[7] >= adc_total[9] &&
-        //     adc_total[7] > adc_total[10] &&
-        //     adc_total[7] > adc_total[11] &&
-        //     adc_total[7] > adc_total[12] &&
-        //     adc_total[7] > adc_total[13] &&
-        //     adc_total[7] > adc_total[14]
+//         // 查找峰值
+//         trg = 0;
+//         if (adc_sum_n != 0)
+//         {
+//             extern void set_mss(uint16_t s);
+//             set_mss(adc + (adc)*fc_effect.music.s / 100);
+//             if (adc * fc_effect.music.s / 100 > adc_sum / adc_sum_n)
+//             {
+//                 // printf("\n adc=%d",adc);
+//                 // printf("\n adc_sum/adc_sum_n=%d",adc_sum/adc_sum_n);
 
-        //     )
-        {
-            if (adc_sum_n != 0)
-            {
-                extern void set_mss(uint16_t s);
-                set_mss(adc + (adc)*fc_effect.music.s / 100);
-                if (adc * fc_effect.music.s / 100 > adc_sum / adc_sum_n)
-                {
-                    // printf("\n adc=%d",adc);
-                    // printf("\n adc_sum/adc_sum_n=%d",adc_sum/adc_sum_n);
+//                 // set_music_oc_trg((adc - adc_sum/adc_sum_n)*100 * fc_effect.music.s / 100/(adc_sum/adc_sum_n));
 
-                    // set_music_oc_trg((adc - adc_sum/adc_sum_n)*100 * fc_effect.music.s / 100/(adc_sum/adc_sum_n));
+//                 extern void WS2812FX_trg(void);
+//                 if (fc_effect.led_num < 90) //太多点数处理不过来
+//                     // WS2812FX_trg();
+//                     extern void set_music_fs_trg(u8 p);
+//                 // set_music_fs_trg((adc - adc_sum/adc_sum_n)*100 * fc_effect.music.s / 100/(adc_sum/adc_sum_n));
 
-                    extern void WS2812FX_trg(void);
-                    if (fc_effect.led_num < 90) //太多点数处理不过来
-                        // WS2812FX_trg();
-                        extern void set_music_fs_trg(u8 p);
-                    // set_music_fs_trg((adc - adc_sum/adc_sum_n)*100 * fc_effect.music.s / 100/(adc_sum/adc_sum_n));
+//                 trg = 200;
+//                 met_trg = 1;
+//                 trg_en = 1;
 
-                    trg = 200;
-                    met_trg = 1;
-                    trg_en = 1;
+//             }
 
-                }
+//             if (adc > adc_sum / adc_sum_n)
+//             {
+//                 set_music_oc_trg((adc - adc_sum / adc_sum_n) * 100 * fc_effect.music.s / 100 / (adc_sum / adc_sum_n));
+//                 extern void set_music_fs_trg(u8 p);
+//                 set_music_fs_trg((adc - adc_sum / adc_sum_n) * 100 * fc_effect.music.s / 100 / (adc_sum / adc_sum_n));
 
-                if (adc > adc_sum / adc_sum_n)
-                {
-                    set_music_oc_trg((adc - adc_sum / adc_sum_n) * 100 * fc_effect.music.s / 100 / (adc_sum / adc_sum_n));
-                    extern void set_music_fs_trg(u8 p);
-                    set_music_fs_trg((adc - adc_sum / adc_sum_n) * 100 * fc_effect.music.s / 100 / (adc_sum / adc_sum_n));
-
-                }
-            }
-
-
-        }
-
-    }
-}
+//             }
+//         }
+//     }
+// }
 
 // 10ms 调用一次
 void main_while(viod)
@@ -502,7 +482,7 @@ void main_while(viod)
         WS2812FX_service(); // 注意，这里约 20ms 才调用一次动画
         count_down_run();
 #endif
- 
+
 
         os_time_dly(1);
     }
@@ -513,7 +493,8 @@ void main_while(viod)
 
 // #include "iokey.h"
 // OS_SEM LED_TASK_SEM;
-
+#if 0
+// 目前没有使用该函数
 void my_main(void)
 {
 
@@ -527,7 +508,7 @@ void my_main(void)
     led_pwm_init();          // 控制灯的PWM
     mic_gpio_init();         // 本地麦克风
     // mcu_com_init();          // 电机控制芯片的初始化
-    // motor_24byj48_init();
+    motor_24byj48_init();
 
     // 测试时使用它来观察波形：
     // gpio_set_direction(IO_PORT_DM, 0); // 
@@ -545,7 +526,9 @@ void my_main(void)
 
 
     // os_sem_create(&LED_TASK_SEM, 0);
-    task_create(main_while, NULL, "led_task");
+#if 0
+    task_create(main_while, NULL, "usr_main");
+#endif
 
 
     /* sys_timeout_add;
@@ -553,3 +536,4 @@ void my_main(void)
     sys_s_hi_timer_add(NULL,main_while,10); */
 
 }
+#endif

@@ -31,36 +31,41 @@
 #include "asm/mcpwm.h"
 // #if TCFG_RF24GKEY_ENABLE
 // #include "ir_key_app.h"
-#include "../../../apps/user_app/led_strip/led_strand_effect.h"
 
+
+#include "user_include.h"
+#include "led_driver.h"
 #include "rf24g_driver.h"
 
-#if 1
-#pragma pack (1)
-typedef struct
-{
-    u8 pair[3];
-    u8 flag;    //0:表示该数组没使用，0xAA：表示改数组已配对使用
-}rf24g_pair_t;
-#pragma pack ()
+#include "led_strand_effect.h"
+#include "user_report_app.h"
+
+// #if 1
+// #pragma pack (1)
+// typedef struct
+// {
+//     u8 pair[3];
+//     u8 flag;    //0:表示该数组没使用，0xAA：表示改数组已配对使用
+// }rf24g_pair_t;
+// #pragma pack ()
 /***********************************************************移植须修改****************************************************************/
 
-#define PAIR_TIME_OUT 5*1000    //3秒
-static u16 pair_tc = 0;
-// 配对计时，10ms计数一次
-void rf24g_pair_tc(void)
-{
-    if (pair_tc <= PAIR_TIME_OUT)
-    {
-        pair_tc += 10;
-    }
-}
+// #define PAIR_TIME_OUT 5*1000    //3秒
+// static u16 pair_tc = 0;
+// // 配对计时，10ms计数一次
+// void rf24g_pair_tc(void)
+// {
+//     if (pair_tc <= PAIR_TIME_OUT)
+//     {
+//         pair_tc += 10;
+//     }
+// }
 
-#define PAIR_MAX    1
+// #define PAIR_MAX    1
 
 /***********************************************************移植须修改 END****************************************************************/
 
-rf24g_pair_t rf24g_pair[PAIR_MAX];        //需要写flash
+// rf24g_pair_t rf24g_pair[PAIR_MAX];        //需要写flash
 
 
 /***********************************************************API*******************************************************************/
@@ -82,70 +87,16 @@ rf24g_pair_t rf24g_pair[PAIR_MAX];        //需要写flash
 
 /***********************************************************APP*******************************************************************/
 
-extern rf24g_ins_t rf24g_ins;
+// extern rf24g_ins_t rf24g_ins;
 // pair_handle是长按执行，长按时会被执行多次
 // 所以执行一次后，要把pair_tc = PAIR_TIME_OUT，避免误触发2次
-static void pair_handle(void)
-{
-    extern void save_rf24g_pair_data(void);
-    u8 op = 0;//1:配对，2：解码
-    u8 i;
-#if 0
-    // 开机3秒内
-    if (pair_tc < PAIR_TIME_OUT)
-    {
-        printf("\n pair_tc=%d", pair_tc);
-        pair_tc = PAIR_TIME_OUT;//避免误触发2次
+// static void pair_handle(void)
+// {
+//     extern void save_rf24g_pair_data(void);
+//     u8 op = 0;//1:配对，2：解码
+//     u8 i;
 
-
-        memcpy((u8*)(&rf24g_pair[0].pair), (u8*)(&rf24g_ins.pair), 3);
-        rf24g_pair[0].flag = 0xaa;
-        save_rf24g_pair_data();
-        printf("\n pair");
-        printf_buf(&rf24g_pair[0].pair, 3);
-        extern void fc_24g_pair_effect(void);
-        fc_24g_pair_effect();
-        // 查找表是否存在
-#if 0
-        for (i = 0; i < PAIR_MAX; i++)
-        {
-            // 和现有客户码匹配,解绑
-            if (memcmp((u8*)(&rf24g_pair[i].pair), (u8*)(&rf24g_ins.pair), 3) == 0)
-            {
-                op = 2;
-                pair_tc = PAIR_TIME_OUT;//避免误触发2次，
-                rf24g_pair[i].flag = 0;
-                rf24g_pair[i].pair[0] = 0;
-                rf24g_pair[i].pair[1] = 0;
-                rf24g_pair[i].pair[2] = 0;
-#warning"save flash"
-                printf("\n dis pair");
-                break;
-            }
-        }
-
-        if (i == PAIR_MAX)
-        {
-            op = 1;
-            for (i = 0; i < PAIR_MAX; i++)
-            {
-                if (rf24g_pair[i].flag == 0)
-                {
-                    pair_tc = PAIR_TIME_OUT;//避免误触发2次
-                    memcpy((u8*)(&rf24g_pair[i].pair), (u8*)(&rf24g_ins.pair), 3);
-#warning"save flash"
-                    printf("\n pair");
-                    printf_buf(&rf24g_pair[i].pair, 3);
-                    break;
-                }
-            }
-
-        }
-#endif
-
-    }
-#endif
-}
+// }
 
 u8 off_long_cnt = 0;
 extern void parse_zd_data(unsigned char* LedCommand);
@@ -464,7 +415,6 @@ void rf24_key_handle(struct sys_event* event)
             }
             if (key_value == RF24_METEOR_SOUND_ONE_TWO && event_type == KEY_EVENT_CLICK)
             {
-
                 // USER_TO_DO one_wire_set_period 已屏蔽，待添加新的接口
    // one_wire_set_period(period[1]);
                 save_user_data_area3();
@@ -503,7 +453,7 @@ void rf24_key_handle(struct sys_event* event)
 }
 
 
-#endif
+
 
 extern const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX]; // 变量声明
 
@@ -534,10 +484,524 @@ void rf24g_key_handle(void)
     // 直接调用对应的处理函数，这样需要每个处理函数内都要判断一下设备是否开机
     rf24g_key_handle_func_ptr();
 
-    // USER_TO_DO 将变化的数据保存到flash
+    // 将变化的数据保存到flash
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 }
 
-const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX] = {
-    [RF24G_TYPE_28KEY_EVENT_R1C1_PRESS] = NULL,
+void rf24g_key_r1c1_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r1c1 press\n");
+#endif
 
+    // 静态模式下，调节亮度 
+    // 声控模式下，调节灵敏度
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        return;
+    }
+
+    if (fc_effect.Now_state == IS_STATIC)
+    {
+        bright_plus();
+        user_report_brightness(fc_effect.b);
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.b == %u\n", (u16)fc_effect.b);
+#endif
+    }
+    else if (fc_effect.Now_state == IS_light_music)
+    {
+        ls_sensitive_plus();
+        user_report_sound_control_sensitive(fc_effect.sound.sensitive);
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.sound.sensitive == %u\n", (u16)fc_effect.sound.sensitive);
+#endif
+    }
+}
+
+void rf24g_key_r1c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r1c2 press\n");
+#endif
+
+    // 静态模式下，调节亮度 
+    // 声控模式下，调节灵敏度
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        return;
+    }
+
+    if (fc_effect.Now_state == IS_STATIC)
+    {
+        bright_sub();
+        user_report_brightness(fc_effect.b);
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.b == %u\n", (u16)fc_effect.b);
+#endif
+    }
+    else if (fc_effect.Now_state == IS_light_music)
+    {
+        ls_sensitive_sub();
+        user_report_sound_control_sensitive(fc_effect.sound.sensitive);
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.sound.sensitive == %u\n", (u16)fc_effect.sound.sensitive);
+#endif
+    }
+}
+
+void rf24g_key_r1c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r1c3 press\n");
+#endif
+
+    // 关机 
+    soft_rurn_off_lights();
+}
+
+void rf24g_key_r1c4_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r1c4 press\n");
+#endif
+
+    // 开机 
+    soft_turn_on_the_light();
+}
+
+void rf24g_key_r2c1_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r2c1 press\n");
+#endif
+
+    // 红色
+    led_colorful_light_set_static_color(RED);
+}
+
+void rf24g_key_r2c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r2c2 press\n");
+#endif
+
+    // 绿色
+    led_colorful_light_set_static_color(GREEN);
+}
+
+void rf24g_key_r2c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r2c3 press\n");
+#endif
+
+    // 蓝色
+    led_colorful_light_set_static_color(BLUE);
+}
+
+void rf24g_key_r2c4_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r2c4 press\n");
+#endif
+
+    if (led_driver.is_mixed_white_light)
+    {
+        // 如果是混白色灯，没有白色分量，所以将R、G、B都设置为最大，构成混白色
+        led_colorful_light_set_static_color(WHITE);
+    }
+    else
+    {
+        // 纯白色
+        led_colorful_light_set_static_color(PURE_WHITE);
+    }
+}
+
+void rf24g_key_r3c1_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r3c1 press\n");
+#endif
+
+    // 黄色
+    led_colorful_light_set_static_color(YELLOW);
+}
+
+void rf24g_key_r3c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r3c2 press\n");
+#endif
+
+    // 青色
+    led_colorful_light_set_static_color(CYAN);
+}
+
+void rf24g_key_r3c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r3c3 press\n");
+#endif
+
+    // 紫色
+    led_colorful_light_set_static_color(MAGENTA);
+}
+
+void rf24g_key_r3c4_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r3c4 press\n");
+#endif
+
+    if (led_driver.is_mixed_white_light)
+    {
+        // 如果是混白色灯，将R、G、B都设置为最大，构成混白色
+        led_colorful_light_set_static_color(WHITE);
+    }
+    else
+    {
+        // 纯白色
+        led_colorful_light_set_static_color(PURE_WHITE);
+    }
+}
+
+void rf24g_key_r4c1_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r4c1 press\n");
+#endif
+
+    /*
+        AUTO 模式，在下面5个模式不断循环切换
+        七色跳变 -> 七色滑翔 -> 七色呼吸 -> 连续渐变 -> 渐变带停顿 -> ...
+    */
+
+}
+
+void rf24g_key_r4c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r4c2 press\n");
+#endif
+
+    /*
+        七色跳变
+    */
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_JUMP;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    set_fc_effect();
+}
+
+void rf24g_key_r4c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r4c3 press\n");
+#endif 
+
+    // 连续渐变
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    set_fc_effect();
+}
+
+void rf24g_key_r4c4_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r4c4 press\n");
+#endif
+
+    // 动画 速度加
+    if (fc_effect.Now_state == IS_light_scene)
+    {
+        ls_speed_plus();
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.dream_scene.speed == %u\n",
+            fc_effect.dream_scene.speed);
+        printf("fc_effect.report_speed == %u\n",
+            (u16)fc_effect.report_speed);
+#endif
+        set_fc_effect();
+        user_report_speed(fc_effect.report_speed);
+    }
+}
+
+void rf24g_key_r5c1_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r5c1 press\n");
+#endif
+
+    // 七色呼吸
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    set_fc_effect();
+}
+
+void rf24g_key_r5c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r5c2 press\n");
+#endif
+
+    // 七色滑翔
+}
+
+void rf24g_key_r5c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r5c3 press\n");
+#endif
+
+    // 渐变带停顿
+}
+
+void rf24g_key_r5c4_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r5c4 press\n");
+#endif
+
+    // 动画速度减
+    if (fc_effect.Now_state == IS_light_scene)
+    {
+        ls_speed_sub();
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.dream_scene.speed == %u\n",
+            fc_effect.dream_scene.speed);
+        printf("fc_effect.report_speed == %u\n",
+            (u16)fc_effect.report_speed);
+#endif
+        set_fc_effect();
+        user_report_speed(fc_effect.report_speed);
+    }
+}
+void rf24g_key_r6c1_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r6c1 press\n");
+#endif
+
+    // 声控模式，没有声音时灭灯
+    fc_effect.music.m = 3;
+    fc_effect.Now_state = IS_light_music;
+    set_fc_effect();
+    user_report_sound_control_mode(fc_effect.music.m);
+}
+
+void rf24g_key_r6c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r6c2 press\n");
+#endif
+
+    // 声控模式，没有声音的时候渐变
+    fc_effect.music.m = 0;
+    fc_effect.Now_state = IS_light_music;
+    set_fc_effect();
+    user_report_sound_control_mode(fc_effect.music.m);
+}
+
+void rf24g_key_r6c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r6c3 press\n");
+#endif
+
+    // 声控模式，没有声音的时候跳变
+
+    // 实际是有声音的时候跳变
+    fc_effect.music.m = 2;
+    fc_effect.Now_state = IS_light_music;
+    set_fc_effect();
+    user_report_sound_control_mode(fc_effect.music.m);
+}
+
+void rf24g_key_r6c4_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r6c4 press\n");
+#endif
+
+    // 声控模式，没有声音的时候呼吸 
+    fc_effect.music.m = 1;
+    fc_effect.Now_state = IS_light_music;
+    set_fc_effect();
+    user_report_sound_control_mode(fc_effect.music.m);
+}
+void rf24g_key_r7c1_click_handle(void)
+{
+    const u8 step = 4;
+
+#if USER_DEBUG_ENABLE
+    printf("r7c1 click\n");
+#endif
+
+    fc_effect.motor_sec_per_round = 35;
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+void rf24g_key_r7c2_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r7c2 press\n");
+#endif
+
+    fc_effect.motor_sec_per_round = 21;
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+void rf24g_key_r7c3_press_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r7c3 press\n");
+#endif
+
+    fc_effect.motor_sec_per_round = 13;
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+void rf24g_key_r7c4_click_handle(void)
+{
+    const u8 step = 4;
+
+#if USER_DEBUG_ENABLE
+    printf("r7c4 click\n");
+#endif
+
+    fc_effect.motor_sec_per_round = 4;
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+void rf24g_key_r7c1_hold_handle(void)
+{
+    const u8 step = 1;
+
+#if USER_DEBUG_ENABLE
+    printf("r7c1 hold\n");
+#endif
+
+    // 电机速度 减
+    if (fc_effect.motor_sec_per_round < 35 - step)
+    {
+        fc_effect.motor_sec_per_round += step;
+    }
+    else
+    {
+        fc_effect.motor_sec_per_round = 35;
+    }
+
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+void rf24g_key_r7c4_hold_handle(void)
+{
+    const u8 step = 1;
+
+#if USER_DEBUG_ENABLE
+    printf("r7c4 hold\n");
+#endif
+
+    // 电机速度 加 
+    if (fc_effect.motor_sec_per_round > 4 + step)
+    {
+        fc_effect.motor_sec_per_round -= step;
+    }
+    else
+    {
+        fc_effect.motor_sec_per_round = 4;
+    }
+
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+
+const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX] = {
+    [RF24G_TYPE_28KEY_EVENT_R1C1_PRESS] = rf24g_key_r1c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R1C2_PRESS] = rf24g_key_r1c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R1C3_PRESS] = rf24g_key_r1c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R1C4_PRESS] = rf24g_key_r1c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R2C1_PRESS] = rf24g_key_r2c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C2_PRESS] = rf24g_key_r2c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C3_PRESS] = rf24g_key_r2c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C4_PRESS] = rf24g_key_r2c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R3C1_PRESS] = rf24g_key_r3c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C2_PRESS] = rf24g_key_r3c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C3_PRESS] = rf24g_key_r3c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C4_PRESS] = rf24g_key_r3c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R4C1_PRESS] = rf24g_key_r4c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R4C2_PRESS] = rf24g_key_r4c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R4C3_PRESS] = rf24g_key_r4c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R4C4_PRESS] = rf24g_key_r4c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R5C1_PRESS] = rf24g_key_r5c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R5C2_PRESS] = rf24g_key_r5c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R5C3_PRESS] = rf24g_key_r5c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R5C4_PRESS] = rf24g_key_r5c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R6C1_PRESS] = rf24g_key_r6c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R6C2_PRESS] = rf24g_key_r6c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R6C3_PRESS] = rf24g_key_r6c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R6C4_PRESS] = rf24g_key_r6c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R7C1_CLICK] = rf24g_key_r7c1_click_handle,
+    [RF24G_TYPE_28KEY_EVENT_R7C2_PRESS] = rf24g_key_r7c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R7C3_PRESS] = rf24g_key_r7c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R7C4_CLICK] = rf24g_key_r7c4_click_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R7C1_HOLD] = rf24g_key_r7c1_hold_handle,
+    [RF24G_TYPE_28KEY_EVENT_R7C4_HOLD] = rf24g_key_r7c4_hold_handle,
 };

@@ -82,31 +82,36 @@ typedef struct
 
 typedef struct
 {
-#ifdef LED_STRIP_R
-    u8 r;
-#endif
-#ifdef LED_STRIP_RG
-    u8 r;
-    u8 g;
-#endif
-#ifdef LED_STRIP_RGB
-    u8 r;
-    u8 g;
-    u8 b;
-#endif
-#ifdef LED_STRIP_RGBW
+    // #ifdef LED_STRIP_R
+    //     u8 r;
+    // #endif
+    // #ifdef LED_STRIP_RG
+    //     u8 r;
+    //     u8 g;
+    // #endif
+    // #ifdef LED_STRIP_RGB
+    //     u8 r;
+    //     u8 g;
+    //     u8 b;
+    // #endif
+    // #ifdef LED_STRIP_RGBW
+    //     u8 r;
+    //     u8 g;
+    //     u8 b;
+    //     u8 w;
+    // #endif
+    // #ifdef LED_STRIP_RGBCW
+    //     u8 r;
+    //     u8 g;
+    //     u8 b;
+    //     u8 c;
+    //     u8 w;
+    // #endif
+
     u8 r;
     u8 g;
     u8 b;
     u8 w;
-#endif
-#ifdef LED_STRIP_RGBCW
-    u8 r;
-    u8 g;
-    u8 b;
-    u8 c;
-    u8 w;
-#endif
 }color_t;
 
 
@@ -127,7 +132,7 @@ extern u8 on_off_flag;
 extern u32 LED_LEDGTH;
 extern const rgb_sequence_t rgb_sequence_buf[6];
 
-void init_led_strip(led_strip_t *strip);
+void init_led_strip(led_strip_t* strip);
 
 
 #endif

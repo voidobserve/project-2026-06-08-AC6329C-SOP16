@@ -8,6 +8,13 @@
 
 #include "led_strand_effect.h"
 #include "rf24g_app.h"
+#include "user_report.h"
+
+void user_report_handle_task(void* p);
+void user_msg_handle_task(void* p);
+void user_main(void* p);
+
+
 
 void user_init(void)
 {
@@ -21,13 +28,68 @@ void user_init(void)
 	full_color_init();
 
 	sys_s_hi_timer_add(NULL, user_10ms_isr, 10);
+
+
+	task_create(user_report_handle_task, NULL, "usr_report_task");
+	task_create(user_msg_handle_task, NULL, "msg_task");
 	task_create(user_main, NULL, "usr_main");
 
 	printf("user_init\n");
 }
 
 
-void user_main(void)
+void user_report_handle_task(void* p)
+{
+	while (1)
+	{
+		user_report.buf_handle();
+		/*
+			notify 需要一段时间才能发送，
+			如果直接一次性修改发送，会导致旧数据被覆盖
+		*/
+		os_time_dly(1);
+	}
+}
+
+void user_msg_handle_task(void* p)
+{
+	int msg[32] = { 0 };
+
+	while (1)
+	{
+#if 1 
+		int ret = os_taskq_pend("msg_task", msg, 1);
+		// printf("recv msg\n");
+		// printf("ret %d\n", ret);
+		if (OS_TASKQ != ret) // 类型不对
+		{
+			continue;
+		}
+
+		if (msg[0] != Q_USER) // 不是用户消息
+		{
+			continue;
+		}
+
+		// 打印接收到的消息
+		// for (u8 i =0; i < ARRAY_SIZE(msg); i++)
+		// {
+		//     printf("msg [%u]: %d\n", (u16)i, msg[i]);
+		// }
+
+		switch (msg[1])
+		{  
+		case MSG_USER_SAVE_INFO:
+		{
+			user_data_save_enable(1);
+		}
+		break;
+		}
+#endif
+	} // while (1)
+}
+
+void user_main(void* p)
 {
 	while (1)
 	{
@@ -46,8 +108,8 @@ void user_main(void)
 
 		rf24g_long_timer();
 
-		WS2812FX_service(); // 注意，这里约 20ms 才调用一次动画
- 
+		WS2812FX_service(); // 注意，实际 这里约 20ms 才调用一次动画
+
 
 		rf24g_key_handle();
 
@@ -59,6 +121,8 @@ void user_main(void)
 void user_10ms_isr(void)
 {
 	user_data_save_delay_add();
+
+	// USER_TO_DO 实际不用这个时钟源，而是用220V的50Hz信号作为时钟源
 	run_tick_per_10ms();
 }
 

@@ -96,7 +96,7 @@ void WS2812FX_init(uint16_t num_leds, uint8_t type) {
 ws218运行
 配合定时
 */
-extern u8 ws2811fx_set_cycle;
+// extern u8 ws2811fx_set_cycle;
 // extern unsigned long get_syn_time(void);
 extern u32 get_syn_time(void);
 

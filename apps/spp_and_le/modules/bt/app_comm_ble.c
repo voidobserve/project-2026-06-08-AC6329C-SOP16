@@ -31,6 +31,7 @@
 #include "le_client_demo.h"
 #include "app_comm_bt.h"
 
+
 #define LOG_TAG_CONST       COMM_BLE
 #define LOG_TAG             "[COMM_BLE]"
 #define LOG_ERROR_ENABLE
@@ -39,6 +40,8 @@
 /* #define LOG_DUMP_ENABLE */
 #define LOG_CLI_ENABLE
 #include "debug.h"
+
+#include "user_report.h"
 
 #if TCFG_USER_BLE_ENABLE
 
@@ -76,7 +79,9 @@ void btstack_ble_start_before_init(const ble_init_cfg_t *cfg, int param)
         //生成edr对应唯一地址
         lib_make_ble_address(tmp_ble_addr, (void *)bt_get_mac_addr());
     }
+
     memcpy(Ble_Addr,tmp_ble_addr,6);
+    user_report_self_addr_set(tmp_ble_addr);
     le_controller_set_mac((void *)tmp_ble_addr);
 
     log_info("---ble's address");

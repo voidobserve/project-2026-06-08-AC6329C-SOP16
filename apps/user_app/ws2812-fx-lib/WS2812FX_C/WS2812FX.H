@@ -16,7 +16,7 @@
 #include "binary.h"
 
 
-/* 为方便移植定义的宏 */
+ /* 为方便移植定义的宏 */
 typedef char __FlashStringHelper;
 #define millis HAL_GetTick
 #define PROGMEM
@@ -37,10 +37,10 @@ typedef char __FlashStringHelper;
 
 #if defined(ESP8266) || defined(ESP32)
   //#pragma message("Compiling for ESP")
-  #define SPEED_MIN (uint16_t)2
+#define SPEED_MIN (uint16_t)2
 #else
   //#pragma message("Compiling for Arduino")
-  #define SPEED_MIN (uint16_t)10
+#define SPEED_MIN (uint16_t)10
 #endif
 #define SPEED_MAX (uint16_t)65535
 
@@ -55,11 +55,12 @@ typedef char __FlashStringHelper;
 #define MAX_NUM_COLORS            8 /* number of colors per segment */
 #define MAX_CUSTOM_MODES          8
 
-// some common colors
+  // some common colors
 #define RED        (uint32_t)0xFF0000
 #define GREEN      (uint32_t)0x00FF00
 #define BLUE       (uint32_t)0x0000FF
-#define WHITE      (uint32_t)0xFFFFFF
+#define WHITE      (uint32_t)0xFFFFFF // 混白色
+#define PURE_WHITE      (uint32_t)0xFF000000 // 纯白色
 #define BLACK      (uint32_t)0x000000
 #define YELLOW     (uint32_t)0xFFFF00
 #define CYAN       (uint32_t)0x00FFFF
@@ -114,7 +115,7 @@ typedef char __FlashStringHelper;
 
 
 
-typedef uint16_t (*mode_ptr)(void);
+typedef uint16_t(*mode_ptr)(void);
 
 // segment parameters
 typedef struct Segment { // 20 bytes
@@ -137,101 +138,103 @@ typedef struct Segment_runtime { // 16 bytes
   uint16_t aux_param3; // auxilary param (usually stores a segment index)
 } Segment_runtime;
 
-
+extern Segment* _seg;                      // currently active segment (20 bytes)
+extern Segment_runtime* _seg_rt;           // currently active segment runtime (16 bytes)
+extern uint16_t _seg_len;                  // num LEDs in the currently active segment
 
 //    timer(void),
 void  WS2812FX_init(uint16_t num_leds, uint8_t type);
 void
-  WS2812FX_service(void),
-  WS2812FX_start(void),
-  WS2812FX_stop(void),
-  WS2812FX_pause(void),
-  WS2812FX_resume(void),
-  WS2812FX_strip_off(void),
-  WS2812FX_fade_out(void),
-  WS2812FX_fade_out_targetColor(uint32_t),
-  WS2812FX_setMode(mode_ptr m),
-  WS2812FX_setMode_seg(uint8_t seg, mode_ptr m),
-  WS2812FX_setOptions(uint8_t seg, uint8_t o),
-  WS2812FX_setCustomMode(uint16_t (*p)()),
-  WS2812FX_setCustomShow(void (*p)()),
-  WS2812FX_setSpeed(uint16_t s),
-  WS2812FX_setSpeed_seg(uint8_t seg, uint16_t s),
-  WS2812FX_increaseSpeed(uint8_t s),
-  WS2812FX_decreaseSpeed(uint8_t s),
-  WS2812FX_setColor_rgb(uint8_t r, uint8_t g, uint8_t b),
-  WS2812FX_setColor_rgbw(uint8_t r, uint8_t g, uint8_t b, uint8_t w),
-  WS2812FX_setColor(uint32_t c),
-  WS2812FX_set_coloQty(uint8_t seg, uint8_t n),
-  WS2812FX_setColor_seg(uint8_t seg, uint32_t c),
-  WS2812FX_setColors(uint8_t seg, uint32_t* c),
-  WS2812FX_setBrightness(uint8_t b),
-  WS2812FX_increaseBrightness(uint8_t s),
-  WS2812FX_decreaseBrightness(uint8_t s),
-  WS2812FX_setLength(uint16_t b),
-  WS2812FX_increaseLength(uint16_t s),
-  WS2812FX_decreaseLength(uint16_t s),
-  WS2812FX_trigger(void),
-  WS2812FX_setCycle(void),
-  WS2812FX_setNumSegments(uint8_t n),
-  WS2812FX_setSegment_colorReverse(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color,          uint16_t speed, uint8_t reverse),
-  WS2812FX_setSegment_colorOptions(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color,          uint16_t speed, uint8_t options),
-  WS2812FX_setSegment_colorsReverse(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t colors[], uint16_t speed, uint8_t reverse),
-  WS2812FX_setSegment_colorsOptions(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t colors[], uint16_t speed, uint8_t options),
-  WS2812FX_setIdleSegment(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color,          uint16_t speed, uint8_t options),
-  WS2812FX_setIdleSegment_colors(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t colors[], uint16_t speed, uint8_t options),
-  WS2812FX_addActiveSegment(uint8_t seg),
-  WS2812FX_removeActiveSegment(uint8_t seg),
-  WS2812FX_swapActiveSegment(uint8_t oldSeg, uint8_t newSeg),
-  WS2812FX_resetSegments(void),
-  WS2812FX_resetSegmentRuntimes(void),
-  WS2812FX_resetSegmentRuntime(uint8_t),
-  WS2812FX_setPixelColor(uint16_t n, uint32_t c),
-  WS2812FX_setPixelColor_rgb(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
-  WS2812FX_setPixelColor_rgbw(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w),
-  WS2812FX_copyPixels(uint16_t d, uint16_t s, uint16_t c),
-  WS2812FX_setPixels(uint16_t, uint8_t*),
-  WS2812FX_show(void);
+WS2812FX_service(void),
+WS2812FX_start(void),
+WS2812FX_stop(void),
+WS2812FX_pause(void),
+WS2812FX_resume(void),
+WS2812FX_strip_off(void),
+WS2812FX_fade_out(void),
+WS2812FX_fade_out_targetColor(uint32_t),
+WS2812FX_setMode(mode_ptr m),
+WS2812FX_setMode_seg(uint8_t seg, mode_ptr m),
+WS2812FX_setOptions(uint8_t seg, uint8_t o),
+WS2812FX_setCustomMode(uint16_t(*p)()),
+WS2812FX_setCustomShow(void (*p)()),
+WS2812FX_setSpeed(uint16_t s),
+WS2812FX_setSpeed_seg(uint8_t seg, uint16_t s),
+WS2812FX_increaseSpeed(uint8_t s),
+WS2812FX_decreaseSpeed(uint8_t s),
+WS2812FX_setColor_rgb(uint8_t r, uint8_t g, uint8_t b),
+WS2812FX_setColor_rgbw(uint8_t r, uint8_t g, uint8_t b, uint8_t w),
+WS2812FX_setColor(uint32_t c),
+WS2812FX_set_coloQty(uint8_t seg, uint8_t n),
+WS2812FX_setColor_seg(uint8_t seg, uint32_t c),
+WS2812FX_setColors(uint8_t seg, uint32_t* c),
+WS2812FX_setBrightness(uint8_t b),
+WS2812FX_increaseBrightness(uint8_t s),
+WS2812FX_decreaseBrightness(uint8_t s),
+WS2812FX_setLength(uint16_t b),
+WS2812FX_increaseLength(uint16_t s),
+WS2812FX_decreaseLength(uint16_t s),
+WS2812FX_trigger(void),
+WS2812FX_setCycle(void),
+WS2812FX_setNumSegments(uint8_t n),
+WS2812FX_setSegment_colorReverse(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color, uint16_t speed, uint8_t reverse),
+WS2812FX_setSegment_colorOptions(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color, uint16_t speed, uint8_t options),
+WS2812FX_setSegment_colorsReverse(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t colors[], uint16_t speed, uint8_t reverse),
+WS2812FX_setSegment_colorsOptions(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t colors[], uint16_t speed, uint8_t options),
+WS2812FX_setIdleSegment(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color, uint16_t speed, uint8_t options),
+WS2812FX_setIdleSegment_colors(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t colors[], uint16_t speed, uint8_t options),
+WS2812FX_addActiveSegment(uint8_t seg),
+WS2812FX_removeActiveSegment(uint8_t seg),
+WS2812FX_swapActiveSegment(uint8_t oldSeg, uint8_t newSeg),
+WS2812FX_resetSegments(void),
+WS2812FX_resetSegmentRuntimes(void),
+WS2812FX_resetSegmentRuntime(uint8_t),
+WS2812FX_setPixelColor(uint16_t n, uint32_t c),
+WS2812FX_setPixelColor_rgb(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
+WS2812FX_setPixelColor_rgbw(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w),
+WS2812FX_copyPixels(uint16_t d, uint16_t s, uint16_t c),
+WS2812FX_setPixels(uint16_t, uint8_t*),
+WS2812FX_show(void);
 
 uint8_t
-  WS2812FX_isRunning(void),
-  WS2812FX_isTriggered(void),
-  WS2812FX_isFrame(void),
-  WS2812FX_isFrame_seg(uint8_t),
-  WS2812FX_isCycle(void),
-  WS2812FX_isCycle_seg(uint8_t),
-  WS2812FX_isActiveSegment(uint8_t seg);
+WS2812FX_isRunning(void),
+WS2812FX_isTriggered(void),
+WS2812FX_isFrame(void),
+WS2812FX_isFrame_seg(uint8_t),
+WS2812FX_isCycle(void),
+WS2812FX_isCycle_seg(uint8_t),
+WS2812FX_isActiveSegment(uint8_t seg);
 
 uint8_t
-  WS2812FX_random8(void),
-  WS2812FX_random8_lim(uint8_t),
+WS2812FX_random8(void),
+WS2812FX_random8_lim(uint8_t),
 
 
-  WS2812FX_getModeCount(void),
+WS2812FX_getModeCount(void),
 //      WS2812FX_setCustomMode(const __FlashStringHelper* name, uint16_t (*p)()),
 //      WS2812FX_setCustomMode(uint8_t i, const __FlashStringHelper* name, uint16_t (*p)()),
-  WS2812FX_getNumSegments(void),
-  WS2812FX_get_random_wheel_index(uint8_t),
-  WS2812FX_getOptions(uint8_t),
-  WS2812FX_getNumBytesPerPixel(void);
+WS2812FX_getNumSegments(void),
+WS2812FX_get_random_wheel_index(uint8_t),
+WS2812FX_getOptions(uint8_t),
+WS2812FX_getNumBytesPerPixel(void);
 
 uint16_t
-  WS2812FX_random16(void),
-  WS2812FX_random16_lim(uint16_t),
-  WS2812FX_getSpeed(void),
-  WS2812FX_getSpeed_seg(uint8_t),
-  WS2812FX_getLength(void),
-  WS2812FX_getNumBytes(void);
+WS2812FX_random16(void),
+WS2812FX_random16_lim(uint16_t),
+WS2812FX_getSpeed(void),
+WS2812FX_getSpeed_seg(uint8_t),
+WS2812FX_getLength(void),
+WS2812FX_getNumBytes(void);
 
 uint32_t
-  WS2812FX_color_wheel(uint8_t),
-  WS2812FX_getColor(void),
-  WS2812FX_getColor_seg(uint8_t),
-  WS2812FX_intensitySum(void);
+WS2812FX_color_wheel(uint8_t),
+WS2812FX_getColor(void),
+WS2812FX_getColor_seg(uint8_t),
+WS2812FX_intensitySum(void);
 
 uint32_t* getColors(uint8_t);
 uint32_t* intensitySums(void);
-uint8_t*  getActiveSegments(void);
+uint8_t* getActiveSegments(void);
 
 const __FlashStringHelper* getModeName(uint8_t m);
 
