@@ -2,15 +2,19 @@
 #include "system/includes.h"
 #include "syscfg_id.h"
 #include "save_flash.h"
+
+#include "user_include.h"
+
 #define CFG_USER_SAVE_DATA_PAGE_ID 3
 #define USER_SAVE_DATA_VALID_CODE ((u8)0xC5) // 表示用户保存的数据有效的标志
 
+/*
+    保存用户数据，调用 os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
+    给线程发送消息，使能保存数据的功能，延时到来后，由用户主线程执行保存数据的操作
+*/
+
 volatile user_save_data_t save_data = { 0 };
 
-// void user_data_read(user_save_data_t* save_data)
-// {
-
-// }
 
 void user_data_init(void)
 {
@@ -20,11 +24,6 @@ void user_data_init(void)
         (void*)(&save_data),
         sizeof(user_save_data_t)
     );
-    if (ret != sizeof(user_save_data_t))
-    {
-        // 如果读取到的数据个数不一致
-        save_data.data_valid_code = !USER_SAVE_DATA_VALID_CODE;
-    }
 
     if (save_data.data_valid_code != USER_SAVE_DATA_VALID_CODE)
     {
@@ -32,6 +31,10 @@ void user_data_init(void)
 
         save_data.data_valid_code = USER_SAVE_DATA_VALID_CODE;
         fc_data_init();
+        // 初始化完成后，将数据写回
+        os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
+
+        printf("data init\n");
     }
     else
     {
@@ -40,7 +43,9 @@ void user_data_init(void)
             (void*)(&fc_effect),
             (void*)(&save_data.fc_save),
             sizeof(fc_effect_t));
-    }
+        
+        printf("data load\n");
+    } 
 }
 
 void user_data_save(void)
@@ -62,9 +67,9 @@ void user_data_save(void)
     printf("save info done \n");
 }
 
-void user_data_save_enable(u8 enable)
+void user_data_save_enable(void)
 {
-    save_data.is_save_enable = enable;
+    save_data.is_save_enable = 1;
 }
 
 /**
@@ -100,41 +105,35 @@ void user_data_save_handle(void)
 }
 
 
-void read_flash_device_status_init(void)
-{
+// void read_flash_device_status_init(void)
+// {
+//     int ret;
+//     save_flash_t save_flash3;
+//     memset((u8*)&save_flash3, 0, sizeof(save_flash_t)); 
 
-#if 1
-    int ret;
-    save_flash_t save_flash3;
-    memset((u8*)&save_flash3, 0, sizeof(save_flash_t));
-
-
-    ret = syscfg_read(
-        CFG_USER_SAVE_DATA_PAGE_ID,
-        (u8*)(&save_flash3),
-        sizeof(save_flash_t));
+//     ret = syscfg_read(
+//         CFG_USER_SAVE_DATA_PAGE_ID,
+//         (u8*)(&save_flash3),
+//         sizeof(save_flash_t));
 
 
-    if (save_flash3.header != USER_SAVE_DATA_VALID_CODE)  // 第一次上电
-    {
-        printf("first read flash");
-        fc_data_init();
-    }
-    else
-    {
-        memcpy((u8*)(&fc_effect), (u8*)(&save_flash3.fc_save), sizeof(fc_effect_t));
-    }
-
-
-#endif
-}
+//     if (save_flash3.header != USER_SAVE_DATA_VALID_CODE)  // 第一次上电
+//     {
+//         printf("first read flash");
+//         fc_data_init();
+//     }
+//     else
+//     {
+//         memcpy((u8*)(&fc_effect), (u8*)(&save_flash3.fc_save), sizeof(fc_effect_t));
+//     }
+// }
 
 
 // 把用户数据写到区域3
 void save_user_data_area3(void)
 {
-    save_flash_t save_data;
-    save_data.header = USER_SAVE_DATA_VALID_CODE;
+    // save_flash_t save_data;
+    save_data.data_valid_code = USER_SAVE_DATA_VALID_CODE;
     // 不保存开关机状态，默认开机
     // fc_effect.on_off_flag = DEVICE_ON;
     memcpy(

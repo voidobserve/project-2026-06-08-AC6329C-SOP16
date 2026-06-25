@@ -87,8 +87,14 @@ typedef enum
   // MODE_MUTIL_C_BREATH,
 
   MODE_COLORFUL_BREATH,
+  MODE_COLORFUL_GRADUAL_BY_PAUSE, // 渐变带停顿
+  MODE_COLORFUL_SLIDE, // 七彩灯 七色滑翔
+
+  MODE_COLORFUL_AUTO, // 七彩灯的自动模式，七色跳变 -> 七色滑翔 -> 七色呼吸 -> 连续渐变 -> 渐变带停顿 -> ...
 
   MODE_MIXED_WHITE_BREATH,  // 混白色呼吸
+
+
 
 } change_type_e;
 

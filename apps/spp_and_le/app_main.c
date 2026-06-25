@@ -448,7 +448,9 @@ extern void set_music_oc_trg(u8 p);
 //     }
 // }
 
+#if 0
 // 10ms 调用一次
+// 目前没有使用该函数
 void main_while(viod)
 {
     u16 i;
@@ -487,7 +489,7 @@ void main_while(viod)
         os_time_dly(1);
     }
 }
-
+#endif
 
 
 

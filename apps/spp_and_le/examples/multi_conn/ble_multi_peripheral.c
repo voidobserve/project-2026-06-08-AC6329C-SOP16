@@ -37,6 +37,8 @@
 #include "user_report_app.h"
 #include "led_strand_effect.h"
 
+#include "user_include.h" 
+
 #if CONFIG_APP_MULTI && CONFIG_BT_GATT_SERVER_NUM
 
 #if LE_DEBUG_PRINT_EN
@@ -548,7 +550,7 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
         printf_buf(buffer, buffer_size);
         parse_zd_data(buffer);
         parse_led_strip_data(buffer, buffer_size);
-
+        os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO); // 收到app传输过来的控制命令之后，使能保存数据的操作
         break;
 
 

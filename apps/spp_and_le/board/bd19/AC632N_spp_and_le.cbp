@@ -730,6 +730,9 @@
 		</Unit>
 		<Unit filename="../../../user_app/hardware/sound_coutrol/sound_control.h" />
 		<Unit filename="../../../user_app/ir_key/ir_key_app.h" />
+		<Unit filename="../../../user_app/led_strip/led_colorful_anim.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../user_app/led_strip/led_strand_effect.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -761,9 +764,6 @@
 		<Unit filename="../../../user_app/rf24g/rf24g_driver.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../../../user_app/rf24g/rf24g_server_driver.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../../../user_app/rf24g/rf24g_server_driver.h" />
 		<Unit filename="../../../user_app/rf433/rf433.h" />
 		<Unit filename="../../../user_app/rf433/rf433_app.h" />
@@ -773,6 +773,13 @@
 		<Unit filename="../../../user_app/save_flash/save_flash.h" />
 		<Unit filename="../../../user_app/user_include.h" />
 		<Unit filename="../../../user_app/user_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/user_report/user_report.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/user_report/user_report.h" />
+		<Unit filename="../../../user_app/user_report/user_report_app.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/Adafruit_NeoPixel.H" />

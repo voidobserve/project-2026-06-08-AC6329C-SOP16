@@ -18,6 +18,8 @@
 #include "led_colorful_anim.h"
 #include "motor.h"
 
+#include "user_include.h"
+
 extern void printf_buf(u8* buf, u32 len);
 static void static_mode(void);
 static void fc_smear_adjust(void);
@@ -117,8 +119,7 @@ void full_color_init(void)
     soft_turn_on_the_light();  //软开灯，灯为开状态
     set_fc_effect();  //效果实现调度
 
-    // custom_meteor_effect(); //实现上电，LED的流星效果
-
+    // custom_meteor_effect(); //实现上电，LED的流星效果 
 }
 
 /**
@@ -432,141 +433,6 @@ void change_dir(void)
 }
 
 
-#if 0
-//------------------------------------------------------自动定义效果：流星效果
-void custom_effect(void)
-{
-    extern uint16_t WS2812FX_mode_comet_2(void);
-    extern uint16_t WS2812FX_mode_comet_3(void);
-
-    //流星效果
-    if (fc_effect.metemor_effect_index == 1 || fc_effect.metemor_effect_index == 2 || fc_effect.metemor_effect_index == 3 || fc_effect.metemor_effect_index == 4)
-    {
-
-        WS2812FX_stop();
-
-        // FADE_SLOW：12颗
-        // FADE_MEDIUM：6颗
-        // FADE_FAST：5颗灯
-        // FADE_XFAST:3颗灯
-        WS2812FX_setSegment_colorOptions(
-            1,                                          //第1段
-            1, fc_effect.led_num - 1,                      //起始位置，结束位置
-            &WS2812FX_mode_comet_1,                     //效果  单灯色流程效果
-            WHITE,                                      //颜色，WS2812FX_setColors设置
-            fc_effect.speed,                            //速度
-            fade_type[fc_effect.metemor_effect_index - 1] | 0);             //选项，这里像素点大小：3 REVERSE决定方向
-
-        WS2812FX_start();
-
-    }
-    else if (fc_effect.metemor_effect_index == 5 || fc_effect.metemor_effect_index == 6 || fc_effect.metemor_effect_index == 7 || fc_effect.metemor_effect_index == 8)
-    {
-
-        WS2812FX_stop();  //库会停止向DMA写数据
-
-        // FADE_SLOW：12颗
-        // FADE_MEDIUM：6颗
-        // FADE_FAST：5颗灯
-        // FADE_XFAST:3颗灯
-        WS2812FX_setSegment_colorOptions(
-            1,                                          //第0段
-            1, fc_effect.led_num - 1,                      //起始位置，结束位置
-            &WS2812FX_mode_comet_1,                     //效果
-            WHITE,                                      //颜色，WS2812FX_setColors设置
-            fc_effect.speed,                            //速度
-            fade_type[fc_effect.metemor_effect_index - 5] | REVERSE);       //选项，这里像素点大小：3 REVERSE决定方向
-
-
-        WS2812FX_start();
-
-
-
-    }
-    else if (fc_effect.metemor_effect_index == 9)
-    {
-
-        WS2812FX_stop();  //库会停止向DMA写数据sjf
-
-        WS2812FX_setSegment_colorOptions(
-            1,                                          //第0段
-            1, fc_effect.led_num - 1,                      //起始位置，结束位置
-            &WS2812FX_mode_comet_2,                     //效果
-            WHITE,                                      //颜色，WS2812FX_setColors设置
-            fc_effect.speed,                            //速度
-            fade_type[0] | 0);             //选项，这里像素点大小：3 REVERSE决定方向
-
-        WS2812FX_start();
-
-    }
-    else if (fc_effect.metemor_effect_index == 10)
-    {
-
-        WS2812FX_stop();  //库会停止向DMA写数据sjf
-
-        WS2812FX_setSegment_colorOptions(
-            1,                                          //第0段
-            1, fc_effect.led_num - 1,                      //起始位置，结束位置
-            &WS2812FX_mode_comet_3,                     //效果
-            WHITE,                                      //颜色，WS2812FX_setColors设置
-            fc_effect.speed,                            //速度
-            fade_type[0] | 0);             //选项，这里像素点大小：3 REVERSE决定方向
-
-        WS2812FX_start();
-
-
-    }
-    else if (fc_effect.metemor_effect_index == 11)
-    {
-
-        extern uint16_t music_mode1(void);
-        extern uint16_t meteor(void);
-        extern uint16_t meteor1(void);
-        WS2812FX_setBrightness(255);
-        extern uint16_t mode5(void);
-        WS2812FX_stop();
-
-        // FADE_SLOW：12颗
-        // FADE_MEDIUM：6颗
-        // FADE_FAST：5颗灯
-        // FADE_XFAST:3颗灯
-        WS2812FX_setSegment_colorOptions(
-            1,                                          //第0段
-            1, fc_effect.led_num - 1,                      //起始位置，结束位置
-            // &meteor1,                               //效果
-            &mode5,
-            WHITE,                                    //颜色，WS2812FX_setColors设置
-            fc_effect.speed,                          //速度
-            0);                                     //选项，这里像素点大小：3 REVERSE决定方向
-
-        WS2812FX_start();
-
-    }
-    else if (fc_effect.metemor_effect_index == 12)
-    {
-
-        extern uint16_t music_meteor3(void);
-        WS2812FX_stop();
-
-        // FADE_SLOW：12颗
-        // FADE_MEDIUM：6颗
-        // FADE_FAST：5颗灯
-        // FADE_XFAST:3颗灯
-        WS2812FX_setSegment_colorOptions(
-            1,                                           //第0段
-            1, fc_effect.led_num - 1,                      //起始位置，结束位置
-            &music_meteor3,                            //效果
-            WHITE,                                    //颜色，WS2812FX_setColors设置
-            fc_effect.speed,                         //速度
-            0);                                     //选项，这里像素点大小：3 REVERSE决定方向
-
-        WS2812FX_start();
-
-    }
-    save_user_data_area3();//保存参数配置到flash
-}
-#endif
-
 u8 get_meteor_on_off(void)
 {
 
@@ -826,7 +692,9 @@ void custom_meteor_effect(void)
 
 
     }
-    save_user_data_area3();//保存参数配置到flash
+
+    // save_user_data_area3();//保存参数配置到flash
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 }
 
 
@@ -880,7 +748,9 @@ void soft_turn_on_the_light(void)   //软开灯处理
 {
     fc_effect.on_off_flag = DEVICE_ON;
     WS2812FX_start();
+    // 设置电机的 模式 和 转速
     motor_set_mode(fc_effect.motor_mode);
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 
     // fb_led_on_off_state();  //与app同步开关状态
 
@@ -969,7 +839,8 @@ void set_music_mode(u8 m)
     fc_effect.Now_state = IS_light_music;
 
     fb_led_music_mode();
-    save_user_data_area3();
+    // save_user_data_area3();
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     set_fc_effect();
 }
 
@@ -1192,8 +1063,7 @@ static void ls_scene_effect(void)
         single_c_breath();
         break;
 
-    case MODE_MIXED_WHITE_BREATH:
-    {
+    case MODE_MIXED_WHITE_BREATH: 
         extern u16 colorful_light_mixed_white_breathing(void);
         WS2812FX_setSegment_colorOptions(
             0,                                      //第0段
@@ -1210,7 +1080,6 @@ static void ls_scene_effect(void)
         WS2812FX_start();
 
         // printf("fc_effect.dream_scene.mixed_white_breath_speed = %u\n", (u16)fc_effect.dream_scene.mixed_white_breath_speed);
-    }
     break;
 
     case MODE_COLORFUL_BREATH:
@@ -1226,6 +1095,48 @@ static void ls_scene_effect(void)
         ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
         WS2812FX_start();
         break;
+
+    case MODE_COLORFUL_GRADUAL_BY_PAUSE:
+        WS2812FX_setSegment_colorOptions(
+            0, // 第0段
+            0, // 起始位置
+            0, // 结束位置
+            &led_colorful_anim_gradual_by_pause,            //效果
+            0,                                      //颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed,            // 速度  
+            NO_OPTIONS);                           //选项，这里像素点大小：3
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_start();
+        break;
+
+    case MODE_COLORFUL_SLIDE:
+        WS2812FX_setSegment_colorOptions(
+            0, // 第0段
+            0, // 起始位置
+            0, // 结束位置
+            &led_colorful_anim_slide,            //效果
+            0,                                      //颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed,            // 速度  
+            NO_OPTIONS);                           //选项，这里像素点大小：3
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_start();
+        break;
+
+    case MODE_COLORFUL_AUTO:
+        WS2812FX_setSegment_colorOptions(
+            0, // 第0段
+            0, // 起始位置
+            0, // 结束位置
+            &led_colorful_anim_auto,            //效果
+            0,                                      //颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed,            // 速度  
+            NO_OPTIONS);                           //选项，这里像素点
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_start();
+
 
     default:
         break;
@@ -1922,7 +1833,8 @@ void fc_static_effect(u8 n)
         fc_effect.rgb.b = (fc_static_map[n]) & 0xff;
     }
 
-    save_user_data_area3();
+    // save_user_data_area3();
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     set_fc_effect();
 }
 
@@ -2103,13 +2015,15 @@ void countdown_handler(int index)
                 {
                     soft_turn_on_the_light();
                     close_alarm(index);
-                    save_user_data_area3();
+                    // save_user_data_area3();
+                    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
                 }
                 else
                 {
                     soft_rurn_off_lights();
                     close_alarm(index);
-                    save_user_data_area3();
+                    // save_user_data_area3();
+                    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
                 }
 
 
@@ -2129,13 +2043,15 @@ void countdown_handler(int index)
 
                             soft_turn_on_the_light();
                             close_alarm(index);
-                            save_user_data_area3();
+                            // save_user_data_area3();
+                            os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
                         }
                         else
                         {
                             soft_rurn_off_lights();
                             close_alarm(index);
-                            save_user_data_area3();
+                            // save_user_data_area3();
+                            os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
                         }
 
                     }

@@ -173,9 +173,15 @@ void WS2812FX_fade_out_targetColor(uint32_t targetColor) {
 }
 
 
-/*
+/**
  * color blend function
- 颜色混合功能，渐变过程
+ * 颜色混合功能，渐变过程
+ * 
+ * @param blend 0~255，
+ *          0：生成的颜色==color1，
+ *          255：生成的颜色==color2，
+ *          128：生成的颜色为 color1一半分量 和 color2一半分量 的混合
+ *          
  */
 uint32_t WS2812FX_color_blend(uint32_t color1, uint32_t color2, uint8_t blend) {
   if(blend == 0)   return color1;
@@ -191,10 +197,10 @@ uint32_t WS2812FX_color_blend(uint32_t color1, uint32_t color2, uint8_t blend) {
   uint8_t g2 = (color2 >>  8) & 0xff;
   uint8_t b2 =  color2        & 0xff;
 
-  uint32_t w3 = ((w2 * blend) + (w1 * (255U - blend))) / 256U;
-  uint32_t r3 = ((r2 * blend) + (r1 * (255U - blend))) / 256U;
-  uint32_t g3 = ((g2 * blend) + (g1 * (255U - blend))) / 256U;
-  uint32_t b3 = ((b2 * blend) + (b1 * (255U - blend))) / 256U;
+  uint32_t w3 = (((u32)w2 * blend) + ((u32)w1 * (255U - blend))) / 256U;
+  uint32_t r3 = (((u32)r2 * blend) + ((u32)r1 * (255U - blend))) / 256U;
+  uint32_t g3 = (((u32)g2 * blend) + ((u32)g1 * (255U - blend))) / 256U;
+  uint32_t b3 = (((u32)b2 * blend) + ((u32)b1 * (255U - blend))) / 256U;
 
   return ((w3 << 24) | (r3 << 16) | (g3 << 8) | (b3));
 }

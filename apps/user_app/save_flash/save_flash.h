@@ -42,7 +42,7 @@ typedef struct
 
 void save_user_data_area3(void);
 
-void user_data_save_enable(u8 enable);
+void user_data_save_enable(void);
 void user_data_save_delay_add(void);
 void user_data_save_handle(void);
 

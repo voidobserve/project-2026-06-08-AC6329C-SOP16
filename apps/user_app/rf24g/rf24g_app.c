@@ -678,7 +678,17 @@ void rf24g_key_r4c1_press_handle(void)
         AUTO 模式，在下面5个模式不断循环切换
         七色跳变 -> 七色滑翔 -> 七色呼吸 -> 连续渐变 -> 渐变带停顿 -> ...
     */
-
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_AUTO;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    set_fc_effect();
 }
 
 void rf24g_key_r4c2_press_handle(void)
@@ -771,6 +781,17 @@ void rf24g_key_r5c2_press_handle(void)
 #endif
 
     // 七色滑翔
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_SLIDE;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    set_fc_effect();
 }
 
 void rf24g_key_r5c3_press_handle(void)
@@ -779,7 +800,18 @@ void rf24g_key_r5c3_press_handle(void)
     printf("r5c3 press\n");
 #endif
 
-    // 渐变带停顿
+    // 七色 渐变带停顿 
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_GRADUAL_BY_PAUSE;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    set_fc_effect();
 }
 
 void rf24g_key_r5c4_press_handle(void)
@@ -802,6 +834,7 @@ void rf24g_key_r5c4_press_handle(void)
         user_report_speed(fc_effect.report_speed);
     }
 }
+
 void rf24g_key_r6c1_press_handle(void)
 {
 #if USER_DEBUG_ENABLE

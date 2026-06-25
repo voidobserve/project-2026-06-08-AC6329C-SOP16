@@ -81,7 +81,7 @@ void user_msg_handle_task(void* p)
 		{  
 		case MSG_USER_SAVE_INFO:
 		{
-			user_data_save_enable(1);
+			user_data_save_enable();
 		}
 		break;
 		}

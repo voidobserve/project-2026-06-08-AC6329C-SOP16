@@ -765,9 +765,7 @@ void parse_zd_data(unsigned char* LedCommand)
                 // else
                 //     fc_effect.w = 0; //必须要配置，不配置，无法调节RBG效果
 
-                set_static_mode(LedCommand[3], LedCommand[4], LedCommand[5]); //配好颜色，在service中会调回PWM驱动修改颜色
-
-                save_user_data_area3();
+                set_static_mode(LedCommand[3], LedCommand[4], LedCommand[5]); //配好颜色，在service中会调回PWM驱动修改颜色 
             }
             //---------------------------------静态（模式）任务处理-----------------------------------
             if (LedCommand[0] == 0x04 && LedCommand[1] == 0x02 && LedCommand[2] >= 0 && LedCommand[2] < 0x07)
@@ -788,14 +786,12 @@ void parse_zd_data(unsigned char* LedCommand)
 
                 case 6:  fc_static_effect(3);  break; //WHILE
                 }
-                save_user_data_area3();
             }
             //---------------------------------动态处理-----------------------------------
             // if(LedCommand[0]==0x04 && LedCommand[1]==0x02 && LedCommand[2]>=0x07 && LedCommand[2]<=0x1e)
             if (LedCommand[0] == 0x04 && LedCommand[1] == 0x02 && LedCommand[2] >= 0x07 && LedCommand[2] <= 0xFF)
             {
                 fc_dynamic_effect(LedCommand[2]);
-                save_user_data_area3();
 
             }
             //---------------------------------调节亮度0-100-----------------------------------
@@ -803,7 +799,6 @@ void parse_zd_data(unsigned char* LedCommand)
             {
                 extern void set_bright(u8 b);
                 set_bright(LedCommand[2]);
-                save_user_data_area3();
                 Send_buffer[6] = 0x04;
                 Send_buffer[7] = 0x03;
                 Send_buffer[8] = LedCommand[2];
@@ -816,7 +811,6 @@ void parse_zd_data(unsigned char* LedCommand)
             {
                 // 范围0-100
                 ls_set_speed(LedCommand[2]);
-                save_user_data_area3();
                 Send_buffer[6] = 0x04;
                 Send_buffer[7] = 0x04;
                 Send_buffer[8] = LedCommand[2];
@@ -829,7 +823,6 @@ void parse_zd_data(unsigned char* LedCommand)
             {
                 extern void set_rgb_sequence(u8 s);
                 set_rgb_sequence(LedCommand[2]);
-                save_user_data_area3();
                 Send_buffer[6] = 0x04;
                 Send_buffer[7] = 0x05;
                 Send_buffer[8] = LedCommand[2];
@@ -842,7 +835,6 @@ void parse_zd_data(unsigned char* LedCommand)
             {
                 extern void set_w(u8 w);
                 set_w(LedCommand[2] * 255 / 100);
-                save_user_data_area3();  //保存参数配置到flash
 
 
             }
@@ -908,7 +900,6 @@ void parse_zd_data(unsigned char* LedCommand)
             {
                 extern void set_mereor_mode(u8 m);
                 set_mereor_mode(LedCommand[2]);
-                //save_user_data_area3();//保存参数配置到flash
 
             }
             //-------------------------------- 流星速度-----------------------------------
@@ -920,8 +911,7 @@ void parse_zd_data(unsigned char* LedCommand)
                 Send_buffer[7] = 0x01;
                 Send_buffer[8] = LedCommand[2];
                 // app_send_user_data(ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer,9, ATT_OP_AUTO_READ_CCC);
-                // ble_comm_att_send_data(fd_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
-                // save_user_data_area3();//保存参数配置到flash、
+                // ble_comm_att_send_data(fd_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC); 
                 fff3_buf_len = 9;
 
             }
@@ -930,7 +920,6 @@ void parse_zd_data(unsigned char* LedCommand)
             {
                 extern void set_on_off_meteor(u8 on_off);
                 set_on_off_meteor(LedCommand[2]);
-                save_user_data_area3();
                 Send_buffer[6] = 0x2F;
                 Send_buffer[7] = 0x02;
                 Send_buffer[8] = LedCommand[2];
@@ -950,7 +939,6 @@ void parse_zd_data(unsigned char* LedCommand)
                 // app_send_user_data(ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer,9, ATT_OP_AUTO_READ_CCC);
                 // ble_comm_att_send_data(fd_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
                 fff3_buf_len = 9;
-                save_user_data_area3();//保存参数配置到flash、
             }
             //---------------------------------设置麦克风灵，电机，流星敏度-----------------------------------
             if (LedCommand[0] == 0x2F && LedCommand[1] == 0x05)
@@ -958,7 +946,6 @@ void parse_zd_data(unsigned char* LedCommand)
                 // extern void set_music_sensitive(u8 s);
                 // set_music_sensitive(LedCommand[2]);
                 set_sensitive(100 - LedCommand[2]);
-                save_user_data_area3();
                 Send_buffer[6] = 0x2F;
                 Send_buffer[7] = 0x05;
                 Send_buffer[8] = LedCommand[2];
@@ -974,8 +961,7 @@ void parse_zd_data(unsigned char* LedCommand)
                 // extern void one_wire_set_mode(u8 m); 
                 // one_wire_set_mode(LedCommand[2]); //配置模式
                 os_time_dly(1);
-                // enable_one_wire();  //使用发送数据
-                save_user_data_area3();//保存参数配置到flash、
+                // enable_one_wire();  //使用发送数据 
                 // extern u8 counting_flag ;
                 // extern u8 set_time;
                 // extern u8 stop_cnt;
@@ -1003,17 +989,14 @@ void parse_zd_data(unsigned char* LedCommand)
                 // extern void one_wire_set_period(u8 p);
                 // one_wire_set_period(LedCommand[2]);
                 os_time_dly(1);
-                // enable_one_wire();
-                save_user_data_area3();//保存参数配置到flash、
+                // enable_one_wire(); 
                 Send_buffer[6] = 0x2F;
                 Send_buffer[7] = 0x07;
                 Send_buffer[8] = LedCommand[2];
                 // app_send_user_data(ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer,9, ATT_OP_AUTO_READ_CCC);
                 // ble_comm_att_send_data(fd_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
-                fff3_buf_len = 9;
-
-            }
-
+                fff3_buf_len = 9; 
+            } 
         }
     }
 }
