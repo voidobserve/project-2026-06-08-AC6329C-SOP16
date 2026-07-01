@@ -134,6 +134,7 @@
 					<Add directory="../../../../include_lib/driver/cpu/bd19/asm" />
 					<Add directory="../../../user_app/hardware/sound_coutrol" />
 					<Add directory="../../../user_app/user_report" />
+					<Add directory="../../../user_app/det_50hz" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
@@ -713,6 +714,9 @@
 		</Unit>
 		<Unit filename="../../../user_app/ad_key/ad_key_app.h" />
 		<Unit filename="../../../user_app/ad_key/adkey.h" />
+		<Unit filename="../../../user_app/det_50hz/det_50hz.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../user_app/hardware/led/led_driver.c">
 			<Option compilerVar="CC" />
 		</Unit>

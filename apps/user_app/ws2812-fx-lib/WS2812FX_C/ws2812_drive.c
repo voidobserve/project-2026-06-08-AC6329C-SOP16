@@ -28,64 +28,64 @@ u8 buf[12 * 3];   //使用中断实现效果时，必须需要全局变量
 void ws281x_show(unsigned char* pixels_pattern, unsigned short pattern_size)
 {
 
-    //printf_buf(pixels_pattern,pattern_size);
-//七彩灯驱动函数
+    printf_buf(pixels_pattern,pattern_size);
+    
+    // 七彩灯驱动函数
     // extern void fc_driver(u8 r, u8 g, u8 b);
     // fc_driver(*pixels_pattern, \
     //     * (pixels_pattern + 1), \
     //     * (pixels_pattern + 2));
 
-    if (led_driver.is_mixed_white_light)
+    u8 white_val;
+    led_driver_set_rgb_pwm_val(
+        pixels_pattern[0],
+        pixels_pattern[1],
+        pixels_pattern[2]
+    );
+
+    if (0 == led_driver.is_mixed_white_light)
     {
-        led_driver_set_rgb_pwm_val(
-            pixels_pattern[0],
-            pixels_pattern[1],
-            pixels_pattern[2]
-        );
-        // led_driver_set_white_pwm_val(0);
-    }
-    else
-    {
-        u8 white_val = (u32)fc_effect.w * fc_effect.b / 255;
+        // u8 white_val = (u32)fc_effect.w * fc_effect.b / 255;
+        // white_val = (u32)fc_effect.rgb.w * fc_effect.b / 255;
+        white_val = (u32)pixels_pattern[3] * fc_effect.b / 255;
         led_driver_set_white_pwm_val(white_val);
-        // led_driver_set_rgb_pwm_val(0,0,0);
     }
 
-    //该数据处理是仅有白光的流星使用
-        // unsigned short i,j=0,k=0;    
-        // u8 r,g,b;
-        // for(i=0; i< pattern_size/3; i++)
-        // {
-        //      *(buf+i) = *(pixels_pattern + 3 + i*3);  //sjf  +3是因为前面有一个灯 RGB，地址不是从零开始
+    // 该数据处理是仅有白光的流星使用
+    // unsigned short i,j=0,k=0;    
+    // u8 r,g,b;
+    // for(i=0; i< pattern_size/3; i++)
+    // {
+    //      *(buf+i) = *(pixels_pattern + 3 + i*3);  //sjf  +3是因为前面有一个灯 RGB，地址不是从零开始
 
-        // }
-        // for(i=0; i< pattern_size/3; i++)
-        // {
-        //     if(j==0)
-        //     {
-        //         r = *(buf+i);
-        //     }
-        //     else if(j==1)
-        //     {
-        //         g = *(buf+i);
-        //     }
-        //     else if(j==2)
-        //     {
-        //         b = *(buf+i);
-        //     }
-        //     j++;
-        //     if(j==3)
-        //     {
-        //         j=0;
-        //         *(buf + rOffset + (i-2)) = r;
-        //         *(buf + gOffset + (i-2)) = g;
-        //         *(buf + bOffset + (i-2)) = b;
-        //     }
-        // }
-        // 幻彩灯驱动函数
-        // ledc_send_rgbbuf(0, buf, pattern_size/3, 0); 
-        // extern void ledc_send_rgbbuf_isr(u8 index, u8 *rgbbuf, u32 buf_len, u16 again_cnt);
-        // ledc_send_rgbbuf_isr(0, buf, pattern_size/3, 0);
+    // }
+    // for(i=0; i< pattern_size/3; i++)
+    // {
+    //     if(j==0)
+    //     {
+    //         r = *(buf+i);
+    //     }
+    //     else if(j==1)
+    //     {
+    //         g = *(buf+i);
+    //     }
+    //     else if(j==2)
+    //     {
+    //         b = *(buf+i);
+    //     }
+    //     j++;
+    //     if(j==3)
+    //     {
+    //         j=0;
+    //         *(buf + rOffset + (i-2)) = r;
+    //         *(buf + gOffset + (i-2)) = g;
+    //         *(buf + bOffset + (i-2)) = b;
+    //     }
+    // }
+    // 幻彩灯驱动函数
+    // ledc_send_rgbbuf(0, buf, pattern_size/3, 0); 
+    // extern void ledc_send_rgbbuf_isr(u8 index, u8 *rgbbuf, u32 buf_len, u16 again_cnt);
+    // ledc_send_rgbbuf_isr(0, buf, pattern_size/3, 0);
 
 }
 

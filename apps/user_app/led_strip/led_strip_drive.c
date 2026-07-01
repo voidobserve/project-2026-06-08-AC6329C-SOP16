@@ -200,7 +200,7 @@ void led_gpio_init(void)
     gpio_set_pull_up(IO_PORT_DP, 0);  //不上拉
 #endif
 
-    //RGB
+    // RGB
     gpio_set_die(IO_PORTA_01, 1);
     gpio_direction_output(IO_PORTA_01, 0);
 
@@ -210,7 +210,7 @@ void led_gpio_init(void)
     gpio_set_die(IO_PORTA_07, 1);
     gpio_direction_output(IO_PORTA_07, 0);
 
-    //w脚，配置输入，作为判断
+    // w脚，配置输入，作为判断
     gpio_set_die(IO_PORTB_06, 1);
     gpio_set_direction(IO_PORTB_06, 1);  //输入模式
     gpio_set_pull_up(IO_PORTB_06, 1);  //上拉

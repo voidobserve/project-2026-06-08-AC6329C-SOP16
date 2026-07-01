@@ -68,7 +68,7 @@ static u8 __rf24g_get_key_val__(void)
 			2.4G接收可能会丢失100~200ms的数据包（响应会慢一些）
 			值 == 20，10ms调用一次该函数，这里填充200ms的超时值
 		*/
-		timeout_cnt = 20; 
+		timeout_cnt = 20;
 		last_key_val = rf24g_key.key_val;
 		return rf24g_key.key_val;
 	}

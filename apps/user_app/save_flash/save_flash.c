@@ -2,6 +2,8 @@
 #include "system/includes.h"
 #include "syscfg_id.h"
 #include "save_flash.h"
+#include "led_driver.h"
+#include "Adafruit_NeoPixel.H"
 
 #include "user_include.h"
 
@@ -34,7 +36,9 @@ void user_data_init(void)
         // 初始化完成后，将数据写回
         os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 
+#if USER_DEBUG_ENABLE
         printf("data init\n");
+#endif
     }
     else
     {
@@ -43,9 +47,20 @@ void user_data_init(void)
             (void*)(&fc_effect),
             (void*)(&save_data.fc_save),
             sizeof(fc_effect_t));
-        
+
+#if USER_DEBUG_ENABLE
         printf("data load\n");
-    } 
+#endif
+    }
+
+    if (led_driver.is_mixed_white_light)
+    {
+        fc_effect.sequence = NEO_RGB;
+    }
+    else
+    {
+        fc_effect.sequence = NEO_RGBW;
+    }
 }
 
 void user_data_save(void)

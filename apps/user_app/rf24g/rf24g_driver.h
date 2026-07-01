@@ -8,7 +8,7 @@
 #define RF24G_KEY_EVENT_MAX (5) // 按键事件种类个数，刚按下、长按、持续hold、松开
 
 #define RF24G_KEY_SCAN_TIME_MS (10) // 2.4G遥控器按键扫描频率，单位：ms
-#define RF24G_KEY_LONG_TIME_MS (1500)
+#define RF24G_KEY_LONG_TIME_MS (1000)
 #define RF24G_KEY_HOLD_TIME_MS (500)
 #define RF24G_KEY_SCAN_CLICK_DELAY_TIME_MS (0) // 2.4G遥控器按键被抬起后等待连击延时数量
 #define RF24G_KEY_SCAN_FILTER_TIME_MS (0)      // 2.4G遥控器按键消抖延时

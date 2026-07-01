@@ -10,7 +10,7 @@
 
 volatile motor_t motor;
 
-// USER_TO_DO 需要改成从 flash 中读出数据，再根据数据进行初始化
+// USER_TO_DO 可能需要改成从 flash 中读出数据，再根据数据进行初始化
 void motor_init(void)
 {
     motor.mode = MOTOR_MODE_FORWARD_ROTATION;

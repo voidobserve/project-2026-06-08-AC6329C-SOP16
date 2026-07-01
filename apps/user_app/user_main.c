@@ -5,6 +5,7 @@
 #include "led_driver.h"
 #include "sound_control.h"
 #include "save_flash.h"
+#include "det_50hz.h"
 
 #include "led_strand_effect.h"
 #include "rf24g_app.h"
@@ -22,6 +23,11 @@ void user_init(void)
 	motor_24byj48_init();
 	motor_init();
 	sound_control_init();
+
+	// USER_TO_DO 还没有添加 220V的50Hz 信号作为ws2812动画的时钟源
+#if !USER_SHIELD_220V_50HZ_DETECTION
+	det_50hz_init();
+#endif
 
 	user_data_init();
 
@@ -78,7 +84,7 @@ void user_msg_handle_task(void* p)
 		// }
 
 		switch (msg[1])
-		{  
+		{
 		case MSG_USER_SAVE_INFO:
 		{
 			user_data_save_enable();
@@ -97,23 +103,20 @@ void user_main(void* p)
 
 		user_data_save_handle();
 
-		time_clock_handler();  //闹钟 
+		time_clock_handler();  // 闹钟 
 
 		/****添加 处理函数 start**/
 		check_mic_sound();      // 采集声音并计算平均值
-		music_static_sound();   // 声控，七彩灯定色转换
+		music_static_sound();   // 声控，七彩灯定色转换 
 
-		// effect_stepmotor();    // 声控，电机的音乐效果 
-		// stepmotor();            // 电机停止指令计时
-
-		rf24g_long_timer();
+		// rf24g_long_timer();
 
 		WS2812FX_service(); // 注意，实际 这里约 20ms 才调用一次动画
 
 
 		rf24g_key_handle();
 
-		// clr_wdt();
+		// clr_wdt(); // 线程里只喂狗，不调用系统延时，还是会出现复位问题
 		os_time_dly(1);
 	}
 }

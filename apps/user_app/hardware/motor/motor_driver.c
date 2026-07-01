@@ -120,11 +120,11 @@ void motor_24byj48_set_step_mode(motor_step_mode_t mode)
 	this->current_step = 0;
 }
 
-// 设置电机速度（RPM）
-// void motor_24byj48_set_speed(motor_24byj48_t* motor, u16 rpm)
-// {
-// 	// USER_TO_DO 待修改
-// 	if (rpm == 0) rpm = 1; // 防止除零
+// //设置电机速度（RPM）
+// //void motor_24byj48_set_speed(motor_24byj48_t* motor, u16 rpm)
+// //{
+// 	//   待修改
+// 	//if (rpm == 0) rpm = 1; // 防止除零
 
 // 	// 计算每步所需的时间（微秒）
 // 	// 2048步/转，所以每分钟需要 2048 * rpm 步
@@ -230,7 +230,7 @@ void motor_24byj48_step(motor_direction_t direction)
 #endif
 }
 
-// USER_TO_DO 
+//   
 // 移动指定步数
 // void motor_24byj48_move_steps(motor_24byj48_t *motor, s32 steps, motor_direction_t direction)
 // {

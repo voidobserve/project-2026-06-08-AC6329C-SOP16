@@ -15,6 +15,8 @@
 #include "app_main.h"
 #include "asm/mcpwm.h"
 
+#include "led_driver.h"
+
 #include "led_colorful_anim.h"
 #include "motor.h"
 
@@ -66,13 +68,16 @@ void fc_data_init(void)
     fc_effect.rgb.r = 255;
     fc_effect.rgb.g = 255;
     fc_effect.rgb.b = 255;
+    fc_effect.rgb.w = 0; // 
     // fc_effect.rgb.g = 0;
     // fc_effect.rgb.b = 0;
+    // fc_effect.w = 255;
     fc_effect.dream_scene.c_n = 1;  //颜色数量为1
     fc_effect.b = 255; // 亮度
 
     fc_effect.report_speed = 80; // 速度值 80%
-    fc_effect.dream_scene.speed = 500 - (u32)fc_effect.report_speed * (500 - 10) / 100;
+    // fc_effect.dream_scene.speed = 500 - (u32)fc_effect.report_speed * (500 - 10) / 100;
+    fc_effect.dream_scene.speed = LED_COLORFUL_ANIM_SPEED_VAL_MAP(fc_effect.report_speed);
     // fc_effect.dream_scene.speed = 100;
     fc_effect.dream_scene.mixed_white_breath_speed = (u16)4000; // 初始值为 4000，对应 4秒
     fc_effect.sequence = NEO_RGB;
@@ -332,7 +337,11 @@ void ls_set_colors(uint8_t n, color_t* c)
     uint8_t i;
     for (i = 0; i < n; i++)
     {
-        colors[i] = c[i].r << 16 | c[i].g << 8 | c[i].b;
+        colors[i] =
+            c[i].w << 24 |
+            c[i].r << 16 |
+            c[i].g << 8 |
+            c[i].b;
     }
 
     WS2812FX_setColors(0, colors);
@@ -1044,11 +1053,40 @@ static void ls_scene_effect(void)
 
     case MODE_JUMP:     //标准跳变
         // standard_jump();
-        standart_jump_fix();
+        // standart_jump_fix();
+
+        WS2812FX_setSegment_colorOptions(
+            0,                                      // 第0段
+            0,  // 起始位置
+            0,                  // 结束位置
+            &led_colorful_anim_jump,       // 效果
+            0,                                      // 颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed,            // 速度
+            0);                           // 选项，这里像素点大小：3
+
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        ls_set_colors(
+            fc_effect.dream_scene.c_n,
+            &fc_effect.dream_scene.rgb);
+        WS2812FX_start();
         break;
 
     case MODE_MUTIL_C_GRADUAL:  //多段同时渐变
-        mutil_c_grandual();
+        // mutil_c_grandual(); 
+        WS2812FX_setSegment_colorOptions(
+            0,                                      // 第0段
+            0, // 起始位置
+            0,                  // 结束位置
+            &led_colorful_anim_gradual,              // 效果
+            0,                                      // 颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed,            // 速度
+            SIZE_MEDIUM);                           // 选项，这里像素点大小：3,反向/反向
+
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_start();
+
+
         break;
 
     case MODE_BREATH_W:    //白色渐变
@@ -1063,7 +1101,7 @@ static void ls_scene_effect(void)
         single_c_breath();
         break;
 
-    case MODE_MIXED_WHITE_BREATH: 
+    case MODE_MIXED_WHITE_BREATH:
         extern u16 colorful_light_mixed_white_breathing(void);
         WS2812FX_setSegment_colorOptions(
             0,                                      //第0段
@@ -1080,7 +1118,7 @@ static void ls_scene_effect(void)
         WS2812FX_start();
 
         // printf("fc_effect.dream_scene.mixed_white_breath_speed = %u\n", (u16)fc_effect.dream_scene.mixed_white_breath_speed);
-    break;
+        break;
 
     case MODE_COLORFUL_BREATH:
         WS2812FX_setSegment_colorOptions(
@@ -1601,8 +1639,11 @@ void ls_speed_plus(void)
     }
 
     // 将速度百分比值映射到 10 ~ 500 的速度值
+    // fc_effect.dream_scene.speed =
+    //     500 - ((u32)fc_effect.report_speed * (500 - 10) / 100);
     fc_effect.dream_scene.speed =
-        500 - ((u32)fc_effect.report_speed * (500 - 10) / 100);
+        LED_COLORFUL_ANIM_SPEED_VAL_MAP(fc_effect.report_speed);
+
 
     // 速度值越小，速度越快
     // if (fc_effect.dream_scene.speed > 10 + 50)
@@ -1631,8 +1672,10 @@ void ls_speed_sub(void)
     }
 
     // 将速度百分比值映射到 10 ~ 500 的速度值
+    // fc_effect.dream_scene.speed =
+    //     500 - ((u32)fc_effect.report_speed * (500 - 10) / 100);
     fc_effect.dream_scene.speed =
-        500 - ((u32)fc_effect.report_speed * (500 - 10) / 100);
+        LED_COLORFUL_ANIM_SPEED_VAL_MAP(fc_effect.report_speed);
 
 
     // // 速度值越小，速度越快
@@ -1849,7 +1892,12 @@ void led_colorful_light_set_static_color(u32 color)
     fc_effect.rgb.r = color >> 16;
     fc_effect.rgb.g = color >> 8;
     fc_effect.rgb.b = color;
-    fc_effect.rgb.w = color >> 24;
+
+    if (0 == led_driver.is_mixed_white_light)
+    {
+        // 不是混白色灯，灯由 RGBW组成
+        fc_effect.rgb.w = color >> 24;
+    }
 
     set_fc_effect();
 }
@@ -1864,7 +1912,11 @@ void led_colorful_light_set_static_color_by_structure(color_t color)
     fc_effect.rgb.r = color.r;
     fc_effect.rgb.g = color.g;
     fc_effect.rgb.b = color.b;
-    fc_effect.rgb.w = color.w;
+    if (0 == led_driver.is_mixed_white_light)
+    {
+        // 不是混白色灯，灯由 RGBW组成
+        fc_effect.rgb.w = color.w;
+    }
 
     set_fc_effect();
 }
@@ -1880,6 +1932,11 @@ void ls_set_color(uint8_t n, uint32_t c)
         fc_effect.dream_scene.rgb[n].r = (c >> 16) & 0xff;
         fc_effect.dream_scene.rgb[n].g = (c >> 8) & 0xff;
         fc_effect.dream_scene.rgb[n].b = c & 0xff;
+        if (0 == led_driver.is_mixed_white_light)
+        {
+            // 不是混白色灯，灯由 RGBW组成
+            fc_effect.dream_scene.rgb[n].w = (c >> 24) & 0xFF;
+        }
     }
 }
 
