@@ -45,6 +45,8 @@ keil MDK 编译器不支持二进制表示，因此首先要实现binary.h文件
 #include <stdlib.h>
 #include <string.h>
 
+#include "user_config.h"
+
 
 
 
@@ -103,11 +105,16 @@ extern u32 get_syn_time(void);
 void WS2812FX_service() 
 {
   if(_running || _triggered) {
-    // USER_TO_DO 测试时使用： unsigned long now = millis() 
-    unsigned long now = millis(); // Be aware, millis() rolls over every 49 days
 
+#if USER_SHIELD_220V_50HZ_DETECTION // 如果没有使能 220V 50HZ检测
+
+    unsigned long now = millis(); // Be aware, millis() rolls over every 49 days
+    
+#else
     // USER_TO_DO 在测试时屏蔽了，实际要恢复
     // u32 now = get_syn_time(); // Be aware, millis() rolls over every 49 days    
+    unsigned long now = det_50hz_get_tick();
+#endif
 
     uint8_t doShow = false;
     for(uint8_t i=0; i < _active_segments_len; i++) {

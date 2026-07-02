@@ -20,6 +20,8 @@ volatile user_save_data_t save_data = { 0 };
 
 void user_data_init(void)
 {
+    u8 sequence;
+
     int ret = 0;
     ret = syscfg_read(
         CFG_USER_SAVE_DATA_PAGE_ID,
@@ -53,13 +55,58 @@ void user_data_init(void)
 #endif
     }
 
+    /*
+        程序执行到这里时，要确保 led_driver.is_mixed_white_light 已经初始化
+        要先调用 led_driver_init()
+    */
     if (led_driver.is_mixed_white_light)
     {
-        fc_effect.sequence = NEO_RGB;
+        sequence = NEO_RGB; // 
     }
     else
     {
-        fc_effect.sequence = NEO_RGBW;
+        sequence = NEO_RGBW;
+    }
+
+#if USER_DEBUG_ENABLE
+    if (NEO_RGB == sequence)
+    {
+        printf("cur sequence == NEO_RGB\n");
+    }
+    else if (NEO_RGBW == sequence)
+    {
+        printf("cur sequence == NEO_RGBW\n");
+    }
+#endif
+
+    if (sequence != fc_effect.sequence)
+    {
+        // 如果当前的RGB顺序和保存的数据不一致，则要修改为当前的 
+
+        fc_effect.sequence = sequence;
+        if (NEO_RGB == sequence)
+        {
+            fc_effect.rgb.w = 0; // 如果是混白色灯，W通道必须为0
+            fc_effect.rgb.r = 0xFF;
+            fc_effect.rgb.g = 0xFF;
+            fc_effect.rgb.b = 0xFF;
+        }
+        else if (NEO_RGBW == sequence)
+        {
+            // 如果是纯白色灯（RGBW），初始只点亮纯白色
+            fc_effect.rgb.w = 0xFF;
+            fc_effect.rgb.r = 0x00;
+            fc_effect.rgb.g = 0x00;
+            fc_effect.rgb.b = 0x00;
+        }
+        else
+        {
+#if USER_DEBUG_ENABLE
+            printf("error sequence\n");
+#endif
+        }
+
+        os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     }
 }
 

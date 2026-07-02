@@ -5,9 +5,11 @@
 #define USER_TEST_ENABLE 0
 
 /*
-	是否屏蔽220V 50Hz信号检测脚的功能
-	0：不屏蔽，1：屏蔽
-*/ 
+    是否屏蔽220V 50Hz信号检测脚的功能
+    0：不屏蔽，1：屏蔽
+
+    TEST_ONLY 测试时设置为1，实际要设置为0
+*/
 #define USER_SHIELD_220V_50HZ_DETECTION 1
 
 #endif

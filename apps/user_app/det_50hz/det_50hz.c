@@ -36,6 +36,6 @@ void det_50hz_init(void)
 	gpio_set_die(DET_50HZ_PIN, 1);        // 过零触发检测口  普通io输入
 	gpio_set_direction(DET_50HZ_PIN, 1);  // 输入模式
 
-	set_io_ext_interrupt_cbfun(io_isr_cbfun_syn);
+	set_io_ext_interrupt_cbfun(io_isr_cbfun_syn); // 注册调用的回调函数
 	io_ext_interrupt_init(pwm_ch3, DET_50HZ_PIN, 0); // 0：上升沿触发中断
 }

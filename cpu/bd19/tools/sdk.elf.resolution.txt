@@ -1770,10 +1770,10 @@ obj/Release/apps/user_app/hardware/led/led_driver.o
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,delay,l
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,mcpwm_init,l
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,timer_pwm_init,l
+-r=obj/Release/apps/user_app/hardware/led/led_driver.o,set_timer_pwm_duty,l
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,led_driver_set_rgb_pwm_val,pl
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,mcpwm_set_duty,l
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,led_driver_set_white_pwm_val,pl
--r=obj/Release/apps/user_app/hardware/led/led_driver.o,set_timer_pwm_duty,l
 -r=obj/Release/apps/user_app/hardware/led/led_driver.o,led_driver,pl
 obj/Release/apps/user_app/hardware/motor/motor.o
 -r=obj/Release/apps/user_app/hardware/motor/motor.o,motor_init,pl
@@ -1996,9 +1996,6 @@ obj/Release/apps/user_app/led_strip/led_strip_drive.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,io_ext_interrupt_syn,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,set_io_ext_interrupt_cbfun,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,io_ext_interrupt_init,l
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,fc_driver,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,mcpwm_set_duty,l
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,set_timer_pwm_duty,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,ledc_data,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,sound_cnt,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,fc_effect,l
@@ -2259,7 +2256,6 @@ obj/Release/apps/user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/neo_pixel.o
 obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o,ws281x_init,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o,ws281x_show,pl
--r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o,printf_buf,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o,led_driver_set_rgb_pwm_val,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o,led_driver_set_white_pwm_val,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812_drive.o,HAL_GetTick,pl

@@ -27,9 +27,8 @@ u8 buf[12 * 3];   //使用中断实现效果时，必须需要全局变量
  */
 void ws281x_show(unsigned char* pixels_pattern, unsigned short pattern_size)
 {
+    // printf_buf(pixels_pattern, pattern_size);
 
-    printf_buf(pixels_pattern,pattern_size);
-    
     // 七彩灯驱动函数
     // extern void fc_driver(u8 r, u8 g, u8 b);
     // fc_driver(*pixels_pattern, \
@@ -45,8 +44,12 @@ void ws281x_show(unsigned char* pixels_pattern, unsigned short pattern_size)
 
     if (0 == led_driver.is_mixed_white_light)
     {
+        // 如果不是混白灯（RGB）而是纯白灯（RGBW）
         // u8 white_val = (u32)fc_effect.w * fc_effect.b / 255;
         // white_val = (u32)fc_effect.rgb.w * fc_effect.b / 255;
+        // printf("ws281x_show: white_val = %u\n", (u16)white_val);
+
+
         white_val = (u32)pixels_pattern[3] * fc_effect.b / 255;
         led_driver_set_white_pwm_val(white_val);
     }

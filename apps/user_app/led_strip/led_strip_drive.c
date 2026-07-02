@@ -321,7 +321,7 @@ void io_ext_interrupt_syn(void)
 
 }
 
-
+#if 0
 //PWM控制函数
 void fc_driver(u8 r, u8 g, u8 b)
 {
@@ -354,6 +354,7 @@ void fc_driver(u8 r, u8 g, u8 b)
     }
 
 }
+#endif
 
 
 

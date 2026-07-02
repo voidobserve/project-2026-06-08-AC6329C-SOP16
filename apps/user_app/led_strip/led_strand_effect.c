@@ -1895,7 +1895,7 @@ void led_colorful_light_set_static_color(u32 color)
 
     if (0 == led_driver.is_mixed_white_light)
     {
-        // 不是混白色灯，灯由 RGBW组成
+        // 不是混白色灯，灯由 RGBW 组成
         fc_effect.rgb.w = color >> 24;
     }
 

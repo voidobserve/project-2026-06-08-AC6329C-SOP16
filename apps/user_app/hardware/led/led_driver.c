@@ -46,7 +46,7 @@ void led_driver_init(void)
 		delay(1);
 	}
 
-	white_light_det_cnt = (u8)-1; // @USER_TO_DO 测试时使用
+	// white_light_det_cnt = (u8)-1; // TEST_ONLY  
 
 	// R
 	mcpwm_arg.pwm_aligned_mode = pwm_edge_aligned;         // 边沿对齐
@@ -88,18 +88,13 @@ void led_driver_init(void)
 
 		// 关闭检测脚的上拉，检测脚改为输出模式，驱动白灯
 		gpio_set_pull_up(LED_DRIVER_WHITE_PIN, 0);  // 关闭上拉
+		gpio_set_die(LED_DRIVER_WHITE_PIN, 1); // 1：普通IO输入；0：模拟IO输入
 		gpio_set_direction(LED_DRIVER_WHITE_PIN, 0); // 输出模式
 		gpio_direction_output(LED_DRIVER_WHITE_PIN, 0);
 		// 用 timer0 的 PWM 来驱动白灯
 		timer_pwm_init(JL_TIMER0, LED_DRIVER_WHITE_PIN, 1000, 0);
+		set_timer_pwm_duty(JL_TIMER0, 0); // 输出 0% 占空比  
 	}
-
-
-	// 如果是纯白色灯:(原本是用一个单独的定时器来驱动输出pwm)
-	// gpio_set_die(IO_PORTB_06, 1);
-	// gpio_direction_output(IO_PORTB_06, 0);
-	// extern void timer_pwm_init(JL_TIMER_TypeDef * JL_TIMERx, u32 pwm_io, u32 fre, u32 duty);
-	// timer_pwm_init(JL_TIMER0, IO_PORTB_06, 1000, 0);  //调timer做pwm  通道号 R c
 }
 
 
@@ -141,6 +136,8 @@ void led_driver_set_white_pwm_val(u8 white_val)
 	u32 white_pwm_duty;
 	white_pwm_duty = (u32)white_val * 10000 / 255;
 	// mcpwm_set_duty(LED_DRIVER_PWM_WHITE_CHANNEL, white_pwm_duty);
+
+	// printf("white_pwm_duty = %u\n", (u16)white_pwm_duty);
 	set_timer_pwm_duty(JL_TIMER0, white_pwm_duty);
 }
 

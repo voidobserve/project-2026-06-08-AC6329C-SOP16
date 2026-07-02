@@ -100,6 +100,7 @@ void user_main(void* p)
 	while (1)
 	{
 		// printf("user_main\n");
+		// printf("fc_effect.rgb.w == %u\n", (u16)fc_effect.rgb.w);
 
 		user_data_save_handle();
 
