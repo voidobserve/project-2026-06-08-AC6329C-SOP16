@@ -817,16 +817,8 @@ void rf24g_key_r3c4_click_handle(void)
         return;
     }
 
-    if (led_driver.is_mixed_white_light)
-    {
-        // 如果是混白色灯，将R、G、B都设置为最大，构成混白色
-        led_colorful_light_set_static_color(WHITE);
-    }
-    else
-    {
-        // 纯白色
-        led_colorful_light_set_static_color(PURE_WHITE);
-    }
+    // 纯白色灯、混白色灯，都只点亮RGB，构成混白色 
+    led_colorful_light_set_static_color(WHITE);
 }
 
 void rf24g_key_r3c4_long_handle(void)
@@ -845,16 +837,7 @@ void rf24g_key_r3c4_long_handle(void)
         7 == fc_effect.dream_scene.c_n)
     {
         // 如果当前是七彩呼吸模式，切换为 对应的单色呼吸模式
-        if (led_driver.is_mixed_white_light)
-        {
-            // 如果是混白色灯，没有白色分量，所以将R、G、B都设置为最大，构成混白色
-            ls_set_color(0, WHITE);
-        }
-        else
-        {
-            // 纯白色
-            ls_set_color(0, PURE_WHITE);
-        }
+        ls_set_color(0, WHITE);
         fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH;
         fc_effect.dream_scene.c_n = 1;
         fc_effect.Now_state = IS_light_scene;
@@ -968,6 +951,33 @@ void rf24g_key_r4c4_press_handle(void)
     }
 }
 
+void rf24g_key_r4c4_hold_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r4c4 hold\n");
+#endif
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        return;
+    }
+
+    // 动画 速度加
+    if (fc_effect.Now_state == IS_light_scene)
+    {
+        ls_speed_plus();
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.dream_scene.speed == %u\n",
+            fc_effect.dream_scene.speed);
+        printf("fc_effect.report_speed == %u\n",
+            (u16)fc_effect.report_speed);
+#endif
+        set_fc_effect();
+        user_report_speed(fc_effect.report_speed);
+    }
+}
+
+
 void rf24g_key_r5c1_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -1069,6 +1079,32 @@ void rf24g_key_r5c4_press_handle(void)
     }
 }
 
+void rf24g_key_r5c4_hold_handle(void)
+{
+#if USER_DEBUG_ENABLE
+    printf("r5c4 hold\n");
+#endif
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        return;
+    }
+
+    // 动画速度减
+    if (fc_effect.Now_state == IS_light_scene)
+    {
+        ls_speed_sub();
+#if USER_DEBUG_ENABLE
+        printf("fc_effect.dream_scene.speed == %u\n",
+            fc_effect.dream_scene.speed);
+        printf("fc_effect.report_speed == %u\n",
+            (u16)fc_effect.report_speed);
+#endif
+        set_fc_effect();
+        user_report_speed(fc_effect.report_speed);
+    }
+}
+
 void rf24g_key_r6c1_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -1144,8 +1180,6 @@ void rf24g_key_r6c4_press_handle(void)
 }
 void rf24g_key_r7c1_click_handle(void)
 {
-    const u8 step = 4;
-
 #if USER_DEBUG_ENABLE
     printf("r7c1 click\n");
 #endif
@@ -1155,7 +1189,7 @@ void rf24g_key_r7c1_click_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 35;
+    fc_effect.motor_sec_per_round = 70;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1174,7 +1208,7 @@ void rf24g_key_r7c2_press_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 21;
+    fc_effect.motor_sec_per_round = 42;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1193,7 +1227,7 @@ void rf24g_key_r7c3_press_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 13;
+    fc_effect.motor_sec_per_round = 30;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1203,8 +1237,6 @@ void rf24g_key_r7c3_press_handle(void)
 
 void rf24g_key_r7c4_click_handle(void)
 {
-    const u8 step = 4;
-
 #if USER_DEBUG_ENABLE
     printf("r7c4 click\n");
 #endif
@@ -1214,7 +1246,7 @@ void rf24g_key_r7c4_click_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 4;
+    fc_effect.motor_sec_per_round = 20;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1236,13 +1268,13 @@ void rf24g_key_r7c1_hold_handle(void)
     }
 
     // 电机速度 减
-    if (fc_effect.motor_sec_per_round < 35 - step)
+    if (fc_effect.motor_sec_per_round < 70 - step)
     {
         fc_effect.motor_sec_per_round += step;
     }
     else
     {
-        fc_effect.motor_sec_per_round = 35;
+        fc_effect.motor_sec_per_round = 70;
     }
 
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
@@ -1266,13 +1298,13 @@ void rf24g_key_r7c4_hold_handle(void)
     }
 
     // 电机速度 加 
-    if (fc_effect.motor_sec_per_round > 4 + step)
+    if (fc_effect.motor_sec_per_round > 20 + step)
     {
         fc_effect.motor_sec_per_round -= step;
     }
     else
     {
-        fc_effect.motor_sec_per_round = 4;
+        fc_effect.motor_sec_per_round = 20;
     }
 
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
@@ -1314,10 +1346,14 @@ const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_2
     [RF24G_TYPE_28KEY_EVENT_R4C3_PRESS] = rf24g_key_r4c3_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R4C4_PRESS] = rf24g_key_r4c4_press_handle,
 
+    [RF24G_TYPE_28KEY_EVENT_R4C4_HOLD] = rf24g_key_r4c4_hold_handle,
+
     [RF24G_TYPE_28KEY_EVENT_R5C1_PRESS] = rf24g_key_r5c1_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R5C2_PRESS] = rf24g_key_r5c2_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R5C3_PRESS] = rf24g_key_r5c3_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R5C4_PRESS] = rf24g_key_r5c4_press_handle,
+
+    [RF24G_TYPE_28KEY_EVENT_R5C4_HOLD] = rf24g_key_r5c4_hold_handle,
 
     [RF24G_TYPE_28KEY_EVENT_R6C1_PRESS] = rf24g_key_r6c1_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R6C2_PRESS] = rf24g_key_r6c2_press_handle,

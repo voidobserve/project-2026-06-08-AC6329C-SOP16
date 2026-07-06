@@ -24,7 +24,6 @@ void user_init(void)
 	motor_init();
 	sound_control_init();
 
-	// USER_TO_DO 还没有添加 220V的50Hz 信号作为ws2812动画的时钟源
 #if !USER_SHIELD_220V_50HZ_DETECTION
 	det_50hz_init();
 #endif
@@ -126,8 +125,10 @@ void user_10ms_isr(void)
 {
 	user_data_save_delay_add();
 
-	// USER_TO_DO 实际不用这个时钟源，而是用220V的50Hz信号作为时钟源
+#if USER_SHIELD_220V_50HZ_DETECTION
+	// TEST_ONLY 实际不用这个时钟源，而是用220V的50Hz信号作为时钟源
 	run_tick_per_10ms();
+#endif
 }
 
 // 在定时器中断内调用

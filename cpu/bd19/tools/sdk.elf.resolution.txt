@@ -1809,7 +1809,6 @@ obj/Release/apps/user_app/hardware/sound_coutrol/sound_control.o
 -r=obj/Release/apps/user_app/hardware/sound_coutrol/sound_control.o,gpio_set_direction,l
 obj/Release/apps/user_app/led_strip/led_colorful_anim.o
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,led_colorful_anim_jump,pl
--r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,printf,l
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,Adafruit_NeoPixel_fill,l
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,led_colorful_anim_gradual,pl
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,WS2812FX_color_blend,l
@@ -1818,6 +1817,7 @@ obj/Release/apps/user_app/led_strip/led_colorful_anim.o
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,led_colorful_anim_slide,pl
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,sinf,l
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,led_colorful_anim_auto,pl
+-r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,printf,l
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,fc_effect,l
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,_seg_rt,l
 -r=obj/Release/apps/user_app/led_strip/led_colorful_anim.o,_seg,l
@@ -2087,7 +2087,6 @@ obj/Release/apps/user_app/rf24g/rf24g_app.o
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_convert_to_key_event,l
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,os_taskq_post,
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r1c1_press_handle,pl
--r=obj/Release/apps/user_app/rf24g/rf24g_app.o,printf,l
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,bright_plus,l
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,user_report_brightness,l
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,ls_sensitive_plus,l
@@ -2124,11 +2123,13 @@ obj/Release/apps/user_app/rf24g/rf24g_app.o
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r4c4_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,ls_speed_plus,l
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,user_report_speed,l
+-r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r4c4_hold_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r5c1_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r5c2_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r5c3_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r5c4_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,ls_speed_sub,l
+-r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r5c4_hold_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r6c1_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,user_report_sound_control_mode,l
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r6c2_press_handle,pl
@@ -2157,11 +2158,11 @@ obj/Release/apps/user_app/save_flash/save_flash.o
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,syscfg_read,l
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,fc_data_init,l
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,os_taskq_post,
--r=obj/Release/apps/user_app/save_flash/save_flash.o,printf,l
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,memcpy,l
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,os_time_dly,
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,syscfg_write,l
+-r=obj/Release/apps/user_app/save_flash/save_flash.o,printf,l
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save_enable,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save_delay_add,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save_handle,pl
@@ -2176,6 +2177,7 @@ obj/Release/apps/user_app/user_main.o
 -r=obj/Release/apps/user_app/user_main.o,motor_24byj48_init,l
 -r=obj/Release/apps/user_app/user_main.o,motor_init,l
 -r=obj/Release/apps/user_app/user_main.o,sound_control_init,l
+-r=obj/Release/apps/user_app/user_main.o,det_50hz_init,l
 -r=obj/Release/apps/user_app/user_main.o,user_data_init,l
 -r=obj/Release/apps/user_app/user_main.o,full_color_init,l
 -r=obj/Release/apps/user_app/user_main.o,usr_timer_add,l
@@ -2195,7 +2197,6 @@ obj/Release/apps/user_app/user_main.o
 -r=obj/Release/apps/user_app/user_main.o,WS2812FX_service,l
 -r=obj/Release/apps/user_app/user_main.o,rf24g_key_handle,l
 -r=obj/Release/apps/user_app/user_main.o,user_data_save_delay_add,l
--r=obj/Release/apps/user_app/user_main.o,run_tick_per_10ms,l
 -r=obj/Release/apps/user_app/user_main.o,user_125us_isr,pl
 -r=obj/Release/apps/user_app/user_main.o,motor_handle_125us,l
 -r=obj/Release/apps/user_app/user_main.o,user_report,l
@@ -2271,7 +2272,7 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_resetSegmentRuntimes,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,Adafruit_NeoPixel_setBrightness,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_service,pl
--r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,HAL_GetTick,l
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,det_50hz_get_tick,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_show,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_set_coloQty,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_setPixelColor,pl

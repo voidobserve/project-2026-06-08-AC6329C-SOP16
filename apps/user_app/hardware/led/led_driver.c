@@ -47,6 +47,7 @@ void led_driver_init(void)
 	}
 
 	// white_light_det_cnt = (u8)-1; // TEST_ONLY  
+	// mixed_white_light_det_cnt = (u8)-1; // TEST_ONLY  
 
 	// R
 	mcpwm_arg.pwm_aligned_mode = pwm_edge_aligned;         // 边沿对齐
