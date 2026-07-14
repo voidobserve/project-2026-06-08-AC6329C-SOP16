@@ -5,7 +5,7 @@
 #include "key_driver.h" // key_driver_para 结构体类型定义
 
 
-#define RF24G_KEY_EVENT_MAX (5) // 按键事件种类个数，刚按下、长按、持续hold、松开
+#define RF24G_KEY_EVENT_MAX (5) // 按键事件种类个数，刚按下、短按、长按、持续hold、松开
 
 #define RF24G_KEY_SCAN_TIME_MS (10) // 2.4G遥控器按键扫描频率，单位：ms
 #define RF24G_KEY_LONG_TIME_MS (1000)

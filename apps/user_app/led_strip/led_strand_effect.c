@@ -1898,6 +1898,11 @@ void led_colorful_light_set_static_color(u32 color)
         // 不是混白色灯，灯由 RGBW 组成
         fc_effect.rgb.w = color >> 24;
     }
+    else
+    {
+        // 混白色灯，灯由 RGB 组成，将白色分量设置为0
+        fc_effect.rgb.w = 0;
+    }
 
     set_fc_effect();
 }

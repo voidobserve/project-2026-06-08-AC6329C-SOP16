@@ -515,10 +515,10 @@ void rf24g_key_r1c4_press_handle(void)
     soft_turn_on_the_light();
 }
 
-void rf24g_key_r2c1_click_handle(void)
+void rf24g_key_r2c1_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r2c1 click\n");
+    printf("r2c1 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -530,6 +530,7 @@ void rf24g_key_r2c1_click_handle(void)
     led_colorful_light_set_static_color(RED);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r2c1_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -553,11 +554,12 @@ void rf24g_key_r2c1_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
-void rf24g_key_r2c2_click_handle(void)
+void rf24g_key_r2c2_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r2c2 click\n");
+    printf("r2c2 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -569,6 +571,7 @@ void rf24g_key_r2c2_click_handle(void)
     led_colorful_light_set_static_color(GREEN);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r2c2_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -592,11 +595,12 @@ void rf24g_key_r2c2_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
-void rf24g_key_r2c3_click_handle(void)
+void rf24g_key_r2c3_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r2c3 click\n");
+    printf("r2c3 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -608,6 +612,7 @@ void rf24g_key_r2c3_click_handle(void)
     led_colorful_light_set_static_color(BLUE);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r2c3_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -631,11 +636,12 @@ void rf24g_key_r2c3_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
-void rf24g_key_r2c4_click_handle(void)
+void rf24g_key_r2c4_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r2c4 click\n");
+    printf("r2c4 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -655,6 +661,7 @@ void rf24g_key_r2c4_click_handle(void)
     }
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r2c4_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -687,11 +694,12 @@ void rf24g_key_r2c4_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
-void rf24g_key_r3c1_click_handle(void)
+void rf24g_key_r3c1_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r3c1 click\n");
+    printf("r3c1 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -703,6 +711,7 @@ void rf24g_key_r3c1_click_handle(void)
     led_colorful_light_set_static_color(YELLOW);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r3c1_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -726,11 +735,12 @@ void rf24g_key_r3c1_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
-void rf24g_key_r3c2_click_handle(void)
+void rf24g_key_r3c2_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r3c2 click\n");
+    printf("r3c2 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -742,6 +752,7 @@ void rf24g_key_r3c2_click_handle(void)
     led_colorful_light_set_static_color(CYAN);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r3c2_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -764,13 +775,13 @@ void rf24g_key_r3c2_long_handle(void)
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
     }
-
 }
+#endif
 
-void rf24g_key_r3c3_click_handle(void)
+void rf24g_key_r3c3_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r3c3 click\n");
+    printf("r3c3 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -782,6 +793,7 @@ void rf24g_key_r3c3_click_handle(void)
     led_colorful_light_set_static_color(MAGENTA);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r3c3_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -805,11 +817,12 @@ void rf24g_key_r3c3_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
-void rf24g_key_r3c4_click_handle(void)
+void rf24g_key_r3c4_press_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("r3c4 click\n");
+    printf("r3c4 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -821,6 +834,7 @@ void rf24g_key_r3c4_click_handle(void)
     led_colorful_light_set_static_color(WHITE);
 }
 
+#if 0 // USER_TO_DO 待删除
 void rf24g_key_r3c4_long_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -844,6 +858,7 @@ void rf24g_key_r3c4_long_handle(void)
         set_fc_effect();
     }
 }
+#endif
 
 void rf24g_key_r4c1_press_handle(void)
 {
@@ -951,6 +966,7 @@ void rf24g_key_r4c4_press_handle(void)
     }
 }
 
+#if 0 // 屏蔽，不确定还需不需要
 void rf24g_key_r4c4_hold_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -976,7 +992,7 @@ void rf24g_key_r4c4_hold_handle(void)
         user_report_speed(fc_effect.report_speed);
     }
 }
-
+#endif
 
 void rf24g_key_r5c1_press_handle(void)
 {
@@ -989,16 +1005,33 @@ void rf24g_key_r5c1_press_handle(void)
         return;
     }
 
-    // 七色呼吸
-    ls_set_color(0, BLUE);
-    ls_set_color(1, GREEN);
-    ls_set_color(2, RED);
-    ls_set_color(3, WHITE);
-    ls_set_color(4, YELLOW);
-    ls_set_color(5, CYAN);
-    ls_set_color(6, PURPLE);
-    fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH;
-    fc_effect.dream_scene.c_n = 7;
+    if (fc_effect.Now_state == IS_light_scene)
+    {
+        // 从其他动态模式进入到这里时，是七色呼吸
+        // 七色呼吸
+        ls_set_color(0, BLUE);
+        ls_set_color(1, GREEN);
+        ls_set_color(2, RED);
+        ls_set_color(3, WHITE);
+        ls_set_color(4, YELLOW);
+        ls_set_color(5, CYAN);
+        ls_set_color(6, PURPLE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH;
+        fc_effect.dream_scene.c_n = 7;
+    }
+    else
+    {
+        // 从非动态模式进入到这里时，是单色呼吸
+        // 将静态模式赋值过的颜色放到动态模式对应的参数中
+        fc_effect.dream_scene.rgb[0].r = fc_effect.rgb.r;
+        fc_effect.dream_scene.rgb[0].g = fc_effect.rgb.g;
+        fc_effect.dream_scene.rgb[0].b = fc_effect.rgb.b;
+        fc_effect.dream_scene.rgb[0].w = fc_effect.rgb.w;
+
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+    }
+
     fc_effect.Now_state = IS_light_scene;
     set_fc_effect();
 }
@@ -1079,6 +1112,7 @@ void rf24g_key_r5c4_press_handle(void)
     }
 }
 
+#if 0 // 屏蔽，不确定还需不需要
 void rf24g_key_r5c4_hold_handle(void)
 {
 #if USER_DEBUG_ENABLE
@@ -1104,6 +1138,7 @@ void rf24g_key_r5c4_hold_handle(void)
         user_report_speed(fc_effect.report_speed);
     }
 }
+#endif
 
 void rf24g_key_r6c1_press_handle(void)
 {
@@ -1178,10 +1213,12 @@ void rf24g_key_r6c4_press_handle(void)
     set_fc_effect();
     user_report_sound_control_mode(fc_effect.music.m);
 }
-void rf24g_key_r7c1_click_handle(void)
+void rf24g_key_r7c1_press_handle(void)
 {
+    const u8 step = 1;
+
 #if USER_DEBUG_ENABLE
-    printf("r7c1 click\n");
+    printf("r7c1 press\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -1189,8 +1226,19 @@ void rf24g_key_r7c1_click_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 70;
-    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+    // fc_effect.motor_sec_per_round = 70;
+    // motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+
+    // 电机速度 减
+    if (fc_effect.motor_sec_per_round < 70 - step)
+    {
+        fc_effect.motor_sec_per_round += step;
+    }
+    else
+    {
+        fc_effect.motor_sec_per_round = 70;
+    }
+
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
         (u16)fc_effect.motor_sec_per_round);
@@ -1208,7 +1256,7 @@ void rf24g_key_r7c2_press_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 42;
+    fc_effect.motor_sec_per_round = 70;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1227,25 +1275,6 @@ void rf24g_key_r7c3_press_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 30;
-    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
-#if USER_DEBUG_ENABLE
-    printf("fc_effect.motor_sec_per_round == %u\n",
-        (u16)fc_effect.motor_sec_per_round);
-#endif
-}
-
-void rf24g_key_r7c4_click_handle(void)
-{
-#if USER_DEBUG_ENABLE
-    printf("r7c4 click\n");
-#endif
-
-    if (fc_effect.on_off_flag == DEVICE_OFF)
-    {
-        return;
-    }
-
     fc_effect.motor_sec_per_round = 20;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
@@ -1254,6 +1283,41 @@ void rf24g_key_r7c4_click_handle(void)
 #endif
 }
 
+void rf24g_key_r7c4_press_handle(void)
+{
+    const u8 step = 1;
+
+#if USER_DEBUG_ENABLE
+    printf("r7c4 press\n");
+#endif
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        return;
+    }
+
+    // fc_effect.motor_sec_per_round = 20;
+    // motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+
+    // 电机速度 加 
+    if (fc_effect.motor_sec_per_round > 20 + step)
+    {
+        fc_effect.motor_sec_per_round -= step;
+    }
+    else
+    {
+        fc_effect.motor_sec_per_round = 20;
+    }
+
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
+
+#if USER_DEBUG_ENABLE
+    printf("fc_effect.motor_sec_per_round == %u\n",
+        (u16)fc_effect.motor_sec_per_round);
+#endif
+}
+
+#if 0 // 屏蔽
 void rf24g_key_r7c1_hold_handle(void)
 {
     const u8 step = 1;
@@ -1283,7 +1347,9 @@ void rf24g_key_r7c1_hold_handle(void)
         (u16)fc_effect.motor_sec_per_round);
 #endif
 }
+#endif
 
+#if 0
 void rf24g_key_r7c4_hold_handle(void)
 {
     const u8 step = 1;
@@ -1313,6 +1379,7 @@ void rf24g_key_r7c4_hold_handle(void)
         (u16)fc_effect.motor_sec_per_round);
 #endif
 }
+#endif
 
 
 const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX] = {
@@ -1321,50 +1388,38 @@ const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_2
     [RF24G_TYPE_28KEY_EVENT_R1C3_PRESS] = rf24g_key_r1c3_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R1C4_PRESS] = rf24g_key_r1c4_press_handle,
 
-    [RF24G_TYPE_28KEY_EVENT_R2C1_CLICK] = rf24g_key_r2c1_click_handle,
-    [RF24G_TYPE_28KEY_EVENT_R2C2_CLICK] = rf24g_key_r2c2_click_handle,
-    [RF24G_TYPE_28KEY_EVENT_R2C3_CLICK] = rf24g_key_r2c3_click_handle,
-    [RF24G_TYPE_28KEY_EVENT_R2C4_CLICK] = rf24g_key_r2c4_click_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C1_PRESS] = rf24g_key_r2c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C2_PRESS] = rf24g_key_r2c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C3_PRESS] = rf24g_key_r2c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R2C4_PRESS] = rf24g_key_r2c4_press_handle,
 
-    [RF24G_TYPE_28KEY_EVENT_R2C1_LONG] = rf24g_key_r2c1_long_handle,
-    [RF24G_TYPE_28KEY_EVENT_R2C2_LONG] = rf24g_key_r2c2_long_handle,
-    [RF24G_TYPE_28KEY_EVENT_R2C3_LONG] = rf24g_key_r2c3_long_handle,
-    [RF24G_TYPE_28KEY_EVENT_R2C4_LONG] = rf24g_key_r2c4_long_handle,
-
-    [RF24G_TYPE_28KEY_EVENT_R3C1_CLICK] = rf24g_key_r3c1_click_handle,
-    [RF24G_TYPE_28KEY_EVENT_R3C2_CLICK] = rf24g_key_r3c2_click_handle,
-    [RF24G_TYPE_28KEY_EVENT_R3C3_CLICK] = rf24g_key_r3c3_click_handle,
-    [RF24G_TYPE_28KEY_EVENT_R3C4_CLICK] = rf24g_key_r3c4_click_handle,
-
-    [RF24G_TYPE_28KEY_EVENT_R3C1_LONG] = rf24g_key_r3c1_long_handle,
-    [RF24G_TYPE_28KEY_EVENT_R3C2_LONG] = rf24g_key_r3c2_long_handle,
-    [RF24G_TYPE_28KEY_EVENT_R3C3_LONG] = rf24g_key_r3c3_long_handle,
-    [RF24G_TYPE_28KEY_EVENT_R3C4_LONG] = rf24g_key_r3c4_long_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C1_PRESS] = rf24g_key_r3c1_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C2_PRESS] = rf24g_key_r3c2_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C3_PRESS] = rf24g_key_r3c3_press_handle,
+    [RF24G_TYPE_28KEY_EVENT_R3C4_PRESS] = rf24g_key_r3c4_press_handle,
 
     [RF24G_TYPE_28KEY_EVENT_R4C1_PRESS] = rf24g_key_r4c1_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R4C2_PRESS] = rf24g_key_r4c2_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R4C3_PRESS] = rf24g_key_r4c3_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R4C4_PRESS] = rf24g_key_r4c4_press_handle,
 
-    [RF24G_TYPE_28KEY_EVENT_R4C4_HOLD] = rf24g_key_r4c4_hold_handle,
+    // [RF24G_TYPE_28KEY_EVENT_R4C4_HOLD] = rf24g_key_r4c4_hold_handle,
 
     [RF24G_TYPE_28KEY_EVENT_R5C1_PRESS] = rf24g_key_r5c1_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R5C2_PRESS] = rf24g_key_r5c2_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R5C3_PRESS] = rf24g_key_r5c3_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R5C4_PRESS] = rf24g_key_r5c4_press_handle,
 
-    [RF24G_TYPE_28KEY_EVENT_R5C4_HOLD] = rf24g_key_r5c4_hold_handle,
+    // [RF24G_TYPE_28KEY_EVENT_R5C4_HOLD] = rf24g_key_r5c4_hold_handle,
 
     [RF24G_TYPE_28KEY_EVENT_R6C1_PRESS] = rf24g_key_r6c1_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R6C2_PRESS] = rf24g_key_r6c2_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R6C3_PRESS] = rf24g_key_r6c3_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R6C4_PRESS] = rf24g_key_r6c4_press_handle,
 
-    [RF24G_TYPE_28KEY_EVENT_R7C1_CLICK] = rf24g_key_r7c1_click_handle,
+    [RF24G_TYPE_28KEY_EVENT_R7C1_PRESS] = rf24g_key_r7c1_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R7C2_PRESS] = rf24g_key_r7c2_press_handle,
     [RF24G_TYPE_28KEY_EVENT_R7C3_PRESS] = rf24g_key_r7c3_press_handle,
-    [RF24G_TYPE_28KEY_EVENT_R7C4_CLICK] = rf24g_key_r7c4_click_handle,
+    [RF24G_TYPE_28KEY_EVENT_R7C4_PRESS] = rf24g_key_r7c4_press_handle,
 
-    [RF24G_TYPE_28KEY_EVENT_R7C1_HOLD] = rf24g_key_r7c1_hold_handle,
-    [RF24G_TYPE_28KEY_EVENT_R7C4_HOLD] = rf24g_key_r7c4_hold_handle,
 };
