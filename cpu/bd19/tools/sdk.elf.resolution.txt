@@ -2126,8 +2126,8 @@ obj/Release/apps/user_app/rf24g/rf24g_app.o
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r6c3_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r6c4_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r7c1_press_handle,pl
--r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r7c2_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,motor_set_speed_sec_per_round,l
+-r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r7c2_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r7c3_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key_r7c4_press_handle,pl
 -r=obj/Release/apps/user_app/rf24g/rf24g_app.o,rf24g_key,l
@@ -2150,7 +2150,6 @@ obj/Release/apps/user_app/save_flash/save_flash.o
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,os_time_dly,
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,syscfg_write,l
--r=obj/Release/apps/user_app/save_flash/save_flash.o,printf,l
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save_enable,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save_delay_add,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,user_data_save_handle,pl

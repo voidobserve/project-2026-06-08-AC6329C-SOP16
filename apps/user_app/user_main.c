@@ -10,6 +10,7 @@
 #include "led_strand_effect.h"
 #include "rf24g_app.h"
 #include "user_report.h"
+#include "user_config.h"
 
 void user_report_handle_task(void* p);
 void user_msg_handle_task(void* p);

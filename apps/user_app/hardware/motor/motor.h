@@ -27,6 +27,8 @@ typedef struct
 	u16 step; // 控制整个电机的步进 0 ~ 4095
 } motor_t;
 
+extern volatile motor_t motor;
+
 void motor_handle_125us(void);
 
 // 设置电机模式

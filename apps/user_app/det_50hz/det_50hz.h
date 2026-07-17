@@ -4,7 +4,7 @@
 #include "typedef.h"
 #include "gpio.h"
 
-#define DET_50HZ_PIN IO_PORT_DP
+#define DET_50HZ_PIN IO_PORT_DM
 
 void det_50hz_init(void);
 

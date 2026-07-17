@@ -29,6 +29,11 @@ void user_data_init(void)
         sizeof(user_save_data_t)
     );
 
+#if USER_DEBUG_ENABLE
+    printf("save_data.fc_save.motor_mode = %u\n", (u16)save_data.fc_save.motor_mode);
+    printf("save_data.fc_save.motor_sec_per_round = %u\n", (u16)save_data.fc_save.motor_sec_per_round);
+#endif
+
     if (save_data.data_valid_code != USER_SAVE_DATA_VALID_CODE)
     {
         // 数据无效，可能是第一次上电，或者是之前的数据损坏
@@ -108,6 +113,9 @@ void user_data_init(void)
 
         os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     }
+
+    // USER_TO_DO 检查发现上电后，该变量不是电机正转，强制赋值为电机正转
+    // fc_effect.motor_mode = MOTOR_MODE_FORWARD_ROTATION;
 }
 
 void user_data_save(void)
@@ -123,10 +131,16 @@ void user_data_save(void)
 
     os_time_dly(1); // 先让出cpu，处理其他任务，防止看门狗复位
     // local_irq_disable(); // 禁用中断
-    ret = syscfg_write(CFG_USER_SAVE_DATA_PAGE_ID, (u8*)(&save_data), sizeof(save_flash_t));
+    ret = syscfg_write(CFG_USER_SAVE_DATA_PAGE_ID, (u8*)(&save_data), sizeof(user_save_data_t));
     // local_irq_enable(); // 使能中断
 
+#if USER_DEBUG_ENABLE
     printf("save info done \n");
+    printf("fc_effect.motor_mode = %u\n", (u16)fc_effect.motor_mode);
+    printf("fc_effect.motor_sec_per_round = %u\n", (u16)fc_effect.motor_sec_per_round);
+    printf("save_data.fc_save.motor_mode = %u\n", (u16)save_data.fc_save.motor_mode);
+    printf("save_data.fc_save.motor_sec_per_round = %u\n", (u16)save_data.fc_save.motor_sec_per_round);
+#endif
 }
 
 void user_data_save_enable(void)
@@ -164,6 +178,8 @@ void user_data_save_handle(void)
         save_data.is_save_enable = 0;
         user_data_save();
     }
+
+
 }
 
 
@@ -205,7 +221,7 @@ void save_user_data_area3(void)
     syscfg_write(
         CFG_USER_SAVE_DATA_PAGE_ID,
         (u8*)(&save_data),
-        sizeof(save_flash_t));
+        sizeof(user_save_data_t));
 
 }
 

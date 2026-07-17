@@ -1213,6 +1213,8 @@ void rf24g_key_r6c4_press_handle(void)
     set_fc_effect();
     user_report_sound_control_mode(fc_effect.music.m);
 }
+
+
 void rf24g_key_r7c1_press_handle(void)
 {
     const u8 step = 1;
@@ -1238,6 +1240,8 @@ void rf24g_key_r7c1_press_handle(void)
     {
         fc_effect.motor_sec_per_round = 70;
     }
+
+    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",

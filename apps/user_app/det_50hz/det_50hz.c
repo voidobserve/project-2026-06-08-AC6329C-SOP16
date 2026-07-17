@@ -11,7 +11,7 @@ static volatile u32 tick = 0; // 用于记录 220V 50Hz 信号的周期计数，
 AT_VOLATILE_RAM_CODE
 void det_50hz_update_tick(void)
 {
-	if (gpio_read(IO_PORT_DP)) //  读取到高电平
+	if (gpio_read(DET_50HZ_PIN)) //  读取到高电平
 	{
 		tick += 20; // 50Hz信号，每个周期为20ms，检测到上升沿时，增加20ms
 	}

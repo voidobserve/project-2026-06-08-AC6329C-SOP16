@@ -18,11 +18,11 @@ typedef enum
 }FLASH_BYTE_FLAG;
 
 #pragma pack (1)
-typedef struct
-{
-    unsigned char header;           //头部
-    fc_effect_t fc_save;
-}save_flash_t;
+// typedef struct
+// {
+//     unsigned char header;           //头部
+//     fc_effect_t fc_save;
+// }save_flash_t;
 
 typedef struct
 {

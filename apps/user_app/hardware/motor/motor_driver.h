@@ -49,7 +49,7 @@
 // 24BYJ48电机引脚定义（需要根据实际硬件连接修改）
 // 默认使用PA0-PA3，实际使用时需要根据硬件连接调整
 #define MOTOR_PIN_1     IO_PORTB_05
-#define MOTOR_PIN_2     IO_PORT_DM 
+#define MOTOR_PIN_2     IO_PORT_DP
 #define MOTOR_PIN_3     IO_PORTA_00
 #define MOTOR_PIN_4     IO_PORTB_07
 
