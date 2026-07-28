@@ -3423,7 +3423,6 @@ obj/Release/apps/spp_and_le/board/bd19/board_ac6329e_demo.o
 obj/Release/apps/spp_and_le/board/bd19/board_ac6329f_demo.o
 obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,debug_uart_init,pl
--r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,uart_init,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,get_power_on_status,pl
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,board_init,pl
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,board_power_init,pl
@@ -3433,7 +3432,6 @@ obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,devices_init,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,get_charge_online_flag,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,power_set_mode,l
--r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,gpio_set_die,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,board_set_soft_poweroff,pl
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,log_print,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,sleep_exit_callback,pl
@@ -3458,6 +3456,7 @@ obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,gpio_set_pull_up,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,gpio_set_pull_down,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,gpio_set_direction,l
+-r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,gpio_set_die,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,gpio_set_dieh,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,usb1_iomode,l
 -r=obj/Release/apps/spp_and_le/board/bd19/board_ac632n_demo.o,power_param,pl
