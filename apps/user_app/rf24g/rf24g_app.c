@@ -1228,21 +1228,13 @@ void rf24g_key_r7c1_press_handle(void)
         return;
     }
 
-    // fc_effect.motor_sec_per_round = 70;
-    // motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
-
-    // 电机速度 减
-    if (fc_effect.motor_sec_per_round < 70 - step)
+    if (fc_effect.on_off_flag == DEVICE_OFF)
     {
-        fc_effect.motor_sec_per_round += step;
-    }
-    else
-    {
-        fc_effect.motor_sec_per_round = 70;
+        return;
     }
 
+    fc_effect.motor_sec_per_round = 70;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
-
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
         (u16)fc_effect.motor_sec_per_round);
@@ -1260,7 +1252,7 @@ void rf24g_key_r7c2_press_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 70;
+    fc_effect.motor_sec_per_round = 42;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1279,7 +1271,7 @@ void rf24g_key_r7c3_press_handle(void)
         return;
     }
 
-    fc_effect.motor_sec_per_round = 20;
+    fc_effect.motor_sec_per_round = 30;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
@@ -1300,90 +1292,14 @@ void rf24g_key_r7c4_press_handle(void)
         return;
     }
 
-    // fc_effect.motor_sec_per_round = 20;
-    // motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
-
-    // 电机速度 加 
-    if (fc_effect.motor_sec_per_round > 20 + step)
-    {
-        fc_effect.motor_sec_per_round -= step;
-    }
-    else
-    {
-        fc_effect.motor_sec_per_round = 20;
-    }
-
-    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
-
-#if USER_DEBUG_ENABLE
-    printf("fc_effect.motor_sec_per_round == %u\n",
-        (u16)fc_effect.motor_sec_per_round);
-#endif
-}
-
-#if 0 // 屏蔽
-void rf24g_key_r7c1_hold_handle(void)
-{
-    const u8 step = 1;
-
-#if USER_DEBUG_ENABLE
-    printf("r7c1 hold\n");
-#endif
-
-    if (fc_effect.on_off_flag == DEVICE_OFF)
-    {
-        return;
-    }
-
-    // 电机速度 减
-    if (fc_effect.motor_sec_per_round < 70 - step)
-    {
-        fc_effect.motor_sec_per_round += step;
-    }
-    else
-    {
-        fc_effect.motor_sec_per_round = 70;
-    }
-
+    fc_effect.motor_sec_per_round = 20;
     motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
 #if USER_DEBUG_ENABLE
     printf("fc_effect.motor_sec_per_round == %u\n",
         (u16)fc_effect.motor_sec_per_round);
 #endif
 }
-#endif
 
-#if 0
-void rf24g_key_r7c4_hold_handle(void)
-{
-    const u8 step = 1;
-
-#if USER_DEBUG_ENABLE
-    printf("r7c4 hold\n");
-#endif
-
-    if (fc_effect.on_off_flag == DEVICE_OFF)
-    {
-        return;
-    }
-
-    // 电机速度 加 
-    if (fc_effect.motor_sec_per_round > 20 + step)
-    {
-        fc_effect.motor_sec_per_round -= step;
-    }
-    else
-    {
-        fc_effect.motor_sec_per_round = 20;
-    }
-
-    motor_set_speed_sec_per_round(fc_effect.motor_sec_per_round);
-#if USER_DEBUG_ENABLE
-    printf("fc_effect.motor_sec_per_round == %u\n",
-        (u16)fc_effect.motor_sec_per_round);
-#endif
-}
-#endif
 
 
 const rf24_key_handle_func_t rf24g_key_type_28keys_handle_func_buff[RF24G_TYPE_28KEY_EVENT_MAX] = {
